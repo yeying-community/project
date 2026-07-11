@@ -2,8 +2,10 @@
 
 namespace App\Module;
 
+use App\Contracts\DooRuntimeInterface;
 use App\Models\User;
 use App\Module\Interface\DooSo;
+use App\Services\DooRuntime\OpenSourceDooRuntime;
 use App\Services\RequestContext;
 
 class Doo
@@ -14,12 +16,12 @@ class Doo
     /**
      * 加载Doo实例
      * - 如果已经存在，则直接返回
-     * - 否则，创建一个新的FFI实例，并初始化
+     * - 否则，按驱动配置创建一个新的运行时实例
      * @param $token
      * @param $language
-     * @return DooSo
+     * @return DooRuntimeInterface
      */
-    public static function load($token = null, $language = null): DooSo
+    public static function load($token = null, $language = null): DooRuntimeInterface
     {
         if (RequestContext::has(self::DOO_INSTANCE)) {
             return RequestContext::get(self::DOO_INSTANCE);
@@ -30,12 +32,21 @@ class Doo
             $token = $token ?: Base::token();
             $language = $language ?: Base::headerOrInput('language');
         }
-        $instance = new DooSo($token, $language);
+        $instance = app()->makeWith(self::resolveRuntimeClass(), compact('token', 'language'));
 
         RequestContext::set(self::DOO_INSTANCE, $instance);
         RequestContext::set(self::DOO_LANGUAGE, $language);
 
         return $instance;
+    }
+
+    protected static function resolveRuntimeClass(): string
+    {
+        return match (config('dootask.doo_driver', 'ffi')) {
+            'opensource' => OpenSourceDooRuntime::class,
+            'ffi' => DooSo::class,
+            default => DooSo::class,
+        };
     }
 
     /**

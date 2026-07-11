@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Module\Base;
-use App\Module\OnlineLicense;
-use Request;
 
 /**
  * 在线授权客户端（与 SystemController::license 的离线粘贴并存）。
@@ -21,18 +19,18 @@ use Request;
  */
 class LicenseController extends AbstractController
 {
+    protected function onlineLicenseDisabledResponse()
+    {
+        return Base::retError('社区版不支持在线授权');
+    }
+
     /**
      * 发送邮箱验证码（登录与试用共用）
      */
     public function email__send()
     {
         User::auth('admin');
-        $email = trim(Request::input('email'));
-        if ($email === '') {
-            return Base::retError('请输入邮箱');
-        }
-        $masked = OnlineLicense::emailSend($email);
-        return Base::retSuccess('验证码已发送', ['email' => $masked]);
+        return $this->onlineLicenseDisabledResponse();
     }
 
     /**
@@ -41,13 +39,7 @@ class LicenseController extends AbstractController
     public function login()
     {
         User::auth('admin');
-        $email = trim(Request::input('email'));
-        $code = trim(Request::input('code'));
-        if ($email === '' || $code === '') {
-            return Base::retError('请输入邮箱和验证码');
-        }
-        $data = OnlineLicense::login($email, $code);
-        return Base::retSuccess('授权成功', $data);
+        return $this->onlineLicenseDisabledResponse();
     }
 
     /**
@@ -56,17 +48,7 @@ class LicenseController extends AbstractController
     public function login__confirm()
     {
         User::auth('admin');
-        $email = trim(Request::input('email'));
-        $code = trim(Request::input('code'));
-        $entitlementId = (int)Request::input('entitlement_id');
-        if ($email === '' || $code === '') {
-            return Base::retError('请输入邮箱和验证码');
-        }
-        if ($entitlementId <= 0) {
-            return Base::retError('请选择要使用的授权');
-        }
-        $data = OnlineLicense::loginConfirm($email, $code, $entitlementId);
-        return Base::retSuccess('授权成功', $data);
+        return $this->onlineLicenseDisabledResponse();
     }
 
     /**
@@ -75,13 +57,7 @@ class LicenseController extends AbstractController
     public function trial()
     {
         User::auth('admin');
-        $email = trim(Request::input('email'));
-        $code = trim(Request::input('code'));
-        if ($email === '' || $code === '') {
-            return Base::retError('请输入邮箱和验证码');
-        }
-        $data = OnlineLicense::trial($email, $code);
-        return Base::retSuccess('试用已开通', $data);
+        return $this->onlineLicenseDisabledResponse();
     }
 
     /**
@@ -90,7 +66,11 @@ class LicenseController extends AbstractController
     public function status()
     {
         User::auth('admin');
-        return Base::retSuccess('success', OnlineLicense::status());
+        return Base::retSuccess('success', [
+            'mode' => 'disabled',
+            'status' => 'disabled',
+            'plan' => 'community',
+        ]);
     }
 
     /**
@@ -99,8 +79,11 @@ class LicenseController extends AbstractController
     public function refresh()
     {
         User::auth('admin');
-        OnlineLicense::refresh();
-        return Base::retSuccess('success', OnlineLicense::status());
+        return Base::retSuccess('success', [
+            'mode' => 'disabled',
+            'status' => 'disabled',
+            'plan' => 'community',
+        ]);
     }
 
     /**
@@ -109,7 +92,6 @@ class LicenseController extends AbstractController
     public function logout()
     {
         User::auth('admin');
-        OnlineLicense::logout();
-        return Base::retSuccess('已退出在线授权');
+        return $this->onlineLicenseDisabledResponse();
     }
 }

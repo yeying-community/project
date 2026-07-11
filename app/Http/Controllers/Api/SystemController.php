@@ -838,9 +838,9 @@ class SystemController extends AbstractController
     }
 
     /**
-     * @api {post} api/system/license License
+     * @api {post} api/system/license 社区授权
      *
-     * @apiDescription 获取License信息、保存License（限管理员）
+     * @apiDescription 获取社区授权信息、保存授权配置（限管理员）
      * @apiVersion 1.0.0
      * @apiGroup system
      * @apiName license
@@ -848,7 +848,7 @@ class SystemController extends AbstractController
      * @apiParam {String} type
      * - get: 获取
      * - save: 保存
-     * @apiParam {String} license   License 原文
+     * @apiParam {String} license   授权配置原文
      *
      * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
      * @apiSuccess {String} msg     返回信息（错误描述）
@@ -861,16 +861,16 @@ class SystemController extends AbstractController
         $type = trim(Request::input('type'));
         if ($type == 'save') {
             $license = Request::input('license');
-            // 解密失败（sn 为空）视为无效 license
+            // 解析失败（sn 为空）视为无效授权配置
             $decoded = Doo::licenseDecode($license);
             if ((string)($decoded['sn'] ?? '') === '') {
-                return Base::retError('LICENSE 格式错误');
+                return Base::retError('授权配置格式错误');
             }
             if ($err = Doo::licenseBindingError($decoded)) {
                 return Base::retError($err);
             }
             Doo::licenseSave($license);
-            // 离线/在线互斥：保存离线 license 即退出在线模式（尽力释放座位+清在线标志，不删除刚写入的文件）
+            // 保存本地授权配置后回落到本地模式
             OnlineLicense::switchToOffline();
         }
         //
@@ -883,10 +883,11 @@ class SystemController extends AbstractController
             'user_count' => User::whereBot(0)->whereNull('disable_at')->count(),
             'error' => []
         ];
+        $isOpenSourceDriver = config('dootask.doo_driver') === 'opensource';
         if ($data['info']['people'] == 0 || $data['info']['people'] > 3) {
-            // 付费档才检查 SN/MAC
+            // 非 1~3 人限制配置时检查 SN/MAC
             if ($data['info']['sn'] != $data['doo_sn']) {
-                $data['error'][] = '终端SN与License不匹配';
+                $data['error'][] = '终端SN与授权配置不匹配';
             }
             if ($data['info']['mac'] && $data['macs']) {
                 $approved = false;
@@ -897,21 +898,29 @@ class SystemController extends AbstractController
                     }
                 }
                 if (!$approved) {
-                    $data['error'][] = '终端MAC与License不匹配';
+                    $data['error'][] = '终端MAC与授权配置不匹配';
                 }
             }
         }
         if ($data['info']['people'] > 0 && $data['user_count'] > $data['info']['people']) {
-            $data['error'][] = '终端用户数超过License限制';
+            $data['error'][] = '终端用户数超过授权配置限制';
         }
         if ($data['info']['expired_at'] && strtotime($data['info']['expired_at']) <= Timer::time()) {
-            $data['error'][] = '终端License已过期';
+            $data['error'][] = '授权配置已过期';
         }
-        // 在线授权：把状态机提醒并入 error[]（dashboard 警告条与本页错误展示自动复用），并附在线状态
-        foreach (OnlineLicense::stageMessages() as $msg) {
-            $data['error'][] = $msg;
+        if ($isOpenSourceDriver) {
+            $data['online'] = [
+                'mode' => 'disabled',
+                'status' => 'disabled',
+                'plan' => 'community',
+            ];
+        } else {
+            // 在线授权：把状态机提醒并入 error[]（dashboard 警告条与本页错误展示自动复用），并附在线状态
+            foreach (OnlineLicense::stageMessages() as $msg) {
+                $data['error'][] = $msg;
+            }
+            $data['online'] = OnlineLicense::status();
         }
-        $data['online'] = OnlineLicense::status();
         //
         if ($type === 'error') {
             $data = [

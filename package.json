@@ -1,8 +1,9 @@
 {
-    "name": "DooTask",
+    "name": "yeying",
     "version": "1.8.64",
+    "license": "MIT",
     "codeVerson": 239,
-    "description": "DooTask is task management system.",
+    "description": "YeYing is an open source task management system.",
     "scripts": {
         "start": "./cmd dev",
         "build": "./cmd prod",
@@ -11,13 +12,13 @@
         "events:map": "node scripts/gen-events-map.mjs"
     },
     "author": {
-        "name": "KuaiFan",
-        "email": "aipaw@live.cn",
-        "url": "https://github.com/kuaifan"
+        "name": "YeYing",
+        "email": "opensource@yeying.com",
+        "url": "https://github.com/yeying"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/kuaifan/dootask.git"
+        "url": "git+https://github.com/yeying/yeying.git"
     },
     "devDependencies": {
         "@chenfengyuan/vue-qrcode": "^1.0.2",
@@ -85,17 +86,16 @@
     },
     "app": [
         {
-            "id": "com.dootask.task",
-            "name": "DooTask",
+            "id": "com.yeying.task",
+            "name": "夜莺",
             "url": "http://public/",
             "urls": [
-                "https://dootask.com/",
-                "https://www.dootask.com/",
-                "https://t.hitosea.com/"
+                "https://yeying.com/",
+                "https://www.yeying.com/"
             ],
             "publish": {
                 "provider": "generic",
-                "url": "https://www.dootask.com/api/download/update"
+                "url": "https://www.yeying.com/api/download/update"
             }
         }
     ]

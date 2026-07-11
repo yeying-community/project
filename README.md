@@ -1,9 +1,9 @@
-# DooTask - Open Source Task Management System
+# 夜莺 YeYing - Open Source Task Management System
 
 English | **[中文文档](./README_CN.md)**
 
 - [Screenshot Preview](./README_PREVIEW.md)
-- [Demo Site](http://www.dootask.com/)
+- [Demo Site](#)
 
 **QQ Group**
 
@@ -15,16 +15,16 @@ English | **[中文文档](./README_CN.md)**
 - Supported Systems: `CentOS/Debian/Ubuntu/macOS` and other Linux/Unix systems
 - Hardware Recommendation: 2+ cores, 4GB+ memory
 - Database: MariaDB (provided by the default Docker Compose `mariadb` service)
-- Special Note: Windows users can install Linux environment using WSL2 before installing DooTask.
+- Special Note: Windows users can install Linux environment using WSL2 before installing the project.
 
-### Deploy Project
+### Deploy YeYing
 
 **Option 1: One-line script (recommended)**
 
 Run it in an empty directory to clone and install automatically; run it inside an existing installation to check and upgrade:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuaifan/dootask/pro/bin/install | bash
+./cmd install
 ```
 
 **Option 2: Manual deployment**
@@ -33,12 +33,10 @@ curl -fsSL https://raw.githubusercontent.com/kuaifan/dootask/pro/bin/install | b
 # 1、Clone the project to your local machine or server
 
 # Clone project from GitHub
-git clone --depth=1 https://github.com/kuaifan/dootask.git
-# Or you can use Gitee
-git clone --depth=1 https://gitee.com/aipaw/dootask.git
+git clone --depth=1 <your-repo-url>
 
 # 2、Enter directory
-cd dootask
+cd project
 
 # 3、One-click installation (Custom port installation: ./cmd install --port 80)
 ./cmd install
@@ -110,7 +108,7 @@ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 Recommended: use the one-line script (run it inside an existing installation; it pulls the latest code and finishes the upgrade in a single run):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuaifan/dootask/pro/bin/install | bash
+./cmd update
 ```
 
 Or use the local command:
@@ -121,7 +119,7 @@ Or use the local command:
 
 * If you encounter 502 errors after upgrade, run `./cmd reup` to restart services.
 
-## Project Migration
+## YeYing Migration
 
 After installing the new project, follow these steps to complete migration:
 
@@ -146,7 +144,7 @@ After installing the new project, follow these steps to complete migration:
 ./cmd mysql recovery
 ```
 
-## Uninstall Project
+## Uninstall YeYing
 
 ```bash
 ./cmd uninstall

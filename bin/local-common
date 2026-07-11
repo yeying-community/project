@@ -1,0 +1,95 @@
+#!/bin/bash
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+LOCAL_COMPOSE_FILE="${ROOT_DIR}/docker-compose.local.yml"
+
+compose_local() {
+    docker compose -f "${LOCAL_COMPOSE_FILE}" "$@"
+}
+
+require_cmd() {
+    local cmd="$1"
+    if ! command -v "${cmd}" >/dev/null 2>&1; then
+        echo "missing command: ${cmd}" >&2
+        exit 1
+    fi
+}
+
+require_php_runtime() {
+    require_cmd php
+    require_cmd composer
+}
+
+set_env_value() {
+    local key="$1"
+    local value="$2"
+    local env_file="${ROOT_DIR}/.env"
+
+    if grep -q "^${key}=" "${env_file}"; then
+        perl -0pi -e "s#^${key}=.*#${key}=${value}#m" "${env_file}"
+    else
+        printf '\n%s=%s\n' "${key}" "${value}" >> "${env_file}"
+    fi
+}
+
+normalize_local_env() {
+    local env_file="${ROOT_DIR}/.env"
+    [ -f "${env_file}" ] || return
+
+    set_env_value APP_RUNTIME local
+    set_env_value APP_URL http://127.0.0.1:2222
+    set_env_value DB_HOST 127.0.0.1
+    set_env_value DB_PORT 23306
+    set_env_value REDIS_HOST 127.0.0.1
+    set_env_value REDIS_PORT 26379
+    set_env_value REDIS_CLIENT predis
+    set_env_value LARAVELS_LISTEN_IP 127.0.0.1
+    set_env_value LARAVELS_LISTEN_PORT 2222
+    set_env_value LARAVELS_INOTIFY_RELOAD false
+    set_env_value APPSTORE_INTERNAL_URL http://127.0.0.1:19080
+    set_env_value 'APPSTORE_ENTRY_URL' 'http://127.0.0.1:19080/internal?language={system_lang}&theme={system_theme}'
+    set_env_value DOO_DRIVER opensource
+    set_env_value DOO_LIBRARY_PATH "${ROOT_DIR}/runtime/doo/doo.so"
+    set_env_value DOO_WORK_PATH "${ROOT_DIR}"
+}
+
+prepare_local_env() {
+    if [ ! -f "${ROOT_DIR}/.env" ]; then
+        cp "${ROOT_DIR}/.env.local.example" "${ROOT_DIR}/.env"
+        normalize_local_env
+        return
+    fi
+
+    if grep -q '^APP_RUNTIME=local$' "${ROOT_DIR}/.env"; then
+        normalize_local_env
+        return
+    fi
+
+    if grep -Eq '^DB_HOST=mariadb$|^REDIS_HOST=redis$|^LARAVELS_LISTEN_PORT=20000$' "${ROOT_DIR}/.env"; then
+        local backup_file="${ROOT_DIR}/.env.container.bak"
+        if [ ! -f "${backup_file}" ]; then
+            cp "${ROOT_DIR}/.env" "${backup_file}"
+        fi
+        cp "${ROOT_DIR}/.env.local.example" "${ROOT_DIR}/.env"
+        normalize_local_env
+        return
+    fi
+
+    echo ".env already exists and is not marked with APP_RUNTIME=local." >&2
+    echo "Please review the current .env, then merge .env.local.example into it." >&2
+    exit 1
+}
+
+prepare_runtime_dirs() {
+    mkdir -p \
+        "${ROOT_DIR}/bootstrap/cache" \
+        "${ROOT_DIR}/storage/app" \
+        "${ROOT_DIR}/storage/framework/cache" \
+        "${ROOT_DIR}/storage/framework/cache/data" \
+        "${ROOT_DIR}/storage/framework/sessions" \
+        "${ROOT_DIR}/storage/framework/testing" \
+        "${ROOT_DIR}/storage/framework/views" \
+        "${ROOT_DIR}/storage/logs"
+}

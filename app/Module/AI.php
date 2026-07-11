@@ -32,6 +32,12 @@ class AI
     protected $timeout = 30;
     protected $providerConfig = null;
 
+    protected static function internalGatewayUrl(string $path): string
+    {
+        $baseUrl = rtrim((string) config('dootask.ai_internal_url', 'http://nginx'), '/');
+        return $baseUrl . '/' . ltrim($path, '/');
+    }
+
     /**
      * 构造函数
      * @param array $post
@@ -285,7 +291,7 @@ class AI
             $authParams['model_name'] = $thinkMatch[1];
         }
 
-        $authResult = Ihttp::ihttp_request('http://nginx/ai/invoke/auth', $authParams, [
+        $authResult = Ihttp::ihttp_request(self::internalGatewayUrl('/ai/invoke/auth'), $authParams, [
             'Content-Type' => 'application/x-www-form-urlencoded',
             'Authorization' => 'Bearer ' . Base::token(),
         ], 30);

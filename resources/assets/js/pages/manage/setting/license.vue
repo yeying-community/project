@@ -1,7 +1,7 @@
 <template>
     <div class="setting-item submit license-setting">
         <Tabs v-model="mode">
-            <TabPane :label="$L('在线授权')" name="online">
+            <TabPane v-if="onlineEnabled" :label="$L('在线授权')" name="online">
                 <div class="setting-component-item">
                     <div class="setting-scroll">
                         <!-- 首次进入且无缓存：骨架占位 + 加载中（有缓存则直接渲染下方真实数据） -->
@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </TabPane>
-            <TabPane :label="$L('离线授权')" name="offline">
+            <TabPane :label="$L('社区授权')" name="offline">
                 <div class="setting-component-item">
                     <div class="setting-scroll">
                         <template v-if="onlineActive">
@@ -88,15 +88,22 @@
                                 </ul>
                             </div>
                             <Form v-if="offlineRebindShow" :model="formData" v-bind="formOptions" @submit.native.prevent>
-                                <FormItem label="License">
-                                    <Input v-model="offlineRebindLicense" type="textarea" :autosize="{minRows: 2,maxRows: 5}" :placeholder="$L('请输入License...')" />
+                                <FormItem :label="$L('授权配置')">
+                                    <Input v-model="offlineRebindLicense" type="textarea" :autosize="{minRows: 2,maxRows: 5}" :placeholder="$L('请输入授权配置...')" />
                                 </FormItem>
                             </Form>
                         </template>
                         <template v-else>
                             <Form ref="formData" :model="formData" v-bind="formOptions" @submit.native.prevent class="license-form">
-                                <FormItem label="License" prop="license">
-                                    <Input v-model="formData.license" type="textarea" :autosize="{minRows: 2,maxRows: 5}" :placeholder="$L('请输入License...')" />
+                                <FormItem :label="$L('授权配置')" prop="license">
+                                    <Input v-model="formData.license" type="textarea" :autosize="{minRows: 2,maxRows: 5}" :placeholder="$L('请输入授权配置...')" />
+                                </FormItem>
+                                <FormItem :label="$L('说明')">
+                                    <div class="license-box">
+                                        <ul>
+                                            <li>{{$L('当前运行时默认使用社区版授权配置。未填写时也可正常运行；如需限制人数、绑定 SN 或设置过期时间，可在此保存本地 JSON 配置。')}}</li>
+                                        </ul>
+                                    </div>
                                 </FormItem>
                                 <FormItem>
                                     <div class="license-box">
@@ -148,7 +155,7 @@
                     </div>
                     <div class="setting-footer">
                         <template v-if="onlineActive">
-                            <Button v-if="!offlineRebindShow" type="primary" @click="offlineRebindShow = true">{{$L('绑定离线 License')}}</Button>
+                            <Button v-if="!offlineRebindShow" type="primary" @click="offlineRebindShow = true">{{$L('保存本地授权配置')}}</Button>
                             <template v-else>
                                 <Button :loading="loadIng > 0" type="primary" @click="offlineRebindSubmit">{{$L('提交')}}</Button>
                                 <Button :loading="loadIng > 0" @click="offlineRebindCancel">{{$L('取消')}}</Button>
@@ -163,7 +170,7 @@
             </TabPane>
         </Tabs>
         <!-- 本机有多条可用授权时，选择要使用哪一条 -->
-        <Modal v-model="candidateShow" :title="$L('选择要使用的授权')" :mask-closable="false">
+        <Modal v-if="onlineEnabled" v-model="candidateShow" :title="$L('选择要使用的授权')" :mask-closable="false">
             <div class="online-candidates">
                 <RadioGroup v-model="candidateChoice" vertical>
                     <Radio v-for="c in candidateList" :key="c.entitlement_id" :label="c.entitlement_id" class="online-candidate">
@@ -435,7 +442,7 @@ export default {
                 online: {},
             },
 
-            mode: 'online',
+            mode: 'offline',
             tabInited: false,
             offlineRebindShow: false,
             offlineRebindLicense: '',
@@ -458,8 +465,7 @@ export default {
         }
     },
     mounted() {
-        this.loadOnlineCache();     // 有缓存先秒开渲染
-        this.onlineRefresh();       // 再后台刷新最新数据
+        this.systemSetting();
     },
     beforeDestroy() {
         this.clearCodeTimer();
@@ -469,6 +475,10 @@ export default {
 
         online() {
             return this.formData.online || {};
+        },
+
+        onlineEnabled() {
+            return false;
         },
 
         onlineActive() {
@@ -605,7 +615,7 @@ export default {
         // 已绑定在线时，从离线页面提交新的离线 License：二次确认 → 成功保存，失败仅提示不保存
         offlineRebindSubmit() {
             if (!String(this.offlineRebindLicense).trim()) {
-                $A.messageError('请输入License');
+                $A.messageError('请输入授权配置');
                 return;
             }
             $A.modalConfirm({
@@ -666,6 +676,9 @@ export default {
         },
 
         onlineRefresh() {
+            if (!this.onlineEnabled) {
+                return this.systemSetting();
+            }
             // 进入授权页静默刷新在线授权：成功后端会更新数据，失败不提示；无论结果都拉取最新展示
             this.onlineRefreshing = true;
             this.$store.dispatch("call", {
@@ -682,6 +695,9 @@ export default {
 
         // 读取在线授权数据缓存：命中则立即渲染（秒开），并默认切到在线 Tab
         loadOnlineCache() {
+            if (!this.onlineEnabled) {
+                return;
+            }
             try {
                 const raw = window.localStorage.getItem(this.onlineCacheKey);
                 if (!raw) {
@@ -703,6 +719,10 @@ export default {
 
         // 写入/清除在线授权数据缓存：在线则缓存 online 对象，非在线则清除
         writeOnlineCache(online) {
+            if (!this.onlineEnabled) {
+                window.localStorage.removeItem(this.onlineCacheKey);
+                return;
+            }
             try {
                 if (online && online.mode === 'online') {
                     window.localStorage.setItem(this.onlineCacheKey, JSON.stringify(online));

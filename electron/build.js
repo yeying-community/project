@@ -460,7 +460,7 @@ async function startBuild(data) {
     // package.json Generated
     const appConfig = require('./package.json')
     let appName = utils.getDomain(data.url)
-    if (appName === "public") appName = "DooTask"
+    if (appName === "public") appName = "YeYing"
     appConfig.name = data.name;
     appConfig.version = config.version;
     appConfig.appId = data.id;

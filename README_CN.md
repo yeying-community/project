@@ -1,9 +1,9 @@
-# DooTask - 开源任务管理系统
+# 夜莺 YeYing - 开源任务管理系统
 
 **[English](./README.md)** | 中文文档
 
 - [截图预览](./README_PREVIEW.md)
-- [演示站点](http://www.dootask.com/)
+- [演示站点](#)
 
 **QQ交流群**
 
@@ -15,16 +15,16 @@
 - 支持环境：`Centos/Debian/Ubuntu/macOS` 等 linux/unix 系统
 - 硬件建议：2核4G以上
 - 数据库：MariaDB（默认 Docker Compose 中的 `mariadb` 服务）
-- 特别说明：Windows 可以使用 WSL2 安装 Linux 环境后再安装 DooTask。
+- 特别说明：Windows 可以使用 WSL2 安装 Linux 环境后再安装本项目。
 
-### 部署项目
+### 部署夜莺
 
 **方式一：一键脚本（推荐）**
 
 在空目录中执行即自动克隆并安装；在已安装目录中执行则自动检查并升级：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuaifan/dootask/pro/bin/install | bash
+./cmd install
 ```
 
 **方式二：手动部署**
@@ -33,12 +33,10 @@ curl -fsSL https://raw.githubusercontent.com/kuaifan/dootask/pro/bin/install | b
 # 1、克隆项目到您的本地或服务器
 
 # 通过github克隆项目
-git clone --depth=1 https://github.com/kuaifan/dootask.git
-# 或者你也可以使用gitee
-git clone --depth=1 https://gitee.com/aipaw/dootask.git
+git clone --depth=1 <your-repo-url>
 
 # 2、进入目录
-cd dootask
+cd project
 
 # 3、一键安装项目（自定义端口安装，如：./cmd install --port 80）
 ./cmd install
@@ -110,7 +108,7 @@ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 推荐使用一键脚本升级（在已安装目录中执行，自动拉取最新代码并完成升级，无需重复执行）：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuaifan/dootask/pro/bin/install | bash
+./cmd update
 ```
 
 或使用本地命令：
@@ -121,7 +119,7 @@ curl -fsSL https://raw.githubusercontent.com/kuaifan/dootask/pro/bin/install | b
 
 * 如果升级后出现502请运行 `./cmd reup` 重启服务即可。
 
-## 迁移项目
+## 迁移夜莺
 
 在新项目安装好之后按照以下步骤完成项目迁移：
 
@@ -146,7 +144,7 @@ curl -fsSL https://raw.githubusercontent.com/kuaifan/dootask/pro/bin/install | b
 ./cmd mysql recovery
 ```
 
-## 卸载项目
+## 卸载夜莺
 
 ```bash
 ./cmd uninstall

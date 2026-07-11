@@ -13,6 +13,11 @@ use App\Module\Ihttp;
 
 class Apps
 {
+    private static function appstoreBaseUrl(): string
+    {
+        return rtrim((string) config('dootask.appstore_internal_url', 'http://appstore'), '/');
+    }
+
     /**
      * 判断应用是否已安装
      *
@@ -263,7 +268,7 @@ class Apps
             }
         }
 
-        $url = sprintf('http://appstore/api/v1/internal/hooks/%s', $action);
+        $url = sprintf('%s/api/v1/internal/hooks/%s', self::appstoreBaseUrl(), $action);
         $payload = [
             'user' => [
                 'id' => (string) $user->userid,

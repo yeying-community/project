@@ -527,7 +527,7 @@ class BotReceiveMsgTask extends AbstractTask
                         {$sendText}
                         EOF;
                 }
-                $webhookUrl = "http://nginx/ai/chat";
+                $webhookUrl = rtrim((string) config('dootask.ai_internal_url', 'http://nginx'), '/') . '/ai/chat';
             } else {
                 // 用户机器人
                 if ($botUser->isUserBot() && str_starts_with($sendText, '/')) {

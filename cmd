@@ -597,6 +597,11 @@ DooTask 管理脚本
   serve, dev                  启动开发模式
   build, prod                 生产环境构建
   electron                    构建桌面应用
+  local-install               初始化本机开发环境（应用本机运行，中间件走容器）
+  local-up                    启动本机开发依赖容器（MariaDB/Redis/AppStore）
+  local-down                  停止本机开发依赖容器
+  local-start                 在宿主机启动 LaravelS
+  local-stop                  停止宿主机 LaravelS
 
 🔧 服务管理:
   up [服务名]                 启动容器
@@ -623,6 +628,7 @@ DooTask 管理脚本
   ./cmd update --branch dev   切换到 dev 分支并更新
   ./cmd mysql backup          备份数据库
   ./cmd artisan migrate       执行数据库迁移
+  ./cmd local-install         初始化本机开发环境
 EOF
     else
         cat << 'EOF'
@@ -646,6 +652,11 @@ Usage: ./cmd <command> [options]
   serve, dev                  Start dev mode
   build, prod                 Production build
   electron                    Build desktop app
+  local-install               Prepare local dev mode (app on host, middleware in containers)
+  local-up                    Start local dev dependencies (MariaDB/Redis/AppStore)
+  local-down                  Stop local dev dependencies
+  local-start                 Start LaravelS on the host
+  local-stop                  Stop LaravelS on the host
 
 🔧 Services:
   up [service]                Start containers
@@ -672,6 +683,7 @@ Examples:
   ./cmd update --branch dev   Switch to dev branch and update
   ./cmd mysql backup          Back up database
   ./cmd artisan migrate       Run database migration
+  ./cmd local-install         Prepare local dev mode
 EOF
     fi
 }
@@ -1139,6 +1151,26 @@ case "$1" in
         else
             $COMPOSE up "$@"
         fi
+        ;;
+    "local-install")
+        shift 1
+        exec "${WORK_DIR}/bin/local-install" "$@"
+        ;;
+    "local-up")
+        shift 1
+        exec "${WORK_DIR}/bin/local-up" "$@"
+        ;;
+    "local-down")
+        shift 1
+        exec "${WORK_DIR}/bin/local-down" "$@"
+        ;;
+    "local-start")
+        shift 1
+        exec "${WORK_DIR}/bin/local-start" "$@"
+        ;;
+    "local-stop")
+        shift 1
+        exec "${WORK_DIR}/bin/local-stop" "$@"
         ;;
     *)
         $COMPOSE "$@"

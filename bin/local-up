@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euo pipefail
+
+source "$(cd "$(dirname "$0")" && pwd)/local-common"
+
+require_cmd docker
+
+compose_local up -d mariadb redis appstore
+echo "Local dependencies are running:"
+echo "  MariaDB  -> 127.0.0.1:23306"
+echo "  Redis    -> 127.0.0.1:26379"
+echo "  AppStore -> http://127.0.0.1:19080"
