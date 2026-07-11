@@ -1,7 +1,7 @@
 services:
-  mariadb:
-    container_name: "project-local-mariadb"
-    image: "mariadb:10.7.3"
+  mysql:
+    container_name: "project-local-mysql"
+    image: "mysql:8.4"
     ports:
       - "23306:3306"
     volumes:

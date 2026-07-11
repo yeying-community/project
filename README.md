@@ -14,7 +14,7 @@ English | **[中文文档](./README_CN.md)**
 - Required: `Docker v20.10+` and `Docker Compose v2.0+`
 - Supported Systems: `CentOS/Debian/Ubuntu/macOS` and other Linux/Unix systems
 - Hardware Recommendation: 2+ cores, 4GB+ memory
-- Database: MariaDB (provided by the default Docker Compose `mariadb` service)
+- Database: MySQL 8.4 (provided by the default local Docker Compose `mysql` service)
 - Special Note: Windows users can install Linux environment using WSL2 before installing the project.
 
 ### Deploy YeYing
@@ -123,14 +123,14 @@ Or use the local command:
 
 After installing the new project, follow these steps to complete migration:
 
-1、Backup the MariaDB database
+1、Backup the MySQL database
 
 ```bash
 # Run command in the old project
 ./cmd mysql backup
 ```
 
-> `./cmd mysql` is the CLI subcommand name; backups run against the MariaDB container.
+> `./cmd mysql` is the CLI subcommand name; backups run against the MySQL container.
 
 2、Copy the following files and directories from old project to the same paths in new project
 
