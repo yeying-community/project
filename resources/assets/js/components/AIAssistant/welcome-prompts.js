@@ -2,7 +2,7 @@
  * AI 助手欢迎界面快捷提示配置
  *
  * 根据不同页面场景显示相关的快捷提示，帮助用户快速开始对话
- * 提示内容基于 DooTask MCP 工具的实际能力设计
+ * 提示内容基于 YeYing MCP 工具的实际能力设计
  */
 
 import {languageName} from "../../language";

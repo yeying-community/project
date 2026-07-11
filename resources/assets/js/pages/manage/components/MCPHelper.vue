@@ -16,7 +16,7 @@
                         <template v-if="configTab === 'claude-code'">
                             <p class="mcp-config-hint">{{ t('在终端运行以下命令', 'Run the following command in terminal') }}:</p>
                             <div class="mcp-code-block">
-                                <pre ref="configClaudeCode">claude mcp add --transport http DooTask {{ mcpServerUrl }}</pre>
+                                <pre ref="configClaudeCode">claude mcp add --transport http YeYing {{ mcpServerUrl }}</pre>
                                 <Button size="small" class="mcp-copy-btn" @click="copyConfig('configClaudeCode')">{{ t('复制', 'Copy') }}</Button>
                             </div>
                         </template>
@@ -125,7 +125,7 @@
 
             <div class="mcp-section">
                 <h3><span class="emoji-original">💡</span> {{ t('使用示例', 'Usage Examples') }}</h3>
-                <p>{{ t('配置生效后，即可通过自然语言与 AI 对话操作 DooTask', 'After configuration, you can interact with DooTask through natural language') }}:</p>
+                <p>{{ t('配置生效后，即可通过自然语言与 AI 对话操作夜莺 YeYing', 'After configuration, you can interact with YeYing through natural language') }}:</p>
 
                 <div class="mcp-category">
                     <h4>{{ t('任务管理', 'Task Management') }}</h4>
@@ -341,7 +341,7 @@ export default {
         configCursor() {
             return JSON.stringify({
                 mcpServers: {
-                    DooTask: {
+                    YeYing: {
                         url: this.mcpServerUrl
                     }
                 }
@@ -353,7 +353,7 @@ export default {
             return JSON.stringify({
                 mcp: {
                     servers: {
-                        DooTask: {
+                        YeYing: {
                             type: "http",
                             url: this.mcpServerUrl
                         }
@@ -366,7 +366,7 @@ export default {
         configWindsurf() {
             return JSON.stringify({
                 mcpServers: {
-                    DooTask: {
+                    YeYing: {
                         serverUrl: this.mcpServerUrl
                     }
                 }
@@ -377,7 +377,7 @@ export default {
         configClaudeDesktop() {
             return JSON.stringify({
                 mcpServers: {
-                    DooTask: {
+                    YeYing: {
                         type: "streamable-http",
                         url: this.mcpServerUrl
                     }
@@ -387,14 +387,14 @@ export default {
 
         // OpenAI Codex: TOML format
         configCodex() {
-            return `[mcp_servers.DooTask]\nurl = "${this.mcpServerUrl}"`;
+            return `[mcp_servers.YeYing]\nurl = "${this.mcpServerUrl}"`;
         },
 
         // Kiro: JSON format
         configKiro() {
             return JSON.stringify({
                 mcpServers: {
-                    DooTask: {
+                    YeYing: {
                         type: "streamable-http",
                         url: this.mcpServerUrl
                     }
@@ -406,7 +406,7 @@ export default {
         configTrae() {
             return JSON.stringify({
                 mcpServers: {
-                    DooTask: {
+                    YeYing: {
                         url: this.mcpServerUrl
                     }
                 }
@@ -417,7 +417,7 @@ export default {
         configAntigravity() {
             return JSON.stringify({
                 mcpServers: {
-                    DooTask: {
+                    YeYing: {
                         serverUrl: this.mcpServerUrl
                     }
                 }
@@ -428,7 +428,7 @@ export default {
         configOpencode() {
             return JSON.stringify({
                 mcp: {
-                    DooTask: {
+                    YeYing: {
                         type: "remote",
                         url: this.mcpServerUrl,
                         enabled: true
@@ -441,7 +441,7 @@ export default {
         configOtherJson() {
             return JSON.stringify({
                 mcpServers: {
-                    DooTask: {
+                    YeYing: {
                         url: this.mcpServerUrl
                     }
                 }
