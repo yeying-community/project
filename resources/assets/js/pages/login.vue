@@ -98,6 +98,7 @@
                         </Input>
 
                         <Button type="primary" :loading="loadIng > 0 || loginJump" size="large" long @click="onLogin">{{$L(loginText)}}</Button>
+                        <Button v-if="loginType=='login'" class="wallet-login-button" :loading="walletLoading" size="large" long @click="onWalletLogin">{{$L('使用夜莺钱包登录')}}</Button>
 
                         <div v-if="loginType=='reg'" class="login-switch">{{$L('已经有帐号？')}} <a href="javascript:void(0)" @click="loginType='login'">{{$L('登录帐号')}}</a></div>
                         <div v-else class="login-switch">{{$L('还没有帐号？')}} <a href="javascript:void(0)" @click="loginType='reg'">{{$L('注册帐号')}}</a></div>
@@ -169,6 +170,7 @@ import {mapState} from "vuex";
 import {languageList, languageName, setLanguage} from "../language";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import emitter from "../store/events";
+import {getProvider, loginWithChallenge, requestAccounts} from "@yeying-community/web3-bs";
 
 export default {
     components: {VueQrcode},
@@ -191,6 +193,7 @@ export default {
             loginMode: 'access',
             loginType: 'login',
             loginJump: false,
+            walletLoading: false,
 
             email: '',
             password: '',
@@ -505,6 +508,37 @@ export default {
             if (e.isComposing || e.key === 'Process' || e.keyCode === 229) return;
             if (e.keyCode === 13) {
                 this.onLogin();
+            }
+        },
+
+        async onWalletLogin() {
+            if (this.walletLoading) return;
+            this.walletLoading = true;
+            try {
+                const provider = await getProvider({preferYeYing: true, timeoutMs: 3000});
+                if (!provider) throw new Error('未检测到夜莺钱包，请先安装并解锁钱包插件');
+                const accounts = await requestAccounts({provider});
+                const address = accounts[0];
+                if (!address) throw new Error('钱包未返回可用账号');
+                const result = await loginWithChallenge({
+                    provider,
+                    address,
+                    baseUrl: `${window.location.origin}/api/public/auth`,
+                    storeToken: false,
+                });
+                const response = await fetch(`${window.location.origin}/api/users/info`, {
+                    headers: {'dootask-token': result.token},
+                });
+                const payload = await response.json();
+                if (!response.ok || !payload.data) {
+                    throw new Error('钱包登录成功，但用户信息获取失败');
+                }
+                await this.$store.dispatch('handleClearCache', Object.assign({}, payload.data, {token: result.token}));
+                this.goNext();
+            } catch (error) {
+                $A.modalError(error?.message || '钱包登录失败');
+            } finally {
+                this.walletLoading = false;
             }
         },
 
