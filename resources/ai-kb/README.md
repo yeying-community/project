@@ -73,7 +73,7 @@ curl -X POST 'http://ai-service/kb/reindex' \
 
 ## 用检索打点与用户反馈数据迭代内容
 
-主程序记录了两类质量数据（mariadb，表前缀以实际 `DB_PREFIX` 为准，下例用 `pre_`）：
+主程序记录了两类质量数据（MySQL，表前缀以实际 `DB_PREFIX` 为准，下例用 `pre_`）：
 
 - `pre_ai_assistant_search_logs` — 每次 `search_help_docs` 检索一行（query、命中 source、分数、是否空结果）
 - `pre_ai_assistant_feedbacks` — 用户对 AI 回复的 👍/👎（含回复引用的 source id 列表）

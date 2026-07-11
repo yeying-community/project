@@ -24,6 +24,7 @@ class AddWebSocketDialogMsgsReplyNum extends Migration
             \App\Models\WebSocketDialogMsg::select(['reply_id'])
                 ->distinct()
                 ->where('reply_id', '>', 0)
+                ->orderBy('reply_id')
                 ->chunk(100, function ($lists) {
                     /** @var \App\Models\WebSocketDialogMsg $item */
                     foreach ($lists as $item) {

@@ -39,7 +39,8 @@
         "predis/predis": "^2.3",
         "smalot/pdfparser": "^2.11",
         "symfony/console": "^7.4",
-        "symfony/yaml": "^7.4"
+        "symfony/yaml": "^7.4",
+        "web3p/ethereum-util": "^0.1.4"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",

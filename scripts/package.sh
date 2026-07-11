@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+project_name="${PROJECT_NAME:-yeying}"
+output_dir="${OUTPUT_DIR:-$root_dir/output}"
+version="${1:-$(node -p "require('$root_dir/package.json').version")}"
+version="${version#v}"
+stage_dir="$(mktemp -d "${TMPDIR:-/tmp}/${project_name}-package.XXXXXX")"
+archive_path="$output_dir/${project_name}-${version}.tar.gz"
+
+cleanup() { rm -rf "$stage_dir"; }
+trap cleanup EXIT
+
+command -v npm >/dev/null || { echo "Missing npm command in PATH" >&2; exit 1; }
+command -v composer >/dev/null || { echo "Missing composer command in PATH" >&2; exit 1; }
+
+cd "$root_dir"
+echo "Installing frontend dependencies..."
+npm ci
+echo "Building frontend static assets..."
+npm run build
+echo "Installing production PHP dependencies..."
+composer install --no-dev --prefer-dist --optimize-autoloader
+
+mkdir -p "$output_dir" "$stage_dir"
+rm -rf "$output_dir"/*
+
+rsync -a \
+  --exclude '.git' \
+  --exclude '.github' \
+  --exclude 'node_modules' \
+  --exclude 'output' \
+  --exclude 'storage/logs/*' \
+  --exclude '.env' \
+  "$root_dir/" "$stage_dir/"
+
+chmod +x "$stage_dir/scripts/starter.sh"
+tar -czf "$archive_path" -C "$stage_dir" .
+echo "Package created: $archive_path"

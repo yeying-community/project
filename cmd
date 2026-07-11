@@ -378,7 +378,7 @@ mysql_snapshot() {
         # 备份数据库
         mkdir -p ${WORK_DIR}/docker/mysql/backup
         filename="${WORK_DIR}/docker/mysql/backup/${database}_$(date "+%Y%m%d%H%M%S").sql.gz"
-        container_exec mariadb "exec mysqldump --databases $database -u${username} -p${password}" | gzip > $filename
+        container_exec mysql "exec mysqldump --databases $database -u${username} -p${password}" | gzip > $filename
         judge "$(msg '备份数据库')"
         [ -f "$filename" ] && echo "$(msg '备份文件：(*)' "$filename")"
     elif [ "$1" = "recovery" ]; then
@@ -407,13 +407,13 @@ mysql_snapshot() {
         done
         filename="${backup_files[$((selection - 1))]}"
         inputname="$(basename "$filename")"
-        container_name=`docker_name mariadb`
+        container_name=`docker_name mysql`
         if [ -z "$container_name" ]; then
-            error "$(msg '没有找到 (*) 容器!' mariadb)"
+            error "$(msg '没有找到 (*) 容器!' mysql)"
             exit 1
         fi
         docker cp "$filename" "${container_name}:/"
-        container_exec mariadb "gunzip < '/${inputname}' | mysql -u${username} -p${password} $database"
+        container_exec mysql "gunzip < '/${inputname}' | mysql -u${username} -p${password} $database"
         container_exec php "php artisan migrate"
         judge "$(msg '还原数据库')"
     fi
@@ -544,7 +544,7 @@ env_init() {
         env_set APP_IPPR "10.$(rand 50 100).$(rand 100 200)"
     fi
     if [ -z "$(env_get UPDATE_TIME)" ]; then
-        env_set DB_HOST "mariadb"
+        env_set DB_HOST "mysql"
         env_set REDIS_HOST "redis"
         docker run $TTY_FLAG --rm -v ${WORK_DIR}:/www nginx:alpine sh -c "sed -i 's|/etc/nginx/conf.d/site/|/var/www/docker/nginx/site/|g' /www/docker/nginx/site/*.conf &> /dev/null"
     fi
@@ -598,7 +598,7 @@ DooTask 管理脚本
   build, prod                 生产环境构建
   electron                    构建桌面应用
   local-install               初始化本机开发环境（应用本机运行，中间件走容器）
-  local-up                    启动本机开发依赖容器（MariaDB/Redis/AppStore）
+  local-up                    启动本机开发依赖容器（MySQL/Redis/AppStore）
   local-down                  停止本机开发依赖容器
   local-start                 在宿主机启动 LaravelS
   local-stop                  停止宿主机 LaravelS
@@ -653,7 +653,7 @@ Usage: ./cmd <command> [options]
   build, prod                 Production build
   electron                    Build desktop app
   local-install               Prepare local dev mode (app on host, middleware in containers)
-  local-up                    Start local dev dependencies (MariaDB/Redis/AppStore)
+  local-up                    Start local dev dependencies (MySQL/Redis/AppStore)
   local-down                  Stop local dev dependencies
   local-start                 Start LaravelS on the host
   local-stop                  Stop LaravelS on the host
@@ -815,7 +815,7 @@ handle_install() {
 
     success "$(msg '安装完成')"
     echo -e "$(msg '地址'): http://${GreenBG}127.0.0.1:$(env_get APP_PORT)${Font}"
-    container_exec mariadb "sh /etc/mysql/repassword.sh"
+    container_exec mysql "sh /etc/mysql/repassword.sh"
 }
 
 # 更新函数
@@ -1018,7 +1018,7 @@ case "$1" in
         ;;
     "repassword")
         shift 1
-        container_exec mariadb "sh /etc/mysql/repassword.sh $@"
+        container_exec mysql "sh /etc/mysql/repassword.sh $@"
         ;;
     "serve"|"dev")
         shift 1
@@ -1104,7 +1104,7 @@ case "$1" in
         elif [[ "$1" == "recovery" ]] || [[ "$1" == "r" ]]; then
             mysql_snapshot recovery
         else
-            e="mysql $@" && container_exec mariadb "$e"
+            e="mysql $@" && container_exec mysql "$e"
         fi
         ;;
     "composer")

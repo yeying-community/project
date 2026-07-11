@@ -15,7 +15,7 @@ class AddUserDeletesCache extends Migration
     {
         Schema::table('user_deletes', function (Blueprint $table) {
             if (!Schema::hasColumn('user_deletes', 'cache')) {
-                $table->text('cache')->after('reason')->nullable()->default('')->comment('会员资料缓存');
+                $table->text('cache')->after('reason')->nullable()->comment('会员资料缓存');
             }
         });
     }

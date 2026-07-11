@@ -67,7 +67,7 @@ prepare_local_env() {
         return
     fi
 
-    if grep -Eq '^DB_HOST=mariadb$|^DB_HOST=mysql$|^REDIS_HOST=redis$|^LARAVELS_LISTEN_PORT=20000$' "${ROOT_DIR}/.env"; then
+    if grep -Eq '^DB_HOST=mysql$|^REDIS_HOST=redis$|^LARAVELS_LISTEN_PORT=20000$' "${ROOT_DIR}/.env"; then
         local backup_file="${ROOT_DIR}/.env.container.bak"
         if [ ! -f "${backup_file}" ]; then
             cp "${ROOT_DIR}/.env" "${backup_file}"

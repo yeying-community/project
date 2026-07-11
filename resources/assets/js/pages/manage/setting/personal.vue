@@ -13,6 +13,10 @@
             <FormItem :label="$L('邮箱')" prop="email">
                 <Input v-model="userInfo.email" disabled></Input>
             </FormItem>
+            <FormItem :label="$L('夜莺钱包')">
+                <Button type="primary" :loading="walletLoading" @click="bindWallet">{{$L('绑定夜莺钱包')}}</Button>
+                <span class="form-tip">{{$L('绑定后可使用钱包登录 YeYing')}}</span>
+            </FormItem>
             <FormItem :label="$L('电话')" prop="tel">
                 <Input v-model="formData.tel" :maxlength="20" :placeholder="$L('请输入联系电话')"></Input>
             </FormItem>
@@ -82,6 +86,7 @@
 import ImgUpload from "../../../components/ImgUpload";
 import UserTagsModal from "../components/UserTagsModal.vue";
 import {mapState} from "vuex";
+import {getProvider, requestAccounts, signMessage} from "@yeying-community/web3-bs";
 export default {
     components: {ImgUpload, UserTagsModal},
     data() {
@@ -120,6 +125,7 @@ export default {
             tagModalVisible: false,
             personalTags: [],
             personalTagTotal: 0,
+            walletLoading: false,
         }
     },
     mounted() {
@@ -191,6 +197,37 @@ export default {
             this.personalTagTotal = typeof extra.personal_tags_total === 'number'
                 ? extra.personal_tags_total
                 : this.personalTags.length;
+        },
+
+        async bindWallet() {
+            if (this.walletLoading) return;
+            this.walletLoading = true;
+            try {
+                const provider = await getProvider({preferYeYing: true, timeoutMs: 3000});
+                if (!provider) throw new Error('未检测到夜莺钱包，请先安装并解锁钱包插件');
+                const accounts = await requestAccounts({provider});
+                const address = accounts[0];
+                if (!address) throw new Error('钱包未返回可用账号');
+                const challengeResponse = await fetch(`${window.location.origin}/api/public/auth/challenge`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({address, chain_id: '1'}),
+                });
+                const challengePayload = await challengeResponse.json();
+                if (!challengeResponse.ok || challengePayload.ret !== 1) {
+                    throw new Error(challengePayload.msg || '获取钱包绑定挑战失败');
+                }
+                const signature = await signMessage({provider, address, message: challengePayload.data.challenge});
+                await this.$store.dispatch('call', {
+                    url: 'public/auth/bind',
+                    data: {address, chain_id: '1', signature},
+                });
+                $A.messageSuccess('夜莺钱包绑定成功');
+            } catch (error) {
+                $A.modalError(error?.message || '钱包绑定失败');
+            } finally {
+                this.walletLoading = false;
+            }
         },
 
         submitForm() {

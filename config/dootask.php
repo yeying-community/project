@@ -57,6 +57,9 @@ return [
     // GnuPG 可执行文件路径；为空时自动从 PATH 和常见安装路径查找
     'gpg_binary' => env('GPG_BINARY'),
 
+    // 钱包登录允许的 EVM chain ID
+    'wallet_chain_id' => env('WALLET_CHAIN_ID', '1'),
+
     // 在线授权：租约剩余不足该天数时触发续期（OnlineLicense）
     'online_license_renew_within_days' => env('ONLINE_LICENSE_RENEW_WITHIN_DAYS', 20),
 

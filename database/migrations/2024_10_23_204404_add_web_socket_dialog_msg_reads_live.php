@@ -25,10 +25,6 @@ class AddWebSocketDialogMsgReadsLive extends Migration
                 $table->index(['userid', 'live', 'msg_id']);
             }
         });
-        info("update web_socket_dialog_msgs deleted_at");
-        Schema::table('web_socket_dialog_msgs', function (Blueprint $table) {
-            $table->index('deleted_at');
-        });
         if ($isAdd) {
             // 关键词包含
             $contains = [
@@ -102,7 +98,7 @@ class AddWebSocketDialogMsgReadsLive extends Migration
             ];
             info("update web_socket_dialog_msgs key equals");
             foreach ($equals as $key) {
-                WebSocketDialogMsg::whereType('text')->whereKey($key)->update(['key' => '']);
+                WebSocketDialogMsg::whereType('text')->where('key', $key)->update(['key' => '']);
             }
 
             // 更新是否在会话里面

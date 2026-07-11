@@ -31,7 +31,7 @@ services:
     networks:
       - extnetwork
     depends_on:
-      mariadb:
+      mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -74,9 +74,9 @@ services:
       - extnetwork
     restart: unless-stopped
 
-  mariadb:
-    container_name: "dootask-mariadb-${APP_ID}"
-    image: "mariadb:10.7.3"
+  mysql:
+    container_name: "dootask-mysql-${APP_ID}"
+    image: "mysql:8.4"
     volumes:
       - ./docker/mysql/repassword.sh:/etc/mysql/repassword.sh
       - ./docker/mysql/conf.d:/etc/mysql/conf.d

@@ -19,7 +19,8 @@ class AddWebSocketDialogMsgsKey extends Migration
         Schema::table('web_socket_dialog_msgs', function (Blueprint $table) use (&$isAdd) {
             if (!Schema::hasColumn('web_socket_dialog_msgs', 'key')) {
                 $isAdd = true;
-                $table->text('key')->after('emoji')->nullable()->default('')->comment('搜索关键词');
+                // MySQL 8.4 does not allow defaults on TEXT columns.
+                $table->text('key')->after('emoji')->nullable()->comment('搜索关键词');
             }
         });
         if ($isAdd) {

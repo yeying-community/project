@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\Api\DialogController;
 use App\Http\Controllers\Api\PublicController;
+use App\Http\Controllers\Api\WalletAuthController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SystemController;
 use App\Http\Controllers\Api\LicenseController;
@@ -28,6 +29,9 @@ use App\Http\Controllers\Api\UploadController;
 |
 */
 
+
+// 钱包 SIWE 登录必须先于通用 public 路由匹配。
+Route::any('api/public/auth/{method}', WalletAuthController::class)->middleware(['webapi']);
 
 /**
  * 接口

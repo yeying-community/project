@@ -7469,7 +7469,7 @@ namespace Illuminate\Support\Facades {
         }
 
         /**
-         * Determine if the connected database is a MariaDB database.
+         * Determine if the connected database is a MySQL-compatible database.
          *
          * @return bool
          * @static
@@ -29926,7 +29926,6 @@ namespace  {
     class Captcha extends \Mews\Captcha\Facades\Captcha {}
     class Iseed extends \Orangehill\Iseed\Facades\Iseed {}
 }
-
 
 
 

@@ -206,7 +206,7 @@ class AbstractModel extends Model
      * 覆写框架 saveOrIgnore 的底层插入逻辑。
      *
      * 框架默认走 insertOrIgnoreReturning（INSERT ... ON CONFLICT ... RETURNING），
-     * MySQL/MariaDB 的 grammar 不支持该变体，会抛
+     * MySQL grammar 不支持该变体，会抛
      * "This database engine does not support insert or ignore with returning."。
      * 这里改用 MySQL 支持的 INSERT IGNORE，并在成功插入时手动回填自增ID，
      * 保持与框架一致的返回语义（冲突被忽略时返回 false）。
