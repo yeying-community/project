@@ -17,7 +17,7 @@ command -v composer >/dev/null || { echo "Missing composer command in PATH" >&2;
 
 cd "$root_dir"
 echo "Installing frontend dependencies..."
-npm ci
+npm install
 echo "Building frontend static assets..."
 npm run build
 echo "Installing production PHP dependencies..."
