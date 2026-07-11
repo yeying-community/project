@@ -536,7 +536,11 @@ export default {
                 await this.$store.dispatch('handleClearCache', Object.assign({}, payload.data, {token: result.token}));
                 this.goNext();
             } catch (error) {
-                $A.modalError(error?.message || '钱包登录失败');
+                if (error?.message === 'Verify response missing token') {
+                    $A.modalWarning('该钱包尚未绑定 YeYing 账号，请先使用邮箱账号登录后绑定钱包');
+                } else {
+                    $A.modalError(error?.message || '钱包登录失败');
+                }
             } finally {
                 this.walletLoading = false;
             }

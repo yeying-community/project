@@ -6,6 +6,8 @@
 /build
 /public/hot
 /public/tmp
+/public/js/build
+/public/manifest.json
 /tmp
 /backup
 

@@ -90,7 +90,7 @@ class WalletAuthController extends AbstractController
             return Base::retError('该钱包已绑定其他 YeYing 账号', ['code' => 'wallet_already_bound']);
         }
         if (!$existing) {
-            UserWallet::createInstance([
+            $wallet = UserWallet::createInstance([
                 'userid' => $userid,
                 'chain' => 'eip155',
                 'chain_id' => $chainId,
@@ -98,6 +98,7 @@ class WalletAuthController extends AbstractController
                 'address_normalized' => $address,
                 'last_login_at' => Carbon::now(),
             ]);
+            $wallet->save();
         }
         return Base::retSuccess('钱包绑定成功', ['address' => $address, 'chain_id' => $chainId]);
     }
