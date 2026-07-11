@@ -1,8 +1,8 @@
 /**
- * DooTask MCP Server
+ * YeYing MCP Server
  *
- * DooTask 的 Electron 客户端集成了 Model Context Protocol (MCP) 服务，
- * 允许 AI 助手(如 Claude)直接与 DooTask 任务进行交互。
+ * 夜莺的 Electron 客户端集成了 Model Context Protocol (MCP) 服务，
+ * 允许 AI 助手(如 Claude)直接与夜莺任务进行交互。
  *
  * 提供的工具（共 29 个）:
  *
@@ -52,7 +52,7 @@
  * 配置方法:
  *  {
  *    "mcpServers": {
- *      "DooTask": {
+ *      "YeYing": {
  *        "url": "http://localhost:22224/mcp"
  *      }
  *    }
@@ -177,9 +177,9 @@ class DooTaskMCP {
         const FastMCPClass = await loadFastMCP();
 
         this.mcp = new FastMCPClass({
-            name: 'DooTask MCP Server',
+            name: 'YeYing MCP Server',
             version: '1.0.0',
-            description: 'DooTask 任务管理 MCP 接口',
+            description: '夜莺任务管理 MCP 接口',
         });
 
         this.setupTools();
@@ -192,7 +192,7 @@ class DooTaskMCP {
         try {
             // 通过主窗口执行前端代码来调用API
             if (!this.mainWindow || !this.mainWindow.webContents) {
-                throw new Error('Main window not available, please open DooTask application first');
+                throw new Error('Main window not available, please open YeYing application first');
             }
 
             // 检查 webContents 是否 ready

@@ -9,7 +9,7 @@ const timezone = require("dayjs/plugin/timezone");
 (function (window, $, undefined) {
     window.systemInfo = window.systemInfo || {};
     window.modalTransferIndex = 1000;
-    localforage.config({name: 'DooTask', storeName: 'common'});
+    localforage.config({name: 'YeYing', storeName: 'common'});
 
     /**
      * =============================================================================

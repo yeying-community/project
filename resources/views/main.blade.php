@@ -27,7 +27,8 @@
             version: "{{ $version }}",
             origin: window.location.origin + "/",
             homeUrl: null,
-            apiUrl: null
+            apiUrl: null,
+            appstoreUrl: @json(config('dootask.appstore_entry_url'))
         };
     </script>
 </head>

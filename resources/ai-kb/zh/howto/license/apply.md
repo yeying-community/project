@@ -1,17 +1,17 @@
 ---
 id: license.howto
-title: 申请与录入 License
+title: 申请与录入社区授权配置
 type: howto
 feature: license
 scope: super-admin
 locale: zh
 aliases:
-  - 申请 License
-  - 录入 License
-  - 怎么填 License
-  - 提交 License
+  - 申请社区授权配置
+  - 录入社区授权配置
+  - 怎么填授权配置
+  - 提交授权配置
   - 上传授权
-  - License 填哪里
+  - 授权配置填哪里
   - 终端绑定
   - 怎么扩容用户数
 related_tools: []
@@ -21,24 +21,24 @@ prerequisites:
   - 保存 License 仅超级管理员（第一个注册用户）可执行
 negative:
   - 不能在终端外部直接编辑 License 文件，必须走管理端 API
-  - 一份 License 仅对当前终端的 SN + MAC 有效，换机或换网卡需重新申请
-  - 不支持把 License 拆给多个独立部署共享
-last_verified: v1.7.91
+  - 开源运行时下，License 只是项目本地的授权描述文件，不再依赖官方签发
+  - 若你自定义了 people / SN / MAC 约束，仍需保证内容与当前实例匹配
+last_verified: v1.8.64
 ---
 
-# 申请与录入 License
+# 申请与录入社区授权配置
 
-> 本文介绍**离线授权**（手动粘贴 License 原文）。License 页现有「离线授权 / 在线授权」两个 Tab，
-> 用 App Store 账号登录自助签发并自动续期的方式见 [[license.online.howto]]。
+> 本文介绍**社区授权配置**（手动粘贴本地 JSON 文本）。
+> 在开源运行时（`DOO_DRIVER=opensource`）下，授权配置会保存为项目本地 JSON；在线授权是否可用取决于你是否保留并接通自己的授权中心。
 
 ## 入口
-桌面端：左上角头像 →「系统设置」→「License」→「离线授权」Tab（仅管理员可见）。
+桌面端：左上角头像 →「系统设置」→「License」→「社区授权」Tab（仅管理员可见）。
 对应后端：`POST api/system/license`，`type=save` 写入。
 
 ## 操作步骤
 
 ### 第 1 步 - 获取当前终端信息
-在「License」页面顶部，DooTask 会显示：
+在「License」页面顶部，夜莺会显示：
 
 - **doo_sn** — 终端 SN（机器指纹，每次部署生成）
 - **macs** — 当前服务器网卡 MAC 列表（用于绑定校验）
@@ -47,21 +47,31 @@ last_verified: v1.7.91
 
 这些字段是申请 License 时必须提供给签发方的信息。
 
-### 第 2 步 - 申请 License
-访问 DooTask 官网（或销售渠道）提交：
-- 终端 SN（必填）
-- 终端 MAC（一张或多张）
-- 期望的最大用户数
-- 期望的有效期
-- 是否需要按 SN 严格绑定
+### 第 2 步 - 准备授权配置内容
+开源运行时默认就是社区版，不录入任何内容也能正常使用；如果你希望明确保存一份本地授权配置，可准备 JSON 文本，例如：
 
-收到 License 原文（加密字符串）后进入下一步。
+```json
+{
+  "edition": "MIT",
+  "type": "community",
+  "people": 0,
+  "sn": "当前页面显示的 doo_sn",
+  "mac": ["当前页面显示的 macs"],
+  "expired_at": null
+}
+```
 
-### 第 3 步 - 录入 License
-1. 把官方返回的 License 原文整段复制
-2. 粘贴到「License」页的输入框
+字段说明：
+- `people=0` 表示不限制人数
+- `sn` 建议直接使用当前页面展示的 `doo_sn`
+- `mac` 可填当前实例的一个或多个 MAC；不想做 MAC 绑定时可传空数组
+- `expired_at` 留空或 `null` 表示不过期
+
+### 第 3 步 - 录入授权配置
+1. 把准备好的 JSON 文本整段复制
+2. 粘贴到「社区授权」页的输入框
 3. 点击「保存」（接口字段 `license`，调用 `type=save`）
-4. 后端用 `Doo::licenseSave()` 写入终端 License 文件
+4. 后端用 `Doo::licenseSave()` 写入项目本地的 License 文件
 5. 页面自动刷新校验结果：`info` 字段重新解析，`error` 数组为空表示通过
 
 ## 校验结果解读
@@ -77,4 +87,4 @@ last_verified: v1.7.91
 ## 不支持
 - 普通管理员能看 License 信息但不能保存；只有超级管理员（id=1）能 save
 - 不支持上传文件方式，仅接受文本字段
-- 3 人以下的部署不强制 License，但用户数严格限制为 3
+- 旧版官方 `doo.so` 加密 License 不能直接被开源运行时解析；迁移时应改写成项目自己的 JSON 结构

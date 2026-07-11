@@ -514,7 +514,7 @@ const utils = {
     async getCachedImage(imageUrl) {
         // 生成图片URL的唯一标识
         const urlHash = crypto.createHash('md5').update(imageUrl).digest('hex');
-        const cacheDir = path.join(os.tmpdir(), 'dootask-cache', 'images');
+        const cacheDir = path.join(os.tmpdir(), 'yeying-cache', 'images');
         const cachePath = path.join(cacheDir, `${urlHash}.png`);
 
         try {

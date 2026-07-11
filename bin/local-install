@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -euo pipefail
+
+source "$(cd "$(dirname "$0")" && pwd)/local-common"
+
+require_cmd docker
+require_php_runtime
+
+prepare_local_env
+prepare_runtime_dirs
+
+compose_local up -d mariadb redis appstore
+
+cd "${ROOT_DIR}"
+
+if [ ! -d vendor ]; then
+    composer install --optimize-autoloader
+fi
+
+if ! grep -q '^APP_KEY=base64:' .env; then
+    php artisan key:generate
+fi
+
+php artisan migrate --seed
+
+echo "Local mode is ready."
+echo "Next steps:"
+echo "  ./cmd local-start           # start LaravelS on host"
+echo "  npm install && npm run dev  # optional frontend hot reload"
