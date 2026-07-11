@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use App\Models\UserWallet;
 use App\Module\Base;
+use App\Module\Doo;
 use App\Services\Wallet\WalletSignatureService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -64,6 +65,41 @@ class WalletAuthController extends AbstractController
             'address' => $address,
             'is_new' => false,
         ]);
+    }
+
+    public function bind()
+    {
+        $userid = Doo::userId();
+        if (!$userid) {
+            return Base::retError('请先登录 YeYing 账号', ['code' => 'login_required']);
+        }
+        $address = $this->normalizeAddress(Request::input('address'));
+        $chainId = trim((string)Request::input('chain_id', config('dootask.wallet_chain_id', '1')));
+        $this->validateChain($chainId);
+        $challenge = Cache::pull($this->challengeKey($address, $chainId));
+        if (!is_array($challenge)) {
+            return Base::retError('钱包绑定挑战已过期或无效', ['code' => 'wallet_challenge_invalid']);
+        }
+        $signature = trim((string)Request::input('signature'));
+        $recovered = app(WalletSignatureService::class)->recoverPersonalSignAddress($challenge['message'], $signature);
+        if ($recovered !== $address) {
+            return Base::retError('钱包签名地址不匹配', ['code' => 'wallet_signature_mismatch']);
+        }
+        $existing = UserWallet::where('chain', 'eip155')->where('chain_id', $chainId)->where('address_normalized', $address)->first();
+        if ($existing && intval($existing->userid) !== $userid) {
+            return Base::retError('该钱包已绑定其他 YeYing 账号', ['code' => 'wallet_already_bound']);
+        }
+        if (!$existing) {
+            UserWallet::createInstance([
+                'userid' => $userid,
+                'chain' => 'eip155',
+                'chain_id' => $chainId,
+                'address' => $address,
+                'address_normalized' => $address,
+                'last_login_at' => Carbon::now(),
+            ]);
+        }
+        return Base::retSuccess('钱包绑定成功', ['address' => $address, 'chain_id' => $chainId]);
     }
 
     private function normalizeAddress($address): string
