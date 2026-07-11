@@ -54,6 +54,9 @@ return [
     // doo.so 初始化工作目录：容器内通常为 /var/www；本机直跑时默认使用项目根目录
     'doo_work_path' => env('DOO_WORK_PATH', base_path()),
 
+    // GnuPG 可执行文件路径；为空时自动从 PATH 和常见安装路径查找
+    'gpg_binary' => env('GPG_BINARY'),
+
     // 在线授权：租约剩余不足该天数时触发续期（OnlineLicense）
     'online_license_renew_within_days' => env('ONLINE_LICENSE_RENEW_WITHIN_DAYS', 20),
 

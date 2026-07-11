@@ -5,6 +5,7 @@ namespace App\Services\DooRuntime;
 use App\Exceptions\ApiException;
 use App\Module\Base;
 use App\Models\User;
+use Cache;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Throwable;
@@ -336,16 +337,25 @@ class OpenSourceDooRuntime extends AbstractDooRuntime
 
     public function pgpGenerateKeyPair($name, $email, string $passphrase = ''): array
     {
-        $this->unsupported(__FUNCTION__);
+        return app(OpenPgpService::class)->generateKeyPair((string)$name, (string)$email, $passphrase);
     }
 
     public function pgpEncrypt($plaintext, $publicKey): string
     {
-        $this->unsupported(__FUNCTION__);
+        if (strlen((string)$publicKey) < 50) {
+            $cached = Base::json2array(Cache::get('KeyPair::' . $publicKey));
+            $publicKey = $cached['public_key'] ?? $publicKey;
+        }
+        return app(OpenPgpService::class)->encrypt((string)$plaintext, (string)$publicKey);
     }
 
     public function pgpDecrypt($encryptedText, $privateKey, $passphrase = null): string
     {
-        $this->unsupported(__FUNCTION__);
+        if (strlen((string)$privateKey) < 50) {
+            $cached = Base::json2array(Cache::get('KeyPair::' . $privateKey));
+            $privateKey = $cached['private_key'] ?? $privateKey;
+            $passphrase = $cached['passphrase'] ?? $passphrase;
+        }
+        return app(OpenPgpService::class)->decrypt((string)$encryptedText, (string)$privateKey, $passphrase);
     }
 }
