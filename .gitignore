@@ -10,6 +10,7 @@
 /public/manifest.json
 /tmp
 /backup
+/output
 
 # Uploads and user-generated content
 /public/summary
