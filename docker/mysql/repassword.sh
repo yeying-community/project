@@ -20,9 +20,15 @@
 account_identifier=$1
 custom_password=$2
 
-GreenBG="\033[42;37m"
-RedBG="\033[41;37m"
-Font="\033[0m"
+if [ -t 1 ]; then
+    GreenBG="$(printf '\\033[42;37m')"
+    RedBG="$(printf '\\033[41;37m')"
+    Font="$(printf '\\033[0m')"
+else
+    GreenBG=""
+    RedBG=""
+    Font=""
+fi
 
 # 生成随机密码
 new_encrypt=$(date +%s%N | md5sum | awk '{print $1}' | cut -c 1-6)
