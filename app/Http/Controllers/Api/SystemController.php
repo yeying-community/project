@@ -1262,7 +1262,11 @@ class SystemController extends AbstractController
         }
         try {
             Setting::validateAddr($all['to'], function($to) use ($all) {
-                $mailer = new Mailer(Transport::fromDsn("smtp://{$all['account']}:{$all['password']}@{$all['smtp_server']}:{$all['port']}?verify_peer=0"));
+                $scheme = intval($all['port']) === 465 ? 'smtps' : 'smtp';
+                $dsn = sprintf('%s://%s:%s@%s:%s?verify_peer=0', $scheme,
+                    rawurlencode($all['account']), rawurlencode($all['password']),
+                    $all['smtp_server'], $all['port']);
+                $mailer = new Mailer(Transport::fromDsn($dsn));
                 $mailer->send((new Email())
                     ->from(Base::settingFind('system', 'system_alias', 'Task') . " <{$all['account']}>")
                     ->to($to)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\UserWallet;
+use App\Models\UserEmailVerification;
 use App\Module\Base;
 use App\Module\Doo;
 use App\Services\Wallet\WalletSignatureService;
@@ -52,11 +53,42 @@ class WalletAuthController extends AbstractController
         }
         $wallet = UserWallet::where('chain', 'eip155')->where('chain_id', $chainId)->where('address_normalized', $address)->first();
         if (!$wallet) {
-            return Base::retError('钱包尚未绑定 YeYing 账号', ['code' => 'wallet_not_bound', 'address' => $address]);
+            $placeholder = 'wallet-' . substr(hash('sha256', $address . ':' . $chainId), 0, 24) . '@wallet.yeying.local';
+            $user = User::whereEmail($placeholder)->first();
+            if (!$user) {
+                $user = User::reg($placeholder, Str::random(32), ['nickname' => '夜莺用户']);
+                $user->email_verity = 0;
+                $user->save();
+            }
+            $wallet = UserWallet::createInstance([
+                'userid' => $user->userid,
+                'chain' => 'eip155',
+                'chain_id' => $chainId,
+                'address' => $address,
+                'address_normalized' => $address,
+                'last_login_at' => Carbon::now(),
+            ]);
+            $wallet->save();
+            $setupToken = $this->issueEmailSetupToken($user->userid);
+            return Base::retError('首次使用钱包登录，请先设置并验证邮箱', [
+                'code' => 'wallet_email_required',
+                'address' => $address,
+                'chain_id' => $chainId,
+                'setup_token' => $setupToken,
+            ]);
         }
         $user = User::where('userid', $wallet->userid)->first();
         if (!$user || $user->disable_at) {
             return Base::retError('钱包绑定的账号不可用');
+        }
+        if (!$user->email || str_ends_with($user->email, '@wallet.yeying.local') || intval($user->email_verity) !== 1) {
+            $setupToken = $this->issueEmailSetupToken($user->userid);
+            return Base::retError('请先设置并验证邮箱', [
+                'code' => 'wallet_email_required',
+                'address' => $address,
+                'chain_id' => $chainId,
+                'setup_token' => $setupToken,
+            ]);
         }
         $wallet->update(['last_login_at' => Carbon::now()]);
         return Base::retSuccess('success', [
@@ -65,6 +97,39 @@ class WalletAuthController extends AbstractController
             'address' => $address,
             'is_new' => false,
         ]);
+    }
+
+    public function email()
+    {
+        $setupToken = trim((string)Request::input('setup_token', Request::input('token')));
+        $setupKey = 'wallet_email_setup:' . hash('sha256', $setupToken);
+        $userid = $setupToken ? Cache::get($setupKey) : null;
+        $user = $userid ? User::whereUserid($userid)->first() : null;
+        if (!$user) {
+            return Base::retError('邮箱补全凭证已失效，请重新进行钱包登录', ['code' => 'wallet_email_setup_expired']);
+        }
+        $email = strtolower(trim((string)Request::input('email')));
+        if (!Base::isEmail($email) || str_ends_with($email, '@wallet.yeying.local')) {
+            return Base::retError('请输入有效邮箱地址');
+        }
+        if (User::where('userid', '<>', $user->userid)->whereEmail($email)->exists()) {
+            return Base::retError('邮箱地址已存在');
+        }
+        $user->email = $email;
+        $user->email_verity = 0;
+        $user->save();
+        UserEmailVerification::userEmailSend($user, 1, $email);
+        Cache::forget($setupKey);
+        return Base::retSuccess('验证邮件已发送，请登录邮箱完成验证', [
+            'email' => $email,
+        ]);
+    }
+
+    private function issueEmailSetupToken(int $userid): string
+    {
+        $token = Str::random(64);
+        Cache::put('wallet_email_setup:' . hash('sha256', $token), $userid, 86400);
+        return $token;
     }
 
     public function bind()

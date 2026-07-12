@@ -98,7 +98,7 @@
                         </Input>
 
                         <Button type="primary" :loading="loadIng > 0 || loginJump" size="large" long @click="onLogin">{{$L(loginText)}}</Button>
-                        <Button v-if="loginType=='login'" class="wallet-login-button" :loading="walletLoading" size="large" long @click="onWalletLogin">{{$L('使用夜莺钱包登录')}}</Button>
+                        <Button v-if="loginType=='login'" class="wallet-login-button" :loading="walletLoading" size="large" long @click="onWalletLogin">{{$L('钱包登录')}}</Button>
 
                         <div v-if="loginType=='reg'" class="login-switch">{{$L('已经有帐号？')}} <a href="javascript:void(0)" @click="loginType='login'">{{$L('登录帐号')}}</a></div>
                         <div v-else class="login-switch">{{$L('还没有帐号？')}} <a href="javascript:void(0)" @click="loginType='reg'">{{$L('注册帐号')}}</a></div>
@@ -170,7 +170,7 @@ import {mapState} from "vuex";
 import {languageList, languageName, setLanguage} from "../language";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import emitter from "../store/events";
-import {getProvider, loginWithChallenge, requestAccounts} from "@yeying-community/web3-bs";
+import {getProvider, requestAccounts, signMessage} from "@yeying-community/web3-bs";
 
 export default {
     components: {VueQrcode},
@@ -520,12 +520,24 @@ export default {
                 const accounts = await requestAccounts({provider});
                 const address = accounts[0];
                 if (!address) throw new Error('钱包未返回可用账号');
-                const result = await loginWithChallenge({
-                    provider,
-                    address,
-                    baseUrl: `${window.location.origin}/api/public/auth`,
-                    storeToken: false,
+                const challengeResponse = await fetch(`${window.location.origin}/api/public/auth/challenge`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({address}),
                 });
+                const challengePayload = await challengeResponse.json();
+                if (challengePayload.ret !== 1) throw new Error(challengePayload.msg || '获取钱包登录挑战失败');
+                const signature = await signMessage({provider, address, message: challengePayload.data.challenge});
+                const verifyResponse = await fetch(`${window.location.origin}/api/public/auth/verify`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({address, signature}),
+                });
+                const verifyPayload = await verifyResponse.json();
+                if (verifyPayload.data?.code === 'wallet_email_required') {
+                    await this.completeWalletEmail(verifyPayload.data.setup_token);
+                    return;
+                }
+                if (verifyPayload.ret !== 1 || !verifyPayload.data?.token) throw new Error(verifyPayload.msg || '钱包登录失败');
+                const result = verifyPayload.data;
                 const response = await fetch(`${window.location.origin}/api/users/info`, {
                     headers: {'dootask-token': result.token},
                 });
@@ -544,6 +556,29 @@ export default {
             } finally {
                 this.walletLoading = false;
             }
+        },
+
+        completeWalletEmail(setupToken) {
+            return new Promise((resolve, reject) => {
+                $A.modalInput({
+                    title: '首次钱包登录，请设置邮箱',
+                    placeholder: '请输入邮箱地址',
+                    onOk: (email) => {
+                        email = $A.trim(email || '');
+                        if (!$A.isEmail(email)) return '请输入有效邮箱地址';
+                        return fetch(`${window.location.origin}/api/public/auth/email`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({email, setup_token: setupToken}),
+                        }).then(response => response.json()).then(payload => {
+                            if (payload.ret !== 1) throw new Error(payload.msg || '邮箱设置失败');
+                            $A.modalWarning('验证邮件已发送，请完成邮箱验证后再使用钱包登录');
+                            resolve();
+                        });
+                    },
+                    onCancel: reject,
+                });
+            });
         },
 
         onLogin() {

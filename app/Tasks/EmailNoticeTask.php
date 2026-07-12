@@ -259,10 +259,12 @@ class EmailNoticeTask extends AbstractTask
     private function sendEmail($user, $emailData): void
     {
         Setting::validateAddr($user->email, function($to) use ($emailData) {
+            $scheme = intval($this->emailSetting['port']) === 465 ? 'smtps' : 'smtp';
             $mailer = new Mailer(Transport::fromDsn(sprintf(
-                'smtp://%s:%s@%s:%s?verify_peer=0',
-                $this->emailSetting['account'],
-                $this->emailSetting['password'],
+                '%s://%s:%s@%s:%s?verify_peer=0',
+                $scheme,
+                rawurlencode($this->emailSetting['account']),
+                rawurlencode($this->emailSetting['password']),
                 $this->emailSetting['smtp_server'],
                 $this->emailSetting['port']
             )));
