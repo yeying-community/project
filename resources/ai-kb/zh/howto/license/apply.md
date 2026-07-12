@@ -23,7 +23,7 @@ negative:
   - 不能在终端外部直接编辑 License 文件，必须走管理端 API
   - 开源运行时下，License 只是项目本地的授权描述文件，不再依赖官方签发
   - 若你自定义了 people / SN / MAC 约束，仍需保证内容与当前实例匹配
-last_verified: v1.8.64
+last_verified: v0.0.1
 ---
 
 # 申请与录入社区授权配置

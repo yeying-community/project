@@ -35,7 +35,7 @@ prerequisites:
 negative:
   - 社区版 / MIT fork 默认不暴露在线授权 UI，也不会调用官方授权中心
   - 若你需要在线授权，必须自行实现对应服务端、签发逻辑和前端入口
-last_verified: v1.8.64
+last_verified: v0.0.1
 ---
 
 # 在线授权（邮箱验证码登录 / 申请试用 / 自动续期）

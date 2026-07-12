@@ -5352,7 +5352,13 @@ export default {
      * @param dispatch
      */
     async updateMicroAppsStatus({commit, state, dispatch}) {
-        const {data: {code, data}} = await axios.get($A.mainUrl('appstore/api/v1/internal/installed'), {
+        const appstoreEntryUrl = window.systemInfo?.appstoreUrl || 'appstore/internal';
+        const appstoreBaseUrl = appstoreEntryUrl
+            .replace(/[?#].*$/, '')
+            .replace(/\/internal\/?$/, '')
+            .replace(/\/$/, '');
+        const installedAppsUrl = `${appstoreBaseUrl}/api/v1/internal/installed`;
+        const {data: {code, data}} = await axios.get(installedAppsUrl, {
             headers: {
                 Token: state.userToken,
                 Language: languageName,
