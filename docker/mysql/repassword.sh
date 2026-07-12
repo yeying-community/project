@@ -37,7 +37,9 @@ if [ -z "$custom_password" ]; then
 else
     new_password=$custom_password
 fi
-md5_password=$(echo -n `echo -n $new_password | md5sum | awk '{print $1}'`$new_encrypt | md5sum | awk '{print $1}')
+# Keep password reset compatible with the open-source runtime:
+# OpenSourceDooRuntime::md5s() hashes "password:encrypt" directly.
+md5_password=$(printf '%s:%s' "$new_password" "$new_encrypt" | md5sum | awk '{print $1}')
 
 # 构建查询条件
 if [ -z "$account_identifier" ]; then
