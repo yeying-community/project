@@ -117,6 +117,15 @@ class WalletAuthController extends AbstractController
         }
         $user->email = $email;
         $user->email_verity = 0;
+        $username = trim((string)Request::input('username'));
+        $currentNickname = trim((string)$user->getRawOriginal('nickname'));
+        if (in_array($currentNickname, ['', '夜莺用户'], true)
+            && mb_strlen($username) >= 2
+            && mb_strlen($username) <= 20) {
+            $user->nickname = $username;
+            $user->az = Base::getFirstCharter($username);
+            $user->pinyin = Base::cn2pinyin($username);
+        }
         $user->save();
         UserEmailVerification::userEmailSend($user, 1, $email);
         Cache::forget($setupKey);

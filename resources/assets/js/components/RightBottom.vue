@@ -3,10 +3,10 @@
         <div v-if="showSSO" class="common-right-bottom-link" @click="useSSOLogin">
             {{ $L('使用 SSO 登录') }}
         </div>
-        <a v-if="showDown && clientDownloadUrl" class="common-right-bottom-link" :href="clientDownloadUrl" target="_blank">
+        <span v-if="showDown && clientDownloadUrl" class="common-right-bottom-link is-disabled" aria-disabled="true">
             <Icon type="md-download"/>
             {{ $L('客户端下载') }}
-        </a>
+        </span>
         <a v-if="showPrivacy" class="common-right-bottom-link" target="_blank" :href="$A.apiUrl('privacy')">
             《{{ $L('隐私政策') }}》
         </a>

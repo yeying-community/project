@@ -73,6 +73,7 @@ class UserEmailVerification extends AbstractModel
         $row->save();
         $setting = Base::setting('emailSetting');
         $alias = Base::settingFind('system', 'system_alias', 'Task');
+        $fromName = $type == 1 ? '夜莺社区' : $alias;
         try {
             if (!Base::isEmail($email)) {
                 throw new \Exception("User email '{$email}' address error");
@@ -96,10 +97,15 @@ class UserEmailVerification extends AbstractModel
                     break;
                 default:
                     $url = Base::fillUrl('single/valid/email') . '?code=' . $row->code;
-                    $subject = Doo::translate($alias . "绑定邮箱验证");
-                    $content = sprintf("<p>%s</p><p style='display: flex; justify-content: center;'>%s</p>",
-                        Doo::translate($user->nickname . " 您好，您正在绑定 " . $alias . " 的邮箱，请于30分钟之内点击以下链接完成验证:"),
-                        "<a href='{$url}' target='_blank'>{$url}</a>"
+                    $subject = Doo::translate('夜莺社区绑定邮箱验证');
+                    $nickname = htmlspecialchars($user->nickname, ENT_QUOTES, 'UTF-8');
+                    $safeUrl = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+                    $content = sprintf(
+                        "<p>%s</p><p>%s</p><p><a href='%s' target='_blank'>%s</a></p>",
+                        $nickname . Doo::translate(' 您好，'),
+                        Doo::translate('您正在绑定夜莺社区的邮箱，请于30分钟之内点击以下链接完成验证：'),
+                        $safeUrl,
+                        $safeUrl
                     );
                     break;
             }
@@ -109,7 +115,7 @@ class UserEmailVerification extends AbstractModel
                 $setting['smtp_server'], $setting['port']);
             $mailer = new Mailer(Transport::fromDsn($dsn));
             $mailer->send((new Email())
-                ->from($alias . " <{$setting['account']}>")
+                ->from($fromName . " <{$setting['account']}>")
                 ->to($email)
                 ->subject($subject)
                 ->html($content));
