@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => env('TIMEZONE', 'PRC'),
+    'timezone' => env('TIMEZONE', 'Asia/Shanghai'),
 
     /*
     |--------------------------------------------------------------------------

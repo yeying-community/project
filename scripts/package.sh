@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export COMPOSER_ALLOW_SUPERUSER=1
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 project_name="${PROJECT_NAME:-project}"
 output_dir="${OUTPUT_DIR:-$root_dir/output}"
 version="${1:-$(node -p "require('$root_dir/package.json').version")}"
 version="${version#v}"
+revision="$(git -C "$root_dir" rev-parse --short=7 HEAD)"
 stage_dir="$(mktemp -d "${TMPDIR:-/tmp}/${project_name}-package.XXXXXX")"
-archive_path="$output_dir/${project_name}-${version}.tar.gz"
+archive_path="$output_dir/${project_name}-v${version}-${revision}.tar.gz"
 
 cleanup() { rm -rf "$stage_dir"; }
 trap cleanup EXIT
