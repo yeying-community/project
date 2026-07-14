@@ -37,68 +37,78 @@
                             clearable
                             @on-clear="setServerUrl('')"/>
 
-                        <Input
-                            v-model="email"
-                            ref="email"
-                            prefix="ios-mail-outline"
-                            :placeholder="$L('输入您的电子邮件')"
-                            type="email"
-                            size="large"
-                            @on-keydown="onLoginKeydown"
-                            @on-blur="onBlur"
-                            clearable/>
+                        <Button v-if="loginType=='login'" type="primary" class="wallet-login-button" :loading="walletLoading" size="large" long @click="onWalletLogin">{{$L('钱包登录')}}</Button>
 
-                        <Input
-                            v-model="password"
-                            ref="password"
-                            prefix="ios-lock-outline"
-                            :placeholder="$L('输入您的密码')"
-                            type="password"
-                            size="large"
-                            @on-keydown="onLoginKeydown"
-                            clearable/>
+                        <Button v-if="loginType=='login'" type="text" class="email-login-toggle" long @click="emailLoginExpanded=!emailLoginExpanded">
+                            {{$L('邮箱密码登录')}}
+                            <Icon :type="emailLoginExpanded ? 'ios-arrow-up' : 'ios-arrow-down'"/>
+                        </Button>
 
-                        <Input
-                            v-if="loginType=='reg'"
-                            v-model="password2"
-                            ref="password2"
-                            prefix="ios-lock-outline"
-                            :placeholder="$L('输入确认密码')"
-                            type="password"
-                            size="large"
-                            @on-keydown="onLoginKeydown"
-                            clearable/>
-                        <Input
-                            v-if="loginType=='reg' && needInvite"
-                            v-model="invite"
-                            ref="invite"
-                            class="login-code"
-                            :placeholder="$L('请输入注册邀请码')"
-                            type="text"
-                            size="large"
-                            @on-keydown="onLoginKeydown"
-                            clearable><span slot="prepend">&nbsp;{{$L('邀请码')}}&nbsp;</span></Input>
+                        <transition name="login-expand">
+                            <div v-if="emailLoginExpanded || loginType=='reg'" class="email-login-panel">
+                                <Input
+                                    v-model="email"
+                                    ref="email"
+                                    prefix="ios-mail-outline"
+                                    :placeholder="$L('输入您的电子邮件')"
+                                    type="email"
+                                    size="large"
+                                    @on-keydown="onLoginKeydown"
+                                    @on-blur="onBlur"
+                                    clearable/>
 
-                        <Input
-                            v-if="loginType=='login' && codeNeed"
-                            v-model="code"
-                            ref="code"
-                            class="login-code"
-                            :placeholder="$L('输入图形验证码')"
-                            type="text"
-                            size="large"
-                            @on-keydown="onLoginKeydown"
-                            clearable>
-                            <Icon type="ios-checkmark-circle-outline" class="login-icon" slot="prepend"></Icon>
-                            <div slot="append" class="login-code-end" @click="refreshCode">
-                                <div v-if="codeLoad > 0" class="code-load"><Loading/></div>
-                                <span v-else-if="codeUrl === 'error'" class="code-error">{{$L('加载失败')}}</span>
-                                <img v-else :src="codeUrl"/>
+                                <Input
+                                    v-model="password"
+                                    ref="password"
+                                    prefix="ios-lock-outline"
+                                    :placeholder="$L('输入您的密码')"
+                                    type="password"
+                                    size="large"
+                                    @on-keydown="onLoginKeydown"
+                                    clearable/>
+
+                                <Input
+                                    v-if="loginType=='reg'"
+                                    v-model="password2"
+                                    ref="password2"
+                                    prefix="ios-lock-outline"
+                                    :placeholder="$L('输入确认密码')"
+                                    type="password"
+                                    size="large"
+                                    @on-keydown="onLoginKeydown"
+                                    clearable/>
+                                <Input
+                                    v-if="loginType=='reg' && needInvite"
+                                    v-model="invite"
+                                    ref="invite"
+                                    class="login-code"
+                                    :placeholder="$L('请输入注册邀请码')"
+                                    type="text"
+                                    size="large"
+                                    @on-keydown="onLoginKeydown"
+                                    clearable><span slot="prepend">&nbsp;{{$L('邀请码')}}&nbsp;</span></Input>
+
+                                <Input
+                                    v-if="loginType=='login' && codeNeed"
+                                    v-model="code"
+                                    ref="code"
+                                    class="login-code"
+                                    :placeholder="$L('输入图形验证码')"
+                                    type="text"
+                                    size="large"
+                                    @on-keydown="onLoginKeydown"
+                                    clearable>
+                                    <Icon type="ios-checkmark-circle-outline" class="login-icon" slot="prepend"></Icon>
+                                    <div slot="append" class="login-code-end" @click="refreshCode">
+                                        <div v-if="codeLoad > 0" class="code-load"><Loading/></div>
+                                        <span v-else-if="codeUrl === 'error'" class="code-error">{{$L('加载失败')}}</span>
+                                        <img v-else :src="codeUrl"/>
+                                    </div>
+                                </Input>
+
+                                <Button :type="loginType=='reg' ? 'primary' : 'default'" :loading="loadIng > 0 || loginJump" size="large" long @click="onLogin">{{$L(loginText)}}</Button>
                             </div>
-                        </Input>
-
-                        <Button type="primary" :loading="loadIng > 0 || loginJump" size="large" long @click="onLogin">{{$L(loginText)}}</Button>
-                        <Button v-if="loginType=='login'" class="wallet-login-button" :loading="walletLoading" size="large" long @click="onWalletLogin">{{$L('钱包登录')}}</Button>
+                        </transition>
 
                         <div v-if="loginType=='reg'" class="login-switch">{{$L('已经有帐号？')}} <a href="javascript:void(0)" @click="loginType='login'">{{$L('登录帐号')}}</a></div>
                         <div v-else class="login-switch">{{$L('还没有帐号？')}} <a href="javascript:void(0)" @click="loginType='reg'">{{$L('注册帐号')}}</a></div>
@@ -194,6 +204,7 @@ export default {
             loginType: 'login',
             loginJump: false,
             walletLoading: false,
+            emailLoginExpanded: false,
 
             email: '',
             password: '',
@@ -254,11 +265,7 @@ export default {
         },
 
         welcomeTitle() {
-            if (this.loginMode == 'qrcode') {
-                return this.$L("扫码登录")
-            }
-            const title = window.systemInfo.title || "夜莺 YeYing";
-            return "Welcome " + title
+            return this.loginMode == 'qrcode' ? this.$L('扫码登录') : this.$L('夜莺项目管理')
         },
 
         subTitle() {
@@ -298,7 +305,10 @@ export default {
         },
         loginType(val) {
             if (val == 'reg') {
+                this.emailLoginExpanded = true;
                 this.getNeedInvite();
+            } else {
+                this.emailLoginExpanded = false;
             }
         },
     },

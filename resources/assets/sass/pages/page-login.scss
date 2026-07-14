@@ -103,6 +103,33 @@
                 .ivu-input-large {
                     font-size: 15px;
                 }
+                .wallet-login-button {
+                    height: 44px;
+                    font-size: 16px;
+                }
+                .email-login-toggle {
+                    height: 36px;
+                    color: #777777;
+                    .ivu-icon {
+                        margin-left: 6px;
+                    }
+                }
+                .email-login-panel {
+                    overflow: hidden;
+                    > * {
+                        margin-top: 18px;
+                    }
+                }
+                .login-expand-enter-active,
+                .login-expand-leave-active {
+                    transition: opacity 0.2s ease, transform 0.2s ease;
+                    transform-origin: top;
+                }
+                .login-expand-enter,
+                .login-expand-leave-to {
+                    opacity: 0;
+                    transform: translateY(-8px);
+                }
                 .login-code {
                     .ivu-input-group-prepend,
                     .ivu-input-group-append {

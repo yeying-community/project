@@ -25,6 +25,13 @@
             color: #fff;
             opacity: 0.9;
         }
+        &.is-disabled {
+            cursor: not-allowed;
+            color: #999999;
+            background-color: #e5e5e5;
+            border-color: #e5e5e5;
+            opacity: 1;
+        }
     }
 }
 
