@@ -7,9 +7,12 @@ if [[ "${SKIP_DEPENDENCY_CHECK:-0}" != "1" ]]; then
   "$root_dir/scripts/ubuntu-deps.sh" --check
 fi
 
-command -v php >/dev/null 2>&1 || { echo "PHP 8.4 is required." >&2; exit 1; }
-command -v composer >/dev/null 2>&1 || { echo "Composer is required." >&2; exit 1; }
-php -m | grep -qi '^swoole$' || { echo "PHP Swoole extension is required." >&2; exit 1; }
+if ! command -v php >/dev/null 2>&1; then
+  echo "PHP 8.4 is not installed. Run: sudo $root_dir/scripts/ubuntu-deps.sh --install" >&2
+  exit 1
+fi
+command -v composer >/dev/null 2>&1 || { echo "Composer is required. Run ubuntu-deps.sh --install first." >&2; exit 1; }
+php -m | grep -qi '^swoole$' || { echo "PHP Swoole extension is required. Run ubuntu-deps.sh --install first." >&2; exit 1; }
 
 cd "$root_dir"
 [[ -f .env ]] || cp .env.example .env

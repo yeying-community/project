@@ -2,156 +2,265 @@
 
 **[English](./README.md)** | 中文文档
 
-- [截图预览](./README_PREVIEW.md)
-- [演示站点](#)
+夜莺 YeYing 是基于 Laravel、LaravelS/Swoole 和 Vue 2 的开源任务与项目管理系统，采用 MIT License 发布。
 
-**QQ交流群**
+- 社区：夜莺社区
+- 邮箱：`yeying.community@gmail.com`
+- 数据库：MySQL 8.4
+- 搜索：Manticore（可选但建议生产启用）
 
-- QQ群号: `546574618`
+## 本地开发
 
-## 安装程序
+本地开发模式下，PHP/LaravelS 在宿主机运行，MySQL、Redis、Manticore 等中间件通过 Docker 容器运行。Node.js/npm 只用于前端开发和构建，不参与 PHP 服务运行。
 
-- 必须安装：`Docker v20.10+` 和 `Docker Compose v2.0+`
-- 支持环境：`Centos/Debian/Ubuntu/macOS` 等 linux/unix 系统
-- 硬件建议：2核4G以上
-- 数据库：MySQL 8.4（默认本地 Docker Compose 中的 `mysql` 服务）
-- 特别说明：Windows 可以使用 WSL2 安装 Linux 环境后再安装本项目。
+### 环境要求
 
-### 部署夜莺
+- macOS 或 Linux
+- PHP 8.4
+- PHP Swoole 扩展
+- Composer
+- Node.js 20+ 和 npm
+- Docker 20.10+、Docker Compose v2+
 
-**方式一：一键脚本（推荐）**
+### 初始化本地环境
 
-在空目录中执行即自动克隆并安装；在已安装目录中执行则自动检查并升级：
+在项目根目录执行：
 
 ```bash
-./cmd install
+./cmd local-install
 ```
 
-**方式二：手动部署**
+该命令用于初始化本地 `.env`、PHP 依赖和运行目录，不会把 PHP 服务放进容器。
+
+### 启动本地中间件
 
 ```bash
-# 1、克隆项目到您的本地或服务器
-
-# 通过github克隆项目
-git clone --depth=1 <your-repo-url>
-
-# 2、进入目录
-cd project
-
-# 3、一键安装项目（自定义端口安装，如：./cmd install --port 80）
-./cmd install
+./cmd local-up
 ```
 
-### 重置密码
+默认使用的本地中间件端口包括：
 
-```bash
-# 重置默认管理员密码
-./cmd repassword
+```text
+MySQL      127.0.0.1:23306
+Redis      127.0.0.1:26379
+Manticore  127.0.0.1:9306
+AppStore   127.0.0.1:19080（如已部署）
 ```
 
-### 更换端口
+### 启动本地 PHP 服务
 
 ```bash
-# 此方法仅更换http端口，更换https端口请阅读下面SSL配置
-./cmd port 80
+./cmd local-start
 ```
 
-### 停止服务
+访问：
 
-```bash
-./cmd down
+```text
+http://127.0.0.1:2222
 ```
 
-### 启动服务
+查看、停止和重启：
 
 ```bash
-./cmd up
+./cmd local-stop
+./cmd local-start
 ```
 
-### 开发编译
+### 前端开发模式
 
-请确保你已经安装了 `NodeJs 20+`
+需要实时编译前端时，另开终端执行：
 
 ```bash
-# 开发模式
 ./cmd dev
-   
-# 编译项目（这是网页端的，客户端请参考“.github/workflows/publish.yml”文件）
-./cmd prod  
 ```
 
-### SSL 配置
+修改前端后，开发服务器会自动重新编译。不要同时运行多个前端开发服务器。
 
-#### 方法1：自动配置
+### 本地生产构建
 
-```bash 
-# 执行指令，根据提示执行即可
-./cmd https
-```
-
-#### 方法2：Nginx 代理配置
-
-```bash 
-# 1、Nginx 代理配置添加
-proxy_set_header X-Forwarded-Host $http_host;
-proxy_set_header X-Forwarded-Proto $scheme;
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-# 2、执行指令（如果取消 Nginx 代理配置请运行：./cmd https close）
-./cmd https agent
-```
-
-## 升级更新
-
-**注意：在升级之前请备份好你的数据！**
-
-推荐使用一键脚本升级（在已安装目录中执行，自动拉取最新代码并完成升级，无需重复执行）：
+只构建前端静态资源，不启动生产 PHP 服务：
 
 ```bash
-./cmd update
+npm run build
 ```
 
-或使用本地命令：
+构建产物位于：
+
+```text
+public/js/build/
+public/manifest.json
+```
+
+停止本地中间件：
 
 ```bash
-./cmd update
+./cmd local-down
 ```
 
-* 如果升级后出现502请运行 `./cmd reup` 重启服务即可。
+## 生产部署
 
-## 迁移夜莺
+生产部署使用构建好的 `project-v版本号-提交号.tar.gz`，应用在 Ubuntu 宿主机以 PHP 8.4 + LaravelS/Swoole 进程运行，不使用应用容器。MySQL、Redis、Manticore 可以部署在独立服务器或容器中。
 
-在新项目安装好之后按照以下步骤完成项目迁移：
+### 1. 构建生产包
 
-1、备份 MySQL 数据库
+在构建机执行：
 
 ```bash
-# 在旧的项目下执行指令
-./cmd mysql backup
+./scripts/package.sh
 ```
 
-> `./cmd mysql` 为 CLI 子命令名称，实际操作的是 MySQL 容器。
+脚本会依次执行：
 
-2、将旧项目以下文件和目录拷贝至新项目同路径位置
+- `npm install`
+- 前端生产构建
+- `composer install --no-dev`
+- 生成包含 `vendor` 和前端静态资源的生产包
 
- - `数据库备份文件`
- - `docker/appstore`
- - `public/uploads`
+输出目录：
 
-3、还原数据库至新项目
+```text
+output/project-v版本号-提交号.tar.gz
+```
+
+生产包不包含：
+
+- `.env`
+- `node_modules`
+- Git 历史
+- 运行日志
+
+### 2. 上传并解压
+
+在 Ubuntu 服务器执行：
+
 ```bash
-# 在新的项目下执行指令
-./cmd mysql recovery
+sudo mkdir -p /opt/yeying
+sudo tar -xzf project-v版本号-提交号.tar.gz -C /opt/yeying
+cd /opt/yeying
 ```
 
-## 卸载夜莺
+### 3. 安装 Ubuntu 运行依赖
+
+第一次部署或 PHP/Swoole 未安装时执行：
 
 ```bash
-./cmd uninstall
+sudo ./scripts/ubuntu-deps.sh --install
 ```
 
-### 更多指令
+该脚本负责安装：
+
+- PHP 8.4、PHP CLI 和 PHP 开发包
+- Swoole
+- MySQL、Redis、cURL、XML、DOM、mbstring、GD、Imagick、ZIP、FFI 等 PHP 扩展
+- Composer
+- Swoole 编译依赖和基础运维工具
+
+安装后检查：
 
 ```bash
-./cmd help
+./scripts/ubuntu-deps.sh --check
 ```
+
+应至少看到：
+
+```text
+OK command: php
+OK php extension: swoole
+OK command: composer
+```
+
+### 4. 配置生产环境
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env`，至少配置：
+
+```dotenv
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://你的域名
+
+DB_CONNECTION=mysql
+DB_HOST=MySQL地址
+DB_PORT=3306
+DB_DATABASE=yeying
+DB_USERNAME=yeying
+DB_PASSWORD=数据库密码
+
+REDIS_HOST=Redis地址
+REDIS_PORT=6379
+
+SEARCH_HOST=Manticore地址
+SEARCH_PORT=9306
+
+LARAVELS_LISTEN_IP=127.0.0.1
+LARAVELS_LISTEN_PORT=2222
+DOO_DRIVER=opensource
+```
+
+不要把生产 `.env` 提交到 Git。生产 SMTP 邮箱在管理员后台的系统邮箱设置中配置，不写入 README 或源码。
+
+### 5. 初始化应用
+
+```bash
+./scripts/install.sh
+```
+
+该命令会：
+
+- 生成 `APP_KEY`
+- 创建 Laravel 可写目录
+- 安装生产 Composer 依赖
+- 执行数据库迁移
+- 清理配置、路由和视图缓存
+- 修复 `storage` 和 `bootstrap/cache` 权限
+
+### 6. 启动和管理服务
+
+```bash
+./scripts/starter.sh start
+./scripts/starter.sh status
+./scripts/starter.sh restart
+./scripts/starter.sh stop
+```
+
+日志：
+
+```text
+storage/logs/starter.log
+storage/logs/laravel.log
+```
+
+启动脚本只负责启动 PHP/LaravelS，不负责安装 PHP。若出现 `PHP 8.4 is not installed`，先执行：
+
+```bash
+sudo ./scripts/ubuntu-deps.sh --install
+./scripts/install.sh
+```
+
+### 7. 生产入口
+
+建议让 LaravelS 只监听 `127.0.0.1:2222`，前面使用 Caddy 或 Nginx 提供：
+
+- HTTPS
+- 域名访问
+- WebSocket 转发
+- 上传大小和超时配置
+- 静态资源缓存
+
+不要把生产 `.env`、MySQL 密码和 SMTP 授权码写入仓库。
+
+## 常用运维命令
+
+```bash
+./cmd repassword       # 重置管理员密码
+./cmd help              # 查看命令帮助
+```
+
+生产升级前请先备份数据库和 `public/uploads`。升级、备份、systemd 自动启动和恢复流程详见 `docs/`。
+
+## License
+
+MIT License。第三方组件和原始版权声明以各自许可证为准。

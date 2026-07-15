@@ -16,8 +16,21 @@ ensure_dirs() {
 
 check_runtime() {
   command -v curl >/dev/null 2>&1 || { echo "curl is required for health checks." >&2; exit 1; }
-  command -v php >/dev/null 2>&1 || { echo "PHP is required." >&2; exit 1; }
-  php -m | grep -qi '^swoole$' || { echo "PHP Swoole extension is required." >&2; exit 1; }
+  if ! command -v php >/dev/null 2>&1; then
+    cat >&2 <<EOF
+PHP 8.4 is not installed. Run these commands first:
+  sudo "$root_dir/scripts/ubuntu-deps.sh" --install
+  "$root_dir/scripts/install.sh"
+EOF
+    exit 1
+  fi
+  if ! php -m | grep -qi '^swoole$'; then
+    cat >&2 <<EOF
+PHP Swoole extension is not installed. Run:
+  sudo "$root_dir/scripts/ubuntu-deps.sh" --install
+EOF
+    exit 1
+  fi
   [[ -f "$root_dir/vendor/autoload.php" ]] || { echo "Missing vendor/autoload.php. Run scripts/install.sh first." >&2; exit 1; }
   php -r 'exit((int) !extension_loaded("swoole"));' || { echo "PHP Swoole extension is required." >&2; exit 1; }
 }

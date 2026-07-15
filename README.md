@@ -1,157 +1,130 @@
-# 夜莺 YeYing - Open Source Task Management System
+# YeYing - Open Source Task Management System
 
-English | **[中文文档](./README_CN.md)**
+**[中文文档](./README_CN.md)** | English
 
-- [Screenshot Preview](./README_PREVIEW.md)
-- [Demo Site](#)
+YeYing is an open source task and project management system based on Laravel, LaravelS/Swoole and Vue 2. It is released under the MIT License.
 
-**QQ Group**
+## Local Development
 
-- Group Number: `546574618`
+In local development, PHP/LaravelS runs directly on the host. MySQL, Redis, Manticore and other middleware run in Docker containers. Node.js/npm is only needed for frontend development and builds.
 
-## Installation Requirements
+### Requirements
 
-- Required: `Docker v20.10+` and `Docker Compose v2.0+`
-- Supported Systems: `CentOS/Debian/Ubuntu/macOS` and other Linux/Unix systems
-- Hardware Recommendation: 2+ cores, 4GB+ memory
-- Database: MySQL 8.4 (provided by the default local Docker Compose `mysql` service)
-- Special Note: Windows users can install Linux environment using WSL2 before installing the project.
+- macOS or Linux
+- PHP 8.4 with Swoole
+- Composer
+- Node.js 20+ and npm
+- Docker 20.10+ and Docker Compose v2+
 
-### Deploy YeYing
+### Initialize and start
 
-**Option 1: One-line script (recommended)**
-
-Run it in an empty directory to clone and install automatically; run it inside an existing installation to check and upgrade:
+Run from the project root:
 
 ```bash
-./cmd install
+./cmd local-install
+./cmd local-up
+./cmd local-start
 ```
 
-**Option 2: Manual deployment**
+Open:
 
-```bash
-# 1、Clone the project to your local machine or server
-
-# Clone project from GitHub
-git clone --depth=1 <your-repo-url>
-
-# 2、Enter directory
-cd project
-
-# 3、One-click installation (Custom port installation: ./cmd install --port 80)
-./cmd install
+```text
+http://127.0.0.1:2222
 ```
 
-### Reset Password
+Default local middleware endpoints:
 
-```bash
-# Reset default administrator password
-./cmd repassword
+```text
+MySQL      127.0.0.1:23306
+Redis      127.0.0.1:26379
+Manticore  127.0.0.1:9306
+AppStore   127.0.0.1:19080 (if deployed)
 ```
 
-### Change Port
+Stop the host service and middleware:
 
 ```bash
-# This method only changes HTTP port. For HTTPS port, please read SSL configuration below
-./cmd port 80
+./cmd local-stop
+./cmd local-down
 ```
 
-### Stop Service
+Run the frontend development server separately when needed:
 
 ```bash
-./cmd down
-```
-
-### Start Service
-
-```bash
-./cmd up
-```
-
-### Development & Build
-
-Please ensure you have installed `NodeJs 20+`
-
-```bash
-# Development mode
 ./cmd dev
-   
-# Build project (This is for web client. For desktop apps, refer to ".github/workflows/publish.yml")
-./cmd prod  
 ```
 
-### SSL Configuration
-
-#### Method 1: Automatic Configuration
-
-```bash 
-# Run command and follow the prompts
-./cmd https
-```
-
-#### Method 2: Nginx Proxy Configuration
-
-```bash 
-# 1、Add Nginx proxy configuration
-proxy_set_header X-Forwarded-Host $http_host;
-proxy_set_header X-Forwarded-Proto $scheme;
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-# 2、Run command (To cancel Nginx proxy configuration: ./cmd https close)
-./cmd https agent
-```
-
-## Upgrade & Update
-
-**Note: Please backup your data before upgrading!**
-
-Recommended: use the one-line script (run it inside an existing installation; it pulls the latest code and finishes the upgrade in a single run):
+Build frontend assets without starting the PHP service:
 
 ```bash
-./cmd update
+npm run build
 ```
 
-Or use the local command:
+## Production Deployment
+
+Production uses a generated `project-vVERSION-COMMIT.tar.gz` package. The application runs directly on Ubuntu with PHP 8.4 and LaravelS/Swoole. Node.js is not required on the production server.
+
+### 1. Build the package
+
+Run on the build machine:
 
 ```bash
-./cmd update
+./scripts/package.sh
 ```
 
-* If you encounter 502 errors after upgrade, run `./cmd reup` to restart services.
+The script installs frontend dependencies, builds static assets, installs production Composer dependencies and writes the package to `output/`.
 
-## YeYing Migration
+The package excludes `.env`, `node_modules`, Git history and runtime logs.
 
-After installing the new project, follow these steps to complete migration:
+### 2. Install Ubuntu dependencies
 
-1、Backup the MySQL database
+After extracting the package on Ubuntu, run:
 
 ```bash
-# Run command in the old project
-./cmd mysql backup
+sudo ./scripts/ubuntu-deps.sh --install
+./scripts/ubuntu-deps.sh --check
 ```
 
-> `./cmd mysql` is the CLI subcommand name; backups run against the MySQL container.
+This installs PHP 8.4, Swoole, Composer, PHP extensions and build/runtime tools. `scripts/starter.sh` does not install PHP by itself.
 
-2、Copy the following files and directories from old project to the same paths in new project
+### 3. Configure and initialize
 
- - `Database backup file`
- - `docker/appstore`
- - `public/uploads`
-
-3、Restore database to new project
 ```bash
-# Run command in the new project
-./cmd mysql recovery
+cp .env.example .env
+# Edit .env with APP_URL, MySQL, Redis, Manticore and LaravelS settings.
+./scripts/install.sh
 ```
 
-## Uninstall YeYing
+At minimum configure `APP_ENV=production`, `APP_DEBUG=false`, the MySQL and Redis endpoints, and:
 
-```bash
-./cmd uninstall
+```dotenv
+DOO_DRIVER=opensource
+LARAVELS_LISTEN_IP=127.0.0.1
+LARAVELS_LISTEN_PORT=2222
 ```
 
-### More Commands
+### 4. Start and manage
 
 ```bash
+./scripts/starter.sh start
+./scripts/starter.sh status
+./scripts/starter.sh restart
+./scripts/starter.sh stop
+```
+
+Logs are written to `storage/logs/starter.log` and `storage/logs/laravel.log`.
+
+Use Caddy or Nginx in front of LaravelS for HTTPS, WebSocket forwarding, upload limits and static asset caching. Keep the application listener on `127.0.0.1` in production.
+
+## Operations
+
+```bash
+./cmd repassword
 ./cmd help
 ```
+
+Back up MySQL, `public/uploads` and production configuration before upgrades. See `docs/` for the deployment, backup and recovery details.
+
+## License
+
+MIT License. Third-party components remain under their respective licenses.
