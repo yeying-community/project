@@ -50,7 +50,7 @@ check() {
   check_command php
   if command -v php >/dev/null 2>&1; then
     info "PHP: $(php -r 'echo PHP_VERSION;' 2>/dev/null || echo unknown)"
-    for extension in curl dom ffi fileinfo gd imagick json libxml openssl simplexml swoole zip; do
+    for extension in curl dom ffi fileinfo gd gmp imagick json ldap libxml openssl simplexml swoole zip; do
       check_php_extension "$extension"
     done
   fi
@@ -85,8 +85,11 @@ install() {
     "php${php_version}" "php${php_version}-cli" "php${php_version}-dev" \
     "php${php_version}-common" "php${php_version}-curl" "php${php_version}-dom" \
     "php${php_version}-ffi" "php${php_version}-gd" "php${php_version}-imagick" \
+    "php${php_version}-gmp" "php${php_version}-ldap" \
     "php${php_version}-mbstring" "php${php_version}-mysql" "php${php_version}-redis" \
     "php${php_version}-xml" "php${php_version}-zip"
+
+  apt-get install -y mysql-client redis-tools
 
   update-alternatives --set php "/usr/bin/php${php_version}" 2>/dev/null || true
   update-alternatives --set phpize "/usr/bin/phpize${php_version}" 2>/dev/null || true

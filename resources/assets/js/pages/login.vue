@@ -269,7 +269,7 @@ export default {
         },
 
         subTitle() {
-            const title = window.systemInfo.title || "夜莺 YeYing";
+            const title = window.systemInfo.title || "夜莺";
             if (this.loginMode == 'qrcode') {
                 return this.$L(`请使用${title}移动端扫描二维码。`)
             }

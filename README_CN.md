@@ -1,8 +1,8 @@
-# 夜莺 YeYing - 开源任务管理系统
+# 夜莺 - 开源任务管理系统
 
 **[English](./README.md)** | 中文文档
 
-夜莺 YeYing 是基于 Laravel、LaravelS/Swoole 和 Vue 2 的开源任务与项目管理系统，采用 MIT License 发布。
+夜莺 是基于 Laravel、LaravelS/Swoole 和 Vue 2 的开源任务与项目管理系统，采用 MIT License 发布。
 
 - 社区：夜莺社区
 - 邮箱：`yeying.community@gmail.com`
@@ -101,6 +101,8 @@ public/manifest.json
 
 生产部署使用构建好的 `project-v版本号-提交号.tar.gz`，应用在 Ubuntu 宿主机以 PHP 8.4 + LaravelS/Swoole 进程运行，不使用应用容器。MySQL、Redis、Manticore 可以部署在独立服务器或容器中。
 
+配置文件约定：仓库只提交 `.env.template` 作为配置模板；复制为 `.env` 后填写实际值。`.env` 是生效配置，包含密码和密钥，已被 Git 忽略，禁止提交到远端。SMTP 邮箱和其他业务设置由管理员在后台配置，不放入 `.env`。
+
 ### 1. 构建生产包
 
 在构建机执行：
@@ -151,7 +153,7 @@ sudo ./scripts/ubuntu-deps.sh --install
 
 - PHP 8.4、PHP CLI 和 PHP 开发包
 - Swoole
-- MySQL、Redis、cURL、XML、DOM、mbstring、GD、Imagick、ZIP、FFI 等 PHP 扩展
+- MySQL、Redis、LDAP、GMP、cURL、XML、DOM、mbstring、GD、Imagick、ZIP、FFI 等 PHP 扩展
 - Composer
 - Swoole 编译依赖和基础运维工具
 
@@ -172,7 +174,7 @@ OK command: composer
 ### 4. 配置生产环境
 
 ```bash
-cp .env.example .env
+cp .env.template .env
 ```
 
 编辑 `.env`，至少配置：
@@ -199,6 +201,8 @@ LARAVELS_LISTEN_IP=127.0.0.1
 LARAVELS_LISTEN_PORT=2222
 DOO_DRIVER=opensource
 ```
+
+宿主机运行时不能使用 Docker Compose 内部服务名 `mysql`、`redis`，应填写服务器可解析的地址。若 MySQL 和 Redis 通过 Docker 映射到本机端口，使用 `127.0.0.1`。`scripts/install.sh` 在 `APP_ENV=production` 时会自动把这两个 Compose 服务名规范化为 `127.0.0.1`，并启用 `DOO_DRIVER=opensource`。
 
 不要把生产 `.env` 提交到 Git。生产 SMTP 邮箱在管理员后台的系统邮箱设置中配置，不写入 README 或源码。
 

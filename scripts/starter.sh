@@ -6,7 +6,15 @@ root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 pid_dir="${YEYING_RUN_DIR:-$root_dir/run}"
 log_dir="${YEYING_LOG_DIR:-$root_dir/storage/logs}"
 pid_file="$pid_dir/yeying.pid"
-port="${LARAVELS_LISTEN_PORT:-2222}"
+
+env_value() {
+  local key="$1"
+  [[ -f "$root_dir/.env" ]] || return 0
+  sed -n "s/^${key}=\(['\"]\?\)\(.*\)\1$/\2/p" "$root_dir/.env" | head -n 1
+}
+
+port="${LARAVELS_LISTEN_PORT:-$(env_value LARAVELS_LISTEN_PORT)}"
+port="${port:-2222}"
 health_url="${YEYING_HEALTH_URL:-http://127.0.0.1:${port}/}"
 
 ensure_dirs() {
@@ -39,7 +47,12 @@ is_running() {
   [[ -f "$pid_file" ]] || return 1
   local pid
   pid="$(cat "$pid_file")"
-  [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null
+  [[ "$pid" =~ ^[0-9]+$ ]] || return 1
+  kill -0 "$pid" 2>/dev/null || return 1
+  # A stale PID can be reused by an unrelated system process (for example
+  # watchdogd). Verify that the recorded process is this LaravelS instance.
+  [[ -r "/proc/$pid/cmdline" ]] || return 1
+  tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null | grep -q 'laravels'
 }
 
 start() {
@@ -49,8 +62,12 @@ start() {
     echo "YeYing already running (pid $(cat "$pid_file"), port $port)."
     return 0
   fi
+  if [[ -f "$pid_file" ]]; then
+    echo "Removing stale PID file: $pid_file (pid $(cat "$pid_file" 2>/dev/null || echo unknown))." >&2
+    rm -f "$pid_file"
+  fi
   if [[ ! -f "$root_dir/.env" ]]; then
-    echo "Missing $root_dir/.env. Copy .env.example and configure the database first." >&2
+    echo "Missing $root_dir/.env. Copy .env.template and configure the database first." >&2
     exit 1
   fi
   cd "$root_dir"
@@ -69,6 +86,10 @@ start() {
     sleep 1
   done
   echo "YeYing did not become healthy at $health_url. See $log_dir/starter.log." >&2
+  echo "Listening sockets:" >&2
+  ss -lntp 2>/dev/null | grep -E ":${port}\b" >&2 || true
+  echo "Recent starter log:" >&2
+  tail -30 "$log_dir/starter.log" >&2 || true
   exit 1
 }
 

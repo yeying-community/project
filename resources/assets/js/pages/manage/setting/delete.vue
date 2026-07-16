@@ -119,7 +119,7 @@ export default {
         ...mapState(['userInfo', 'formOptions']),
 
         appTitle() {
-            return window.systemInfo.title || "夜莺 YeYing";
+            return window.systemInfo.title || "夜莺";
         },
     },
 

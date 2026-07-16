@@ -51,7 +51,7 @@ class PromptPlaceholder
         // 格式指南块
         $blocks[] = <<<'EOF'
             <optional-format-guide>
-            当你的回答中包含夜莺 YeYing 系统资源（任务、项目、文件等）时，建议使用以下链接格式使其可点击：
+            当你的回答中包含夜莺系统资源（任务、项目、文件等）时，建议使用以下链接格式使其可点击：
             - 任务: [任务名称](dootask://task/{task_id}/{parent_id})，其中 parent_id 为主任务ID，主任务时为 0
             - 项目: [项目名称](dootask://project/{project_id})
             - 文件: [文件名称](dootask://file/{file_id})

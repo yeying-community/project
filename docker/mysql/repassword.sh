@@ -20,6 +20,11 @@
 account_identifier=$1
 custom_password=$2
 
+mysql_cmd() {
+    mysql -h "${MYSQL_HOST:-127.0.0.1}" -P "${MYSQL_PORT:-3306}" \
+        -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" "$@"
+}
+
 if [ -t 1 ]; then
     GreenBG="$(printf '\\033[42;37m')"
     RedBG="$(printf '\\033[41;37m')"
@@ -44,7 +49,7 @@ md5_password=$(printf '%s:%s' "$new_password" "$new_encrypt" | md5sum | awk '{pr
 # 构建查询条件
 if [ -z "$account_identifier" ]; then
     # 默认查询第一个管理员
-    admin_query=$(echo "SELECT userid FROM ${MYSQL_PREFIX}users WHERE identity LIKE '%,admin,%' ORDER BY userid LIMIT 1;" | mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE)
+    admin_query=$(echo "SELECT userid FROM ${MYSQL_PREFIX}users WHERE identity LIKE '%,admin,%' ORDER BY userid LIMIT 1;" | mysql_cmd)
     identifier_value=$(echo "$admin_query" | sed -n '2p')
 
     if [ -z "$identifier_value" ]; then
@@ -81,7 +86,7 @@ else
 fi
 
 # 查询用户信息
-content=$(echo "select userid,email from ${MYSQL_PREFIX}users $where_condition;" | mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE)
+content=$(echo "select userid,email from ${MYSQL_PREFIX}users $where_condition;" | mysql_cmd)
 
 # 提取用户ID和邮箱
 user_id=$(echo "$content" | sed -n '2p' | awk '{print $1}')
@@ -93,7 +98,7 @@ if [ -z "$account" ]; then
 fi
 
 # 更新密码
-mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE <<EOF
+mysql_cmd <<EOF
 update ${MYSQL_PREFIX}users set encrypt='${new_encrypt}',password='${md5_password}' $where_condition;
 EOF
 

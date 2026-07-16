@@ -6,9 +6,8 @@ use App\Exceptions\ApiException;
 use App\Module\Base;
 use App\Module\Doo;
 use App\Module\Timer;
+use App\Services\MailTransportService;
 use Carbon\Carbon;
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -109,13 +108,10 @@ class UserEmailVerification extends AbstractModel
                     );
                     break;
             }
-            $scheme = intval($setting['port']) === 465 ? 'smtps' : 'smtp';
-            $dsn = sprintf('%s://%s:%s@%s:%s?verify_peer=0', $scheme,
-                rawurlencode($setting['account']), rawurlencode($setting['password']),
-                $setting['smtp_server'], $setting['port']);
-            $mailer = new Mailer(Transport::fromDsn($dsn));
+            $mailSettings = MailTransportService::settings($setting);
+            $mailer = MailTransportService::mailer($setting);
             $mailer->send((new Email())
-                ->from($fromName . " <{$setting['account']}>")
+                ->from($fromName . " <{$mailSettings['account']}>")
                 ->to($email)
                 ->subject($subject)
                 ->html($content));

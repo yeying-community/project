@@ -57,7 +57,7 @@ normalize_local_env() {
 
 prepare_local_env() {
     if [ ! -f "${ROOT_DIR}/.env" ]; then
-        cp "${ROOT_DIR}/.env.local.example" "${ROOT_DIR}/.env"
+        cp "${ROOT_DIR}/.env.template" "${ROOT_DIR}/.env"
         normalize_local_env
         return
     fi
@@ -72,13 +72,13 @@ prepare_local_env() {
         if [ ! -f "${backup_file}" ]; then
             cp "${ROOT_DIR}/.env" "${backup_file}"
         fi
-        cp "${ROOT_DIR}/.env.local.example" "${ROOT_DIR}/.env"
+        cp "${ROOT_DIR}/.env.template" "${ROOT_DIR}/.env"
         normalize_local_env
         return
     fi
 
     echo ".env already exists and is not marked with APP_RUNTIME=local." >&2
-    echo "Please review the current .env, then merge .env.local.example into it." >&2
+    echo "Please review the current .env, then merge .env.template into it." >&2
     exit 1
 }
 

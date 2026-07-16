@@ -19,7 +19,7 @@
                 </Input>
                 <template v-else>
                     <Button type="primary" :loading="walletLoading" @click="bindWallet">{{$L('绑定夜莺钱包')}}</Button>
-                    <span class="form-tip">{{$L('绑定后可使用钱包登录 YeYing')}}</span>
+                    <span class="form-tip">{{$L('绑定后可使用钱包登录夜莺')}}</span>
                 </template>
             </FormItem>
             <FormItem :label="$L('电话')" prop="tel">

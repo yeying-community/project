@@ -154,7 +154,7 @@ class WalletAuthController extends AbstractController
     {
         $userid = Doo::userId();
         if (!$userid) {
-            return Base::retError('请先登录 YeYing 账号', ['code' => 'login_required']);
+            return Base::retError('请先登录夜莺账号', ['code' => 'login_required']);
         }
         $address = $this->normalizeAddress(Request::input('address'));
         $chainId = trim((string)Request::input('chain_id', config('dootask.wallet_chain_id', '1')));
@@ -170,7 +170,7 @@ class WalletAuthController extends AbstractController
         }
         $existing = UserWallet::where('chain', 'eip155')->where('chain_id', $chainId)->where('address_normalized', $address)->first();
         if ($existing && intval($existing->userid) !== $userid) {
-            return Base::retError('该钱包已绑定其他 YeYing 账号', ['code' => 'wallet_already_bound']);
+            return Base::retError('该钱包已绑定其他夜莺账号', ['code' => 'wallet_already_bound']);
         }
         if (!$existing) {
             $wallet = UserWallet::createInstance([

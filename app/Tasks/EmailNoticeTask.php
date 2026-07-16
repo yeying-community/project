@@ -8,9 +8,8 @@ use App\Models\WebSocketDialogMsgRead;
 use App\Module\Base;
 use App\Module\Doo;
 use App\Module\Timer;
+use App\Services\MailTransportService;
 use Carbon\Carbon;
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -259,17 +258,10 @@ class EmailNoticeTask extends AbstractTask
     private function sendEmail($user, $emailData): void
     {
         Setting::validateAddr($user->email, function($to) use ($emailData) {
-            $scheme = intval($this->emailSetting['port']) === 465 ? 'smtps' : 'smtp';
-            $mailer = new Mailer(Transport::fromDsn(sprintf(
-                '%s://%s:%s@%s:%s?verify_peer=0',
-                $scheme,
-                rawurlencode($this->emailSetting['account']),
-                rawurlencode($this->emailSetting['password']),
-                $this->emailSetting['smtp_server'],
-                $this->emailSetting['port']
-            )));
+            $mailSettings = MailTransportService::settings($this->emailSetting);
+            $mailer = MailTransportService::mailer($this->emailSetting);
             $mailer->send((new Email())
-                ->from(sprintf('%s <%s>', Base::settingFind('system', 'system_alias', 'Task'), $this->emailSetting['account']))
+                ->from(sprintf('%s <%s>', Base::settingFind('system', 'system_alias', 'Task'), $mailSettings['account']))
                 ->to($to)
                 ->subject($emailData['subject'])
                 ->html($emailData['content']));

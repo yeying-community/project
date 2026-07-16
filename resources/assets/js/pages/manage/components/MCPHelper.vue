@@ -125,7 +125,7 @@
 
             <div class="mcp-section">
                 <h3><span class="emoji-original">💡</span> {{ t('使用示例', 'Usage Examples') }}</h3>
-                <p>{{ t('配置生效后，即可通过自然语言与 AI 对话操作夜莺 YeYing', 'After configuration, you can interact with YeYing through natural language') }}:</p>
+                <p>{{ t('配置生效后，即可通过自然语言与 AI 对话操作夜莺', 'After configuration, you can interact with YeYing through natural language') }}:</p>
 
                 <div class="mcp-category">
                     <h4>{{ t('任务管理', 'Task Management') }}</h4>

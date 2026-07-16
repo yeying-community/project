@@ -15,11 +15,10 @@ use App\Models\User;
 use App\Module\Base;
 use App\Module\OnlineLicense;
 use App\Module\Timer;
+use App\Services\MailTransportService;
 use App\Models\Setting;
 use LdapRecord\Container;
 use App\Module\BillExport;
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
 use App\Models\UserCheckinRecord;
 use App\Module\Apps;
@@ -1262,13 +1261,10 @@ class SystemController extends AbstractController
         }
         try {
             Setting::validateAddr($all['to'], function($to) use ($all) {
-                $scheme = intval($all['port']) === 465 ? 'smtps' : 'smtp';
-                $dsn = sprintf('%s://%s:%s@%s:%s?verify_peer=0', $scheme,
-                    rawurlencode($all['account']), rawurlencode($all['password']),
-                    $all['smtp_server'], $all['port']);
-                $mailer = new Mailer(Transport::fromDsn($dsn));
+                $mailSettings = MailTransportService::settings($all);
+                $mailer = MailTransportService::mailer($all);
                 $mailer->send((new Email())
-                    ->from(Base::settingFind('system', 'system_alias', 'Task') . " <{$all['account']}>")
+                    ->from(Base::settingFind('system', 'system_alias', 'Task') . " <{$mailSettings['account']}>")
                     ->to($to)
                     ->subject('Mail sending test')
                     ->html('<p>' . Doo::translate('收到此电子邮件意味着您的邮箱配置正确。') . '</p>'));

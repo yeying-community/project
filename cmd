@@ -185,10 +185,10 @@ rand() {
 # 随机字符串
 rand_string() {
     local lan=$1
-    if [[ `uname` == 'Linux' ]]; then
-        echo "$(date +%s%N | md5sum | cut -c 1-${lan})"
+    if command -v openssl >/dev/null 2>&1; then
+        openssl rand -hex "$(( (lan + 1) / 2 ))" | cut -c 1-${lan}
     else
-        echo "$(docker run $TTY_FLAG --rm nginx:alpine sh -c "date +%s%N | md5sum | cut -c 1-${lan}")"
+        date +%s%N | md5sum | cut -c 1-${lan}
     fi
 }
 
@@ -422,7 +422,7 @@ mysql_snapshot() {
 # 根据网络名称删除所有容器
 remove_by_network() {
     local app_id=$(env_get APP_ID)
-    local network_name="dootask-networks-${app_id}"
+    local network_name="project-networks-${app_id}"
 
     # 批量删除所有状态的容器（包括已停止的）
     local container_ids=$(docker ps -aq --filter network="$network_name")
@@ -577,14 +577,14 @@ arg_get() {
 show_help() {
     if [ "$DT_LANG" = "zh" ]; then
         cat << 'EOF'
-DooTask 管理脚本
+Project 管理脚本
 
 用法: ./cmd <命令> [参数]
 
 📦 核心操作:
-  install                     安装 DooTask (支持 --port <端口> --relock)
-  update                      更新 DooTask (支持 --branch <分支> --force --local)
-  uninstall                   卸载 DooTask
+  install                     安装 Project (支持 --port <端口> --relock)
+  update                      更新 Project (支持 --branch <分支> --force --local)
+  uninstall                   卸载 Project
 
 ⚙️  配置管理:
   port <端口>                 修改服务端口
@@ -632,14 +632,14 @@ DooTask 管理脚本
 EOF
     else
         cat << 'EOF'
-DooTask Management Script
+Project Management Script
 
 Usage: ./cmd <command> [options]
 
 📦 Core:
-  install                     Install DooTask (supports --port <port> --relock)
-  update                      Update DooTask (supports --branch <branch> --force --local)
-  uninstall                   Uninstall DooTask
+  install                     Install Project (supports --port <port> --relock)
+  update                      Update Project (supports --branch <branch> --force --local)
+  uninstall                   Uninstall Project
 
 ⚙️  Configuration:
   port <port>                 Change service port
@@ -691,7 +691,7 @@ EOF
 # 检测APP_ID是否与其他实例冲突
 check_instance() {
     local app_id=$(env_get APP_ID)
-    local container_name="dootask-php-${app_id}"
+    local container_name="project-php-${app_id}"
     local mount_path=$(docker inspect "$container_name" --format '{{range .Mounts}}{{if eq .Destination "/var/www"}}{{.Source}}{{end}}{{end}}' 2>/dev/null)
     if [[ -n "$mount_path" ]] && [[ "$mount_path" != "$WORK_DIR" ]]; then
         error "$(msg 'APP_ID（(*)）已被其他实例使用：(*)' "$app_id" "$mount_path")"
@@ -706,7 +706,7 @@ check_port() {
     local port=$1
     local current_port=$2
     if [[ "$port" -gt 0 ]] && [[ "$port" != "$current_port" ]]; then
-        if ! docker run --rm -p "${port}:80" --entrypoint true nginx:alpine 2>/dev/null; then
+        if ss -ltn 2>/dev/null | awk '{print $4}' | grep -Eq ":${port}$"; then
             error "$(msg '端口 (*) 已被占用，请指定其他端口' "$port")"
             exit 1
         fi
@@ -715,8 +715,8 @@ check_port() {
 
 # 安装函数
 handle_install() {
-    check_sudo
-    check_instance
+    error "生产应用已改为宿主机 PHP/LaravelS 模式，请使用 scripts/ubuntu-deps.sh、scripts/install.sh 和 scripts/starter.sh；不要使用 ./cmd install。"
+    exit 1
 
     local relock=$(arg_get relock)
     local port=$(arg_get port)
@@ -740,9 +740,9 @@ handle_install() {
         mkdir -p "${tmp_path}"
         find "${tmp_path}" -type d -exec chmod 775 {} \;
 
-        rm -f "${tmp_path}/dootask.lock"
+        rm -f "${tmp_path}/project.lock"
         cmda="${cmda} -v ${tmp_path}:/usr/share/${vol}"
-        cmdb="${cmdb} touch /usr/share/${vol}/dootask.lock &&"
+        cmdb="${cmdb} touch /usr/share/${vol}/project.lock &&"
     done
 
     # 目录权限检测
@@ -750,13 +750,13 @@ handle_install() {
     while true; do
         ((remaining=$remaining-1))
         writable="yes"
-        docker run --rm ${cmda} nginx:alpine sh -c "${cmdb} touch /usr/share/docker/dootask.lock" &> /dev/null
+        docker run --rm ${cmda} nginx:alpine sh -c "${cmdb} touch /usr/share/docker/project.lock" &> /dev/null
         if [ $? -ne 0 ]; then
             error "$(msg '目录权限检测失败！请检查目录权限设置')"
             exit 1
         fi
         for vol in "${volumes[@]}"; do
-            if [ ! -f "${vol}/dootask.lock" ]; then
+            if [ ! -f "${vol}/project.lock" ]; then
                 if [ $remaining -lt 0 ]; then
                     error "$(msg '目录【(*)】权限不足！' "$vol")"
                     exit 1
@@ -820,7 +820,8 @@ handle_install() {
 
 # 更新函数
 handle_update() {
-    check_sudo
+    error "生产应用已改为宿主机 PHP/LaravelS 模式，请使用生产包更新流程和 scripts/starter.sh；不要使用 ./cmd update。"
+    exit 1
 
     local target_branch=$(arg_get branch)
     local is_local=$(arg_get local)
@@ -1018,21 +1019,7 @@ case "$1" in
         ;;
     "repassword")
         shift 1
-        if [ "$(env_get APP_RUNTIME)" = "local" ]; then
-            local_mysql_container="project-local-mysql"
-            if ! docker inspect "$local_mysql_container" >/dev/null 2>&1; then
-                error "没有找到本地 mysql 容器!"
-                exit 1
-            fi
-            docker exec \
-                -e MYSQL_PREFIX="$(env_get DB_PREFIX)" \
-                -e MYSQL_USER="$(env_get DB_USERNAME)" \
-                -e MYSQL_PASSWORD="$(env_get DB_PASSWORD)" \
-                -e MYSQL_DATABASE="$(env_get DB_DATABASE)" \
-                "$local_mysql_container" sh /etc/mysql/repassword.sh "$@"
-        else
-            container_exec mysql "sh /etc/mysql/repassword.sh $@"
-        fi
+        exec "${WORK_DIR}/scripts/repassword.sh" "$@"
         ;;
     "serve"|"dev")
         shift 1
@@ -1139,32 +1126,21 @@ case "$1" in
         container_exec php "php artisan ide-helper:models -W"
         ;;
     "restart")
-        shift 1
-        $COMPOSE stop "$@"
-        $COMPOSE start "$@"
+        error "./cmd restart 已停用。生产应用请使用 scripts/starter.sh restart；本地中间件请使用 ./cmd local-up。"
+        exit 1
         ;;
     "reup")
-        shift 1
-        remove_by_network
-        $COMPOSE down --remove-orphans
-        $COMPOSE up -d
+        error "./cmd reup 已停用。生产应用请使用 scripts/package.sh 和 scripts/starter.sh；本地中间件请使用 ./cmd local-up。"
+        exit 1
         ;;
     "down")
-        shift 1
-        remove_by_network
-        if [[ $# -eq 0 ]]; then
-            $COMPOSE down --remove-orphans
-        else
-            $COMPOSE down "$@"
-        fi
+        error "./cmd down 已停用。生产应用请使用 scripts/starter.sh stop；本地中间件请使用 ./cmd local-down。"
+        exit 1
         ;;
     "up")
         shift 1
-        if [[ $# -eq 0 ]]; then
-            $COMPOSE up -d --remove-orphans
-        else
-            $COMPOSE up "$@"
-        fi
+        error "./cmd up 仅属于旧容器应用模式，已停用。生产应用请使用 scripts/starter.sh；本地中间件请使用 ./cmd local-up。"
+        exit 1
         ;;
     "local-install")
         shift 1

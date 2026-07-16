@@ -427,7 +427,7 @@ class AiTaskSuggestion
         try {
             // 使用 AI 模块调用
             $result = AI::invoke([
-                ['system', '你是夜莺 YeYing 任务管理系统的 AI 助手，帮助用户管理任务。'],
+                ['system', '你是夜莺任务管理系统的 AI 助手，帮助用户管理任务。'],
                 ['user', $prompt],
             ]);
 

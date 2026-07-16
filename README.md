@@ -78,6 +78,8 @@ The package excludes `.env`, `node_modules`, Git history and runtime logs.
 
 ### 2. Install Ubuntu dependencies
 
+The repository only includes `.env.template` as the configuration template. Copy it to `.env` and fill in deployment-specific values. `.env` is the active configuration, contains secrets, is ignored by Git, and must never be committed. SMTP and other business settings are configured by an administrator in the web console.
+
 After extracting the package on Ubuntu, run:
 
 ```bash
@@ -85,12 +87,12 @@ sudo ./scripts/ubuntu-deps.sh --install
 ./scripts/ubuntu-deps.sh --check
 ```
 
-This installs PHP 8.4, Swoole, Composer, PHP extensions and build/runtime tools. `scripts/starter.sh` does not install PHP by itself.
+This installs PHP 8.4, Swoole, Composer, LDAP/GMP and the other required PHP extensions, MySQL/Redis client tools, and build/runtime tools. `scripts/starter.sh` does not install PHP by itself.
 
 ### 3. Configure and initialize
 
 ```bash
-cp .env.example .env
+cp .env.template .env
 # Edit .env with APP_URL, MySQL, Redis, Manticore and LaravelS settings.
 ./scripts/install.sh
 ```
@@ -102,6 +104,8 @@ DOO_DRIVER=opensource
 LARAVELS_LISTEN_IP=127.0.0.1
 LARAVELS_LISTEN_PORT=2222
 ```
+
+When LaravelS runs on the host, Docker Compose service names such as `mysql` and `redis` are not resolvable. Use `127.0.0.1` when those containers publish their ports on the host. `scripts/install.sh` normalizes these two names automatically for `APP_ENV=production` and enables the open-source runtime driver.
 
 ### 4. Start and manage
 

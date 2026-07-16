@@ -44,6 +44,7 @@ last_verified: v1.7.90
 
 - 验证码由 `UserEmailVerification` 表存储，按邮箱 + 场景隔离
 - 收不到邮件先查系统设置 → 邮件设置是否配好 SMTP
+- SMTP 优先使用管理员在数据库中的 `emailSetting`；数据库字段为空时，回退到 `.env` 的 `MAIL_HOST`、`MAIL_PORT`、`MAIL_USERNAME`、`MAIL_PASSWORD`
 - 同一邮箱短时间内重复发送会限流
 
 ## 不开启邮箱验证时

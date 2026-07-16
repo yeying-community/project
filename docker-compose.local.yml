@@ -11,11 +11,11 @@ services:
     environment:
       MYSQL_PREFIX: "pre_"
       MYSQL_ROOT_PASSWORD: "local-root"
-      MYSQL_DATABASE: "dootask"
-      MYSQL_USER: "dootask"
+      MYSQL_DATABASE: "project"
+      MYSQL_USER: "project"
       MYSQL_PASSWORD: "123456"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "dootask", "-p123456"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "project", "-p123456"]
       interval: 5s
       timeout: 5s
       retries: 20
