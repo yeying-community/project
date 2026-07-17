@@ -21,8 +21,16 @@ account_identifier=$1
 custom_password=$2
 
 mysql_cmd() {
-    mysql -h "${MYSQL_HOST:-127.0.0.1}" -P "${MYSQL_PORT:-3306}" \
-        -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" "$@"
+    if [ -n "${MYSQL_CONTAINER:-}" ]; then
+        docker exec -i \
+            -e MYSQL_PWD="$MYSQL_PASSWORD" \
+            "$MYSQL_CONTAINER" \
+            mysql -h "${MYSQL_HOST:-127.0.0.1}" -P "${MYSQL_PORT:-3306}" \
+            -u"$MYSQL_USER" "$MYSQL_DATABASE" "$@"
+    else
+        mysql -h "${MYSQL_HOST:-127.0.0.1}" -P "${MYSQL_PORT:-3306}" \
+            -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" "$@"
+    fi
 }
 
 if [ -t 1 ]; then
