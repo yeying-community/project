@@ -10,7 +10,7 @@ pid_file="$pid_dir/yeying.pid"
 env_value() {
   local key="$1"
   [[ -f "$root_dir/.env" ]] || return 0
-  sed -n "s/^${key}=\(['\"]\?\)\(.*\)\1$/\2/p" "$root_dir/.env" | head -n 1
+  sed -n "s/^${key}=//p" "$root_dir/.env" | head -n 1 | sed -e 's/^['\''"]//' -e 's/['\''"]$//'
 }
 
 port="${LARAVELS_LISTEN_PORT:-$(env_value LARAVELS_LISTEN_PORT)}"
