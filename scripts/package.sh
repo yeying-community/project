@@ -9,7 +9,9 @@ version="${1:-$(node -p "require('$root_dir/package.json').version")}"
 version="${version#v}"
 revision="$(git -C "$root_dir" rev-parse --short=7 HEAD)"
 stage_dir="$(mktemp -d "${TMPDIR:-/tmp}/${project_name}-package.XXXXXX")"
-archive_path="$output_dir/${project_name}-v${version}-${revision}.tar.gz"
+package_name="${project_name}-v${version}-${revision}"
+package_dir="$stage_dir/$package_name"
+archive_path="$output_dir/$package_name.tar.gz"
 
 cleanup() { rm -rf "$stage_dir"; }
 trap cleanup EXIT
@@ -25,7 +27,7 @@ npm run build
 echo "Installing production PHP dependencies..."
 composer install --no-dev --prefer-dist --optimize-autoloader
 
-mkdir -p "$output_dir" "$stage_dir"
+mkdir -p "$output_dir" "$package_dir"
 rm -rf "$output_dir"/*
 
 rsync -a \
@@ -35,8 +37,8 @@ rsync -a \
   --exclude 'output' \
   --exclude 'storage/logs/*' \
   --exclude '.env' \
-  "$root_dir/" "$stage_dir/"
+  "$root_dir/" "$package_dir/"
 
-chmod +x "$stage_dir/scripts/ubuntu-deps.sh" "$stage_dir/scripts/starter.sh" "$stage_dir/scripts/install.sh"
-tar -czf "$archive_path" -C "$stage_dir" .
+chmod +x "$package_dir/scripts/ubuntu-deps.sh" "$package_dir/scripts/starter.sh" "$package_dir/scripts/install.sh"
+tar -czf "$archive_path" -C "$stage_dir" "$package_name"
 echo "Package created: $archive_path"

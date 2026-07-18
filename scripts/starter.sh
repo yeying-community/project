@@ -17,6 +17,16 @@ port="${LARAVELS_LISTEN_PORT:-$(env_value LARAVELS_LISTEN_PORT)}"
 port="${port:-2222}"
 health_url="${YEYING_HEALTH_URL:-http://127.0.0.1:${port}/}"
 
+normalize_production_env() {
+  [[ -f "$root_dir/.env" ]] || return 0
+  grep -q '^APP_ENV=production$' "$root_dir/.env" || return 0
+
+  sed -i \
+    -e 's/^DB_HOST=mysql$/DB_HOST=127.0.0.1/' \
+    -e 's/^REDIS_HOST=redis$/REDIS_HOST=127.0.0.1/' \
+    "$root_dir/.env"
+}
+
 ensure_dirs() {
   mkdir -p "$pid_dir" "$log_dir" "$root_dir/bootstrap/cache" "$root_dir/storage/framework/cache"
   touch "$log_dir/starter.log"
@@ -70,6 +80,7 @@ start() {
     echo "Missing $root_dir/.env. Copy .env.template and configure the database first." >&2
     exit 1
   fi
+  normalize_production_env
   cd "$root_dir"
   nohup php "$root_dir/bin/laravels" start >>"$log_dir/starter.log" 2>&1 &
   echo $! > "$pid_file"
