@@ -72,10 +72,11 @@ jobs:
           docker run --rm --network host -v "$GITHUB_WORKSPACE":/var/www -w /var/www \
             kuaifan/php:swoole-8.4 sh -c '
               composer install --prefer-dist --no-interaction &&
-              cp .env.example .env &&
+              cp .env.template .env &&
               sed -i "s/^DB_HOST=.*/DB_HOST=127.0.0.1/" .env &&
               sed -i "s/^DB_PORT=.*/DB_PORT=3306/" .env &&
               sed -i "s/^DB_DATABASE=.*/DB_DATABASE=dootask/" .env &&
+              sed -i "s/^DB_USERNAME=.*/DB_USERNAME=yeying/" .env &&
               sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=test/" .env &&
               sed -i "s/^REDIS_HOST=.*/REDIS_HOST=127.0.0.1/" .env &&
               php artisan key:generate &&
