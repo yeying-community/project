@@ -45,7 +45,7 @@ class Doo
 
     protected static function resolveRuntimeClass(): string
     {
-        return match (config('dootask.doo_driver', 'ffi')) {
+        return match (config('dootask.runtime_driver', 'opensource')) {
             'opensource' => OpenSourceDooRuntime::class,
             'ffi' => DooSo::class,
             default => DooSo::class,

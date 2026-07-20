@@ -100,12 +100,12 @@ cp .env.template .env
 At minimum configure `APP_ENV=production`, `APP_DEBUG=false`, the MySQL and Redis endpoints, and:
 
 ```dotenv
-DOO_DRIVER=opensource
+RUNTIME_DRIVER=opensource
 LARAVELS_LISTEN_IP=127.0.0.1
 LARAVELS_LISTEN_PORT=2222
 ```
 
-When LaravelS runs on the host, Docker Compose service names such as `mysql` and `redis` are not resolvable. Use `127.0.0.1` when those containers publish their ports on the host. `scripts/install.sh` normalizes these two names automatically for `APP_ENV=production` and enables the open-source runtime driver.
+When LaravelS runs on the host, configure `DB_HOST`, `DB_PORT`, `REDIS_HOST` and `REDIS_PORT` with addresses reachable from the host. For local development, the template uses the ports exposed by the local middleware services; for production, use the actual database and Redis endpoints.
 
 ### 4. Start and manage
 

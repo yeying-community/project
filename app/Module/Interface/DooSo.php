@@ -20,8 +20,8 @@ class DooSo extends AbstractDooRuntime implements DooRuntimeInterface
 
     public function __construct($token = null, $language = null)
     {
-        $libraryPath = config('dootask.doo_library_path', '/usr/lib/doo/doo.so');
-        $workPath = config('dootask.doo_work_path', base_path());
+        $libraryPath = config('dootask.runtime_library_path', '/usr/lib/project/runtime.so');
+        $workPath = config('dootask.runtime_work_path', base_path());
 
         $this->so = FFI::cdef(<<<EOF
                 void initialize(char* work, char* token, char* lang);

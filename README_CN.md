@@ -199,10 +199,10 @@ SEARCH_PORT=9306
 
 LARAVELS_LISTEN_IP=127.0.0.1
 LARAVELS_LISTEN_PORT=2222
-DOO_DRIVER=opensource
+RUNTIME_DRIVER=opensource
 ```
 
-宿主机运行时不能使用 Docker Compose 内部服务名 `mysql`、`redis`，应填写服务器可解析的地址。若 MySQL 和 Redis 通过 Docker 映射到本机端口，使用 `127.0.0.1`。`scripts/install.sh` 在 `APP_ENV=production` 时会自动把这两个 Compose 服务名规范化为 `127.0.0.1`，并启用 `DOO_DRIVER=opensource`。
+宿主机运行时请将 `DB_HOST`、`DB_PORT`、`REDIS_HOST` 和 `REDIS_PORT` 配置为宿主机可访问的实际地址。模板已经按本地中间件暴露端口填写默认值，生产环境请替换为实际数据库和 Redis 地址。
 
 不要把生产 `.env` 提交到 Git。生产 SMTP 邮箱在管理员后台的系统邮箱设置中配置，不写入 README 或源码。
 

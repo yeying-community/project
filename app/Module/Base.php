@@ -139,6 +139,12 @@ class Base
      */
     public static function checkClientVersion($min)
     {
+        // Web and desktop clients are bundled with the current server release;
+        // their package version may intentionally start at 0.0.1 and must not
+        // be blocked by legacy native-client compatibility gates.
+        if (self::isPc()) {
+            return;
+        }
         if (!self::judgeClientVersion($min)) {
             throw new ApiException('当前客户端版本 (' . Base::getClientVersion() . ') 过低，最低版本要求 (' . $min . ')。');
         }

@@ -882,7 +882,7 @@ class SystemController extends AbstractController
             'user_count' => User::whereBot(0)->whereNull('disable_at')->count(),
             'error' => []
         ];
-        $isOpenSourceDriver = config('dootask.doo_driver') === 'opensource';
+        $isOpenSourceDriver = config('dootask.runtime_driver', 'opensource') === 'opensource';
         if ($data['info']['people'] == 0 || $data['info']['people'] > 3) {
             // 非 1~3 人限制配置时检查 SN/MAC
             if ($data['info']['sn'] != $data['doo_sn']) {

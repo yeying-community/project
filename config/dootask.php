@@ -45,14 +45,9 @@ return [
     // 前端微应用打开 AppStore 的入口地址；默认走同源 /appstore 反代，本机直跑可改成独立端口
     'appstore_entry_url' => env('APPSTORE_ENTRY_URL', 'appstore/internal?language={system_lang}&theme={system_theme}'),
 
-    // Doo 运行时驱动：ffi 继续加载官方 doo.so；opensource 为后续纯开源替代实现
-    'doo_driver' => env('DOO_DRIVER', 'ffi'),
-
-    // doo.so 动态库路径：容器内默认在 /usr/lib/doo/doo.so；本机直跑可改为项目内 runtime/doo/doo.so
-    'doo_library_path' => env('DOO_LIBRARY_PATH', '/usr/lib/doo/doo.so'),
-
-    // doo.so 初始化工作目录：容器内通常为 /var/www；本机直跑时默认使用项目根目录
-    'doo_work_path' => env('DOO_WORK_PATH', base_path()),
+    // Community runtime implementation. The open-source driver is the only
+    // supported default and does not require an external binary.
+    'runtime_driver' => env('RUNTIME_DRIVER', 'opensource'),
 
     // GnuPG 可执行文件路径；为空时自动从 PATH 和常见安装路径查找
     'gpg_binary' => env('GPG_BINARY'),

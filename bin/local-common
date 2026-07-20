@@ -50,9 +50,7 @@ normalize_local_env() {
     set_env_value LARAVELS_INOTIFY_RELOAD false
     set_env_value APPSTORE_INTERNAL_URL http://127.0.0.1:19080
     set_env_value 'APPSTORE_ENTRY_URL' 'http://127.0.0.1:19080/internal?language={system_lang}&theme={system_theme}'
-    set_env_value DOO_DRIVER opensource
-    set_env_value DOO_LIBRARY_PATH "${ROOT_DIR}/runtime/doo/doo.so"
-    set_env_value DOO_WORK_PATH "${ROOT_DIR}"
+    set_env_value RUNTIME_DRIVER opensource
 }
 
 prepare_local_env() {
@@ -63,16 +61,6 @@ prepare_local_env() {
     fi
 
     if grep -q '^APP_RUNTIME=local$' "${ROOT_DIR}/.env"; then
-        normalize_local_env
-        return
-    fi
-
-    if grep -Eq '^DB_HOST=mysql$|^REDIS_HOST=redis$|^LARAVELS_LISTEN_PORT=20000$' "${ROOT_DIR}/.env"; then
-        local backup_file="${ROOT_DIR}/.env.container.bak"
-        if [ ! -f "${backup_file}" ]; then
-            cp "${ROOT_DIR}/.env" "${backup_file}"
-        fi
-        cp "${ROOT_DIR}/.env.template" "${ROOT_DIR}/.env"
         normalize_local_env
         return
     fi
