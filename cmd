@@ -975,8 +975,8 @@ if [[ "$1" == "help" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]] || [[ $#
     exit 0
 fi
 
-# 非electron命令需要检查Docker环境
-if [[ "$1" != "electron" ]]; then
+# 非宿主机命令需要检查 Docker 环境；repassword 自己处理 mysql/docker fallback。
+if [[ "$1" != "electron" ]] && [[ "$1" != "repassword" ]]; then
     check_docker
     env_init
 fi
