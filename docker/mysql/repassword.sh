@@ -6,11 +6,11 @@
 #   ./repassword.sh [账号标识符] [自定义密码]
 #
 # 参数说明:
-#   [账号标识符]: 可选，可以是用户ID(纯数字)或邮箱地址。不提供时默认为第一个管理员用户，找不到管理员标记时回退第一个用户
+#   [账号标识符]: 可选，可以是用户ID(纯数字)或邮箱地址。不提供时默认为第一个管理员用户
 #   [自定义密码]: 可选，指定要设置的新密码。不提供时会自动生成随机密码
 #
 # 使用示例:
-#   ./repassword.sh                     # 重置第一个管理员用户密码(随机生成)，找不到管理员标记时回退第一个用户
+#   ./repassword.sh                     # 重置第一个管理员用户密码(随机生成)
 #   ./repassword.sh 123                 # 重置ID=123的用户密码(随机生成)
 #   ./repassword.sh user@example.com    # 重置邮箱为user@example.com的用户密码(随机生成)
 #   ./repassword.sh 123 newpass         # 重置ID=123的用户密码为"newpass"
@@ -56,22 +56,17 @@ md5_password=$(printf '%s:%s' "$new_password" "$new_encrypt" | md5sum | awk '{pr
 
 # 构建查询条件
 if [ -z "$account_identifier" ]; then
-    # 默认查询第一个管理员；没有管理员标记时回退第一个用户
+    # 默认查询第一个管理员
     admin_query=$(echo "SELECT userid FROM ${MYSQL_PREFIX}users WHERE identity LIKE '%,admin,%' ORDER BY userid LIMIT 1;" | mysql_cmd)
     identifier_value=$(echo "$admin_query" | sed -n '2p')
 
     if [ -z "$identifier_value" ]; then
-        first_user_query=$(echo "SELECT userid FROM ${MYSQL_PREFIX}users ORDER BY userid LIMIT 1;" | mysql_cmd)
-        identifier_value=$(echo "$first_user_query" | sed -n '2p')
-    fi
-
-    if [ -z "$identifier_value" ]; then
-        echo "${RedBG}错误：未找到用户！${Font}"
+        echo "${RedBG}错误：未找到管理员用户！${Font}"
         exit 1
     fi
 
     where_field="userid"
-    identifier_type="ID"
+    identifier_type="管理员ID"
 else
     # 检查是否为纯数字（ID）
     # 使用更兼容的 shell 语法检查是否为纯数字

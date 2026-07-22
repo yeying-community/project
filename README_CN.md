@@ -259,8 +259,32 @@ sudo ./scripts/ubuntu-deps.sh --install
 ## 常用运维命令
 
 ```bash
-./cmd repassword       # 重置管理员密码
-./cmd help              # 查看命令帮助
+./cmd repassword                  # 重置第一个管理员密码
+./cmd repassword 1                # 按用户 ID 重置密码
+./cmd repassword user@example.com # 按邮箱重置密码
+./cmd help                        # 查看命令帮助
+```
+
+无参数执行 `./cmd repassword` 时，只会查找 `identity` 包含 `admin` 标记的用户。若提示 `错误：未找到管理员用户！`，不要回退重置任意第一个用户，应先把明确的目标账号授予管理员身份。
+
+部署后需要获得第一个管理账号时，连接 `.env` 中配置的 MySQL 数据库，先确认目标用户，再写入管理员标记。若 `.env` 配置了 `DB_PREFIX`，请把下面的 `users` 替换成 `${DB_PREFIX}users`。
+
+```sql
+SELECT userid, email, identity FROM users ORDER BY userid LIMIT 10;
+UPDATE users
+SET identity = CASE
+    WHEN identity IS NULL OR identity = '' THEN ',admin,'
+    WHEN identity LIKE '%,admin,%' THEN identity
+    WHEN RIGHT(identity, 1) = ',' THEN CONCAT(identity, 'admin,')
+    ELSE CONCAT(identity, ',admin,')
+END
+WHERE userid = 1;
+```
+
+然后再显式按 ID 或邮箱重置该账号密码：
+
+```bash
+./cmd repassword 1
 ```
 
 生产升级前请先备份数据库和 `public/uploads`。升级、备份、systemd 自动启动和恢复流程详见 `docs/`。
