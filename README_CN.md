@@ -112,6 +112,14 @@ public/manifest.json
 ./scripts/package.sh
 ```
 
+不带参数时，脚本会从 `origin` 拉取远端 tag，在 `origin/main` 上创建下一个 patch 版本 tag（例如 `v0.0.1` -> `v0.0.2`），推送 tag，然后基于这个精确提交打包。如果最新 tag 已经指向 `origin/main`，则跳过打包。要按已有 tag 打包且不创建新 tag，可显式传入：
+
+```bash
+./scripts/package.sh v0.0.2
+```
+
+如需从其他远端打包，可设置 `PACKAGE_REMOTE=upstream`。脚本会在临时 Git worktree 中构建，避免污染当前工作区。
+
 脚本会依次执行：
 
 - `npm install`
@@ -129,6 +137,7 @@ output/project-v版本号-提交号.tar.gz
 
 - `.env`
 - `node_modules`
+- `package-lock.json`
 - Git 历史
 - 运行日志
 
