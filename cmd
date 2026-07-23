@@ -272,7 +272,20 @@ check_node() {
 
 # 获取容器名称
 docker_name() {
-    echo `$COMPOSE ps | awk '{print $1}' | grep "\-$1\-"`
+    local service=$1
+    local name=""
+
+    name="$($COMPOSE ps -q "$service" 2>/dev/null | head -n 1)"
+    if [ -n "$name" ]; then
+        echo "$name"
+        return
+    fi
+
+    name="$(docker ps -aq --filter "name=^/${service}$" | head -n 1)"
+    if [ -n "$name" ]; then
+        echo "$name"
+        return
+    fi
 }
 
 # 等待 php 容器健康（最多约 90s）

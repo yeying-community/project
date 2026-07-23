@@ -1,6 +1,6 @@
 services:
   redis:
-    container_name: "project-redis-${APP_ID}"
+    container_name: "redis"
     image: "redis:alpine"
     volumes:
       - redis_data:/data
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   mysql:
-    container_name: "project-mysql-${APP_ID}"
+    container_name: "mysql"
     image: "mysql:8.4"
     volumes:
       - ./docker/mysql/repassword.sh:/etc/mysql/repassword.sh
@@ -62,4 +62,4 @@ volumes:
   shared_data:
     name: "project-shared-data-${APP_ID}"
   redis_data:
-    name: "project-redis-data-${APP_ID}"
+    name: "redis-data"

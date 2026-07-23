@@ -21,7 +21,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 
 说明:
   命令使用 .env 中的 MySQL 配置，并要求本机安装 mysql 客户端。
-  旧容器场景必须显式设置 MYSQL_CONTAINER=容器名，不会自动猜测容器名。
+  容器场景必须显式设置 MYSQL_CONTAINER=mysql，不会自动猜测容器名。
 EOF
   exit 0
 fi
@@ -48,7 +48,7 @@ export MYSQL_PREFIX="$(env_value DB_PREFIX)"
 if ! command -v mysql >/dev/null 2>&1; then
   mysql_container="${MYSQL_CONTAINER:-}"
   [[ -n "$mysql_container" ]] || {
-    echo "未找到 mysql 客户端。请安装 mysql-client，或显式设置 MYSQL_CONTAINER=你的MySQL容器名 后重试。" >&2
+    echo "未找到 mysql 客户端。请安装 mysql-client，或显式设置 MYSQL_CONTAINER=mysql 后重试。" >&2
     exit 1
   }
 
