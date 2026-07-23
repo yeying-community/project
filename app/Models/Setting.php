@@ -522,7 +522,7 @@ class Setting extends AbstractModel
         }
         $ignoreAddr = Base::settingFind('emailSetting', 'ignore_addr');
         $ignoreAddr = explode("\n", $ignoreAddr);
-        $ignoreArray = ['admin@dootask.com', 'test@dootask.com'];
+        $ignoreArray = ['admin@yeying.com', 'test@dootask.com'];
         foreach ($ignoreAddr as $item) {
             if (Base::isEmail($item)) {
                 $ignoreArray[] = trim($item);

@@ -6,6 +6,7 @@ source "$(cd "$(dirname "$0")" && pwd)/local-common"
 
 require_php_runtime
 prepare_local_env
+require_local_env_config
 
 cd "${ROOT_DIR}"
 php ./bin/laravels stop

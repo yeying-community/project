@@ -24,6 +24,7 @@ fi
 
 composer install --no-dev --prefer-dist --optimize-autoloader
 php artisan migrate --force
+php artisan dootask:ensure-admin
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear

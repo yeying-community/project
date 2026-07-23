@@ -19,14 +19,6 @@ micro-app-body .app-view-loading {
 .app-view-loading[data-visible=false] > div {
     opacity: 0;
 }
-.app-view-loading > div > div {
-    color: #ccc;
-    margin: 0;
-    font: 11px verdana;
-    line-height: 16px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
 .app-view-loading > div > span {
     display: inline-block;
     vertical-align: middle;

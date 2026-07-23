@@ -17,7 +17,7 @@
 
                 <div class="login-title">{{welcomeTitle}}</div>
 
-                <div class="login-subtitle">{{$L(subTitle)}}</div>
+                <div class="login-subtitle">{{subTitle}}</div>
 
                 <transition name="login-mode">
                     <div v-if="loginMode=='qrcode'" class="login-qrcode" @click="qrcodeRefresh">
@@ -106,7 +106,7 @@
                                     </div>
                                 </Input>
 
-                                <Button :type="loginType=='reg' ? 'primary' : 'default'" :loading="loadIng > 0 || loginJump" size="large" long @click="onLogin">{{$L(loginText)}}</Button>
+                                <Button :type="loginType=='reg' ? 'primary' : 'default'" :loading="loadIng > 0 || loginJump" size="large" long @click="onLogin">{{loginText}}</Button>
                             </div>
                         </transition>
 
@@ -271,20 +271,19 @@ export default {
         subTitle() {
             const title = window.systemInfo.title || "夜莺";
             if (this.loginMode == 'qrcode') {
-                return this.$L(`请使用${title}移动端扫描二维码。`)
+                return this.$L('请使用(*)移动端扫描二维码。', title)
             }
             if (this.loginType=='reg') {
-                return this.$L(`输入您的信息以创建帐户。`)
+                return this.$L('输入您的信息以创建帐户。')
             }
-            return this.$L(`输入您的凭证以访问您的帐户。`)
+            return this.$L('输入您的凭证以访问您的帐户。')
         },
 
         loginText() {
-            let text = this.loginType == 'login' ? '登录' : '注册';
             if (this.loginJump) {
-                text += "成功..."
+                return this.loginType == 'login' ? this.$L('登录成功...') : this.$L('注册成功')
             }
-            return text
+            return this.loginType == 'login' ? this.$L('登录') : this.$L('注册')
         },
 
         qrcodeUrl() {
@@ -440,7 +439,7 @@ export default {
                     networkFailureRetry: false
                 }).then(async ({data}) => {
                     if (typeof data.server_version === "undefined" && typeof data.all_group_mute === "undefined") {
-                        reject(`服务器（${$A.getDomain(value)}）版本过低`)
+                        reject(this.$L('服务器（(*)）版本过低', $A.getDomain(value)))
                     } else {
                         await this.setServerUrl(url)
                         resolve()
@@ -451,7 +450,7 @@ export default {
                             this.inputServerChack(`http://${value}`).then(resolve).catch(reject);
                             return;
                         }
-                        msg = "服务器地址无效";
+                        msg = this.$L('网络连接失败，请检查网络设置。');
                     }
                     reject(msg)
                 });
@@ -462,7 +461,7 @@ export default {
             return new Promise((resolve, reject) => {
                 if (this.isNotServer()) {
                     this.inputServerUrl()
-                    tip === true && this.$nextTick(_ => $A.messageWarning("请设置服务器"))
+                    tip === true && this.$nextTick(_ => $A.messageWarning("请输入服务器地址"))
                     reject()
                 } else {
                     resolve()
@@ -526,7 +525,7 @@ export default {
             this.walletLoading = true;
             try {
                 const provider = await getProvider({preferYeYing: true, timeoutMs: 3000});
-                if (!provider) throw new Error('未检测到夜莺钱包，请先安装并解锁钱包插件');
+                if (!provider) throw new Error(this.$L('未检测到夜莺钱包，请先安装并解锁钱包插件'));
                 let address = '';
                 let walletProfile = {};
                 try {
@@ -540,13 +539,13 @@ export default {
                     const accounts = await requestAccounts({provider});
                     address = accounts[0];
                 }
-                if (!address) throw new Error('钱包未返回可用账号');
+                if (!address) throw new Error(this.$L('钱包未返回可用账号'));
                 const challengeResponse = await fetch(`${window.location.origin}/api/public/auth/challenge`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({address}),
                 });
                 const challengePayload = await challengeResponse.json();
-                if (challengePayload.ret !== 1) throw new Error(challengePayload.msg || '获取钱包登录挑战失败');
+                if (challengePayload.ret !== 1) throw new Error(challengePayload.msg || this.$L('获取钱包登录挑战失败'));
                 const signature = await signMessage({provider, address, message: challengePayload.data.challenge});
                 const verifyResponse = await fetch(`${window.location.origin}/api/public/auth/verify`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -557,14 +556,14 @@ export default {
                     await this.completeWalletEmail(verifyPayload.data.setup_token, walletProfile);
                     return;
                 }
-                if (verifyPayload.ret !== 1 || !verifyPayload.data?.token) throw new Error(verifyPayload.msg || '钱包登录失败');
+                if (verifyPayload.ret !== 1 || !verifyPayload.data?.token) throw new Error(verifyPayload.msg || this.$L('钱包登录失败'));
                 const result = verifyPayload.data;
                 const response = await fetch(`${window.location.origin}/api/users/info`, {
                     headers: {'dootask-token': result.token},
                 });
                 const payload = await response.json();
                 if (!response.ok || !payload.data) {
-                    throw new Error('钱包登录成功，但用户信息获取失败');
+                    throw new Error(this.$L('钱包登录成功，但用户信息获取失败'));
                 }
                 await this.$store.dispatch('handleClearCache', Object.assign({}, payload.data, {token: result.token}));
                 this.goNext();
@@ -597,7 +596,7 @@ export default {
                                 setup_token: setupToken,
                             }),
                         }).then(response => response.json()).then(payload => {
-                            if (payload.ret !== 1) throw new Error(payload.msg || '邮箱设置失败');
+                            if (payload.ret !== 1) throw new Error(payload.msg || this.$L('邮箱设置失败'));
                             $A.modalWarning('验证邮件已发送，请完成邮箱验证后再使用钱包登录');
                             resolve();
                         });

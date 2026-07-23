@@ -3,11 +3,6 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-LOCAL_COMPOSE_FILE="${ROOT_DIR}/docker-compose.local.yml"
-
-compose_local() {
-    docker compose -f "${LOCAL_COMPOSE_FILE}" "$@"
-}
 
 require_cmd() {
     local cmd="$1"
@@ -22,52 +17,103 @@ require_php_runtime() {
     require_cmd composer
 }
 
-set_env_value() {
+env_config_value() {
     local key="$1"
-    local value="$2"
     local env_file="${ROOT_DIR}/.env"
+    local line
 
-    if grep -q "^${key}=" "${env_file}"; then
-        perl -0pi -e "s#^${key}=.*#${key}=${value}#m" "${env_file}"
-    else
-        printf '\n%s=%s\n' "${key}" "${value}" >> "${env_file}"
-    fi
-}
-
-normalize_local_env() {
-    local env_file="${ROOT_DIR}/.env"
-    [ -f "${env_file}" ] || return
-
-    set_env_value APP_RUNTIME local
-    set_env_value APP_URL http://127.0.0.1:2222
-    set_env_value DB_HOST 127.0.0.1
-    set_env_value DB_PORT 23306
-    set_env_value REDIS_HOST 127.0.0.1
-    set_env_value REDIS_PORT 26379
-    set_env_value REDIS_CLIENT predis
-    set_env_value LARAVELS_LISTEN_IP 127.0.0.1
-    set_env_value LARAVELS_LISTEN_PORT 2222
-    set_env_value LARAVELS_INOTIFY_RELOAD false
-    set_env_value APPSTORE_INTERNAL_URL http://127.0.0.1:19080
-    set_env_value 'APPSTORE_ENTRY_URL' 'http://127.0.0.1:19080/internal?language={system_lang}&theme={system_theme}'
-    set_env_value RUNTIME_DRIVER opensource
+    line="$(grep -E "^${key}=" "${env_file}" | tail -n 1 || true)"
+    printf '%s' "${line#*=}" | tr -d '\r'
 }
 
 prepare_local_env() {
     if [ ! -f "${ROOT_DIR}/.env" ]; then
         cp "${ROOT_DIR}/.env.template" "${ROOT_DIR}/.env"
-        normalize_local_env
-        return
+        echo "Created .env from .env.template. Review the DB/Redis settings before starting." >&2
+    fi
+}
+
+require_local_env_config() {
+    local env_file="${ROOT_DIR}/.env"
+    local missing=()
+    local empty=()
+    local required_keys=(
+        APP_RUNTIME
+        APP_URL
+        DB_CONNECTION
+        DB_HOST
+        DB_PORT
+        DB_DATABASE
+        DB_USERNAME
+        DB_PASSWORD
+        REDIS_HOST
+        REDIS_PORT
+        REDIS_CLIENT
+        LARAVELS_LISTEN_IP
+        LARAVELS_LISTEN_PORT
+        RUNTIME_DRIVER
+    )
+    local non_empty_keys=(
+        APP_RUNTIME
+        APP_URL
+        DB_CONNECTION
+        DB_HOST
+        DB_PORT
+        DB_DATABASE
+        DB_USERNAME
+        REDIS_HOST
+        REDIS_PORT
+        REDIS_CLIENT
+        LARAVELS_LISTEN_IP
+        LARAVELS_LISTEN_PORT
+        RUNTIME_DRIVER
+    )
+    local key
+
+    for key in "${required_keys[@]}"; do
+        if ! grep -q "^${key}=" "${env_file}"; then
+            missing+=("${key}")
+        fi
+    done
+
+    for key in "${non_empty_keys[@]}"; do
+        if grep -q "^${key}=" "${env_file}" && [ -z "$(env_config_value "${key}")" ]; then
+            empty+=("${key}")
+        fi
+    done
+
+    if [ "${#missing[@]}" -gt 0 ] || [ "${#empty[@]}" -gt 0 ]; then
+        if [ "${#missing[@]}" -gt 0 ]; then
+            echo ".env is missing required settings: ${missing[*]}" >&2
+        fi
+        if [ "${#empty[@]}" -gt 0 ]; then
+            echo ".env has empty required settings: ${empty[*]}" >&2
+        fi
+        echo "Fill these values in .env, then rerun the command." >&2
+        exit 1
     fi
 
-    if grep -q '^APP_RUNTIME=local$' "${ROOT_DIR}/.env"; then
-        normalize_local_env
-        return
+    if [ "$(env_config_value APP_RUNTIME)" != "local" ]; then
+        echo "./cmd local-* commands require APP_RUNTIME=local in .env." >&2
+        exit 1
+    fi
+}
+
+require_local_database_ready() {
+    local status_output=""
+
+    cd "${ROOT_DIR}"
+    if ! status_output="$(php artisan migrate:status --no-interaction 2>&1)"; then
+        echo "Local database is not ready. Run ./cmd local-install after checking .env DB settings." >&2
+        printf '%s\n' "$status_output" >&2
+        exit 1
     fi
 
-    echo ".env already exists and is not marked with APP_RUNTIME=local." >&2
-    echo "Please review the current .env, then merge .env.template into it." >&2
-    exit 1
+    if printf '%s\n' "$status_output" | grep -qE 'Migration table not found|Pending'; then
+        echo "Local database has not been initialized or has pending migrations." >&2
+        echo "Run ./cmd local-install before ./cmd local-start." >&2
+        exit 1
+    fi
 }
 
 prepare_runtime_dirs() {

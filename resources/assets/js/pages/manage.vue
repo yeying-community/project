@@ -225,9 +225,7 @@
                             </div>
                         </li>
                         <li v-if="projectKeyLoading > 0 || departmentOwnerProjectsRefreshing" class="loading"><Loading/></li>
-                        <li v-else-if="projectLists.length === 0" class="nothing">
-                            {{$L(projectKeyValue ? `没有任何与"${projectKeyValue}"相关的结果` : `没有任何项目`)}}
-                        </li>
+                        <li v-else-if="projectLists.length === 0" class="nothing">{{projectEmptyText}}</li>
                     </Draggable>
                 </div>
             </Scrollbar>
@@ -262,7 +260,7 @@
                     <Icon v-else type="ios-search" />
                 </div>
                 <Form class="search-form" action="javascript:void(0)" @submit.native.prevent="$A.eeuiAppKeyboardHide">
-                    <Input type="search" v-model="projectKeyValue" :placeholder="$L(`共${projectTotal || cacheProjects.length}个项目，搜索...`)" clearable/>
+                    <Input type="search" v-model="projectKeyValue" :placeholder="projectSearchPlaceholder" clearable/>
                 </Form>
             </div>
             <ButtonGroup class="manage-box-new-group">
@@ -535,7 +533,7 @@ export default {
             addRule: {
                 name: [
                     { required: true, message: this.$L('请填写项目名称！'), trigger: 'change' },
-                    { type: 'string', min: 2, message: this.$L('项目名称至少2个字！'), trigger: 'change' }
+                    { type: 'string', min: 2, message: this.$L('项目名称至少(*)个字！', 2), trigger: 'change' }
                 ]
             },
 
@@ -756,7 +754,7 @@ export default {
                 } else if (todoNum === 1) {
                     todoNum = ""
                 }
-                return `${this.$L("待办")}${todoNum}`
+                return this.$L('待办') + todoNum
             }
             return null;
         },
@@ -899,6 +897,17 @@ export default {
                 return this.projectBaseLists;
             }
             return this.projectBaseLists.filter(item => this.ownerProjectTab === 'readonly' ? item.department_readonly : !item.department_readonly);
+        },
+
+        projectEmptyText() {
+            if (this.projectKeyValue) {
+                return this.$L('没有任何与"(*)"相关的结果', this.projectKeyValue);
+            }
+            return this.$L('没有任何项目');
+        },
+
+        projectSearchPlaceholder() {
+            return this.$L('共(*)个项目，搜索...', this.projectTotal || this.cacheProjects.length);
         },
 
         /**

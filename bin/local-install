@@ -4,13 +4,11 @@ set -euo pipefail
 
 source "$(cd "$(dirname "$0")" && pwd)/local-common"
 
-require_cmd docker
 require_php_runtime
 
 prepare_local_env
+require_local_env_config
 prepare_runtime_dirs
-
-compose_local up -d mysql redis appstore
 
 cd "${ROOT_DIR}"
 

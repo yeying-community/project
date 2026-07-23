@@ -93,6 +93,7 @@ msg() {
             "终止卸载。") out="Uninstall aborted." ;;
             "卸载完成") out="Uninstall complete" ;;
             "修改成功") out="Changed successfully" ;;
+            "确保管理员账号") out="Ensure administrator account" ;;
         esac
     fi
     # 动态值：依次把 (*) 替换为参数
@@ -271,7 +272,20 @@ check_node() {
 
 # 获取容器名称
 docker_name() {
-    echo `$COMPOSE ps | awk '{print $1}' | grep "\-$1\-"`
+    local service=$1
+    local name=""
+
+    name="$($COMPOSE ps -q "$service" 2>/dev/null | head -n 1)"
+    if [ -n "$name" ]; then
+        echo "$name"
+        return
+    fi
+
+    name="$(docker ps -aq --filter "name=^/${service}$" | head -n 1)"
+    if [ -n "$name" ]; then
+        echo "$name"
+        return
+    fi
 }
 
 # 等待 php 容器健康（最多约 90s）
@@ -591,23 +605,19 @@ Project 管理脚本
   url <地址>                  修改访问地址
   env <键> <值>               设置环境变量
   debug [true|false]          切换调试模式
+  ensure-admin [参数]          确保存在管理员账号
   repassword [用户名]         重置数据库密码
 
 🚀 开发构建:
   serve, dev                  启动开发模式
   build, prod                 生产环境构建
   electron                    构建桌面应用
-  local-install               初始化本机开发环境（应用本机运行，中间件走容器）
-  local-up                    启动本机开发依赖容器（MySQL/Redis/AppStore）
-  local-down                  停止本机开发依赖容器
+  local-install               初始化本机开发环境（应用本机运行，中间件需自行配置）
   local-start                 在宿主机启动 LaravelS
   local-stop                  停止宿主机 LaravelS
 
 🔧 服务管理:
-  up [服务名]                 启动容器
-  down [服务名]               停止容器
-  restart [服务名]            重启容器
-  reup                        重新构建并启动
+  up/down/restart/reup        旧容器应用模式已停用
 
 💾 数据库操作:
   mysql backup                备份数据库
@@ -627,6 +637,7 @@ Project 管理脚本
   ./cmd install --port 8080   安装并指定端口 8080
   ./cmd update --branch dev   切换到 dev 分支并更新
   ./cmd mysql backup          备份数据库
+  ./cmd ensure-admin          创建或修复默认管理员
   ./cmd artisan migrate       执行数据库迁移
   ./cmd local-install         初始化本机开发环境
 EOF
@@ -646,23 +657,19 @@ Usage: ./cmd <command> [options]
   url <address>               Change access URL
   env <key> <value>           Set environment variable
   debug [true|false]          Toggle debug mode
+  ensure-admin [options]      Ensure an administrator account exists
   repassword [username]       Reset database password
 
 🚀 Build:
   serve, dev                  Start dev mode
   build, prod                 Production build
   electron                    Build desktop app
-  local-install               Prepare local dev mode (app on host, middleware in containers)
-  local-up                    Start local dev dependencies (MySQL/Redis/AppStore)
-  local-down                  Stop local dev dependencies
+  local-install               Prepare local dev mode (app on host, middleware configured externally)
   local-start                 Start LaravelS on the host
   local-stop                  Stop LaravelS on the host
 
 🔧 Services:
-  up [service]                Start containers
-  down [service]              Stop containers
-  restart [service]           Restart containers
-  reup                        Rebuild and start
+  up/down/restart/reup        Legacy container app mode is disabled
 
 💾 Database:
   mysql backup                Back up database
@@ -682,6 +689,7 @@ Examples:
   ./cmd install --port 8080   Install on port 8080
   ./cmd update --branch dev   Switch to dev branch and update
   ./cmd mysql backup          Back up database
+  ./cmd ensure-admin          Create or repair the default administrator
   ./cmd artisan migrate       Run database migration
   ./cmd local-install         Prepare local dev mode
 EOF
@@ -975,8 +983,15 @@ if [[ "$1" == "help" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]] || [[ $#
     exit 0
 fi
 
-# 非electron命令需要检查Docker环境
-if [[ "$1" != "electron" ]]; then
+# 非宿主机命令需要检查 Docker 环境；repassword 自己检查 mysql 客户端，本机直跑命令不需要 Docker。
+if [[ "$1" != "electron" ]] \
+    && [[ "$1" != "repassword" ]] \
+    && [[ "$1" != "ensure-admin" ]] \
+    && [[ "$1" != "local-install" ]] \
+    && [[ "$1" != "local-up" ]] \
+    && [[ "$1" != "local-down" ]] \
+    && [[ "$1" != "local-start" ]] \
+    && [[ "$1" != "local-stop" ]]; then
     check_docker
     env_init
 fi
@@ -1020,6 +1035,10 @@ case "$1" in
     "repassword")
         shift 1
         exec "${WORK_DIR}/scripts/repassword.sh" "$@"
+        ;;
+    "ensure-admin")
+        shift 1
+        php artisan dootask:ensure-admin "$@"
         ;;
     "serve"|"dev")
         shift 1
@@ -1126,20 +1145,20 @@ case "$1" in
         container_exec php "php artisan ide-helper:models -W"
         ;;
     "restart")
-        error "./cmd restart 已停用。生产应用请使用 scripts/starter.sh restart；本地中间件请使用 ./cmd local-up。"
+        error "./cmd restart 已停用。生产应用请使用 scripts/starter.sh restart；本地中间件请在项目外自行管理。"
         exit 1
         ;;
     "reup")
-        error "./cmd reup 已停用。生产应用请使用 scripts/package.sh 和 scripts/starter.sh；本地中间件请使用 ./cmd local-up。"
+        error "./cmd reup 已停用。生产应用请使用 scripts/package.sh 和 scripts/starter.sh；本地中间件请在项目外自行管理。"
         exit 1
         ;;
     "down")
-        error "./cmd down 已停用。生产应用请使用 scripts/starter.sh stop；本地中间件请使用 ./cmd local-down。"
+        error "./cmd down 已停用。生产应用请使用 scripts/starter.sh stop；本地中间件请在项目外自行管理。"
         exit 1
         ;;
     "up")
         shift 1
-        error "./cmd up 仅属于旧容器应用模式，已停用。生产应用请使用 scripts/starter.sh；本地中间件请使用 ./cmd local-up。"
+        error "./cmd up 仅属于旧容器应用模式，已停用。生产应用请使用 scripts/starter.sh；本地中间件请在项目外自行管理。"
         exit 1
         ;;
     "local-install")

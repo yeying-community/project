@@ -6,6 +6,8 @@ source "$(cd "$(dirname "$0")" && pwd)/local-common"
 
 require_php_runtime
 prepare_local_env
+require_local_env_config
+require_local_database_ready
 prepare_runtime_dirs
 
 cd "${ROOT_DIR}"

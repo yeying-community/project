@@ -11,7 +11,7 @@
 
 ## 本地开发
 
-本地开发模式下，PHP/LaravelS 在宿主机运行，MySQL、Redis、Manticore 等中间件通过 Docker 容器运行。Node.js/npm 只用于前端开发和构建，不参与 PHP 服务运行。
+本地开发模式下，PHP/LaravelS 在宿主机运行。MySQL、Redis、Manticore、AppStore 等通用中间件由你在项目外统一管理，项目命令不会启动或停止这些容器。Node.js/npm 只用于前端开发和构建，不参与 PHP 服务运行。
 
 ### 环境要求
 
@@ -20,32 +20,39 @@
 - PHP Swoole 扩展
 - Composer
 - Node.js 20+ 和 npm
-- Docker 20.10+、Docker Compose v2+
+- 可从宿主机访问的 MySQL 8.4 和 Redis
+- Manticore、AppStore 按需单独部署
 
 ### 初始化本地环境
 
-在项目根目录执行：
+先准备 `.env` 并确认数据库、Redis 等连接配置指向你已经启动的通用中间件：
+
+```bash
+cp .env.template .env
+```
+
+至少检查这些配置：
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=project
+DB_USERNAME=project
+DB_PASSWORD=123456
+
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_CLIENT=predis
+```
+
+然后在项目根目录执行：
 
 ```bash
 ./cmd local-install
 ```
 
-该命令用于初始化本地 `.env`、PHP 依赖和运行目录，不会把 PHP 服务放进容器。
-
-### 启动本地中间件
-
-```bash
-./cmd local-up
-```
-
-默认使用的本地中间件端口包括：
-
-```text
-MySQL      127.0.0.1:23306
-Redis      127.0.0.1:26379
-Manticore  127.0.0.1:9306
-AppStore   127.0.0.1:19080（如已部署）
-```
+该命令用于初始化本地 `.env`、PHP 依赖、运行目录并执行迁移。它只检查必要配置项是否存在，不会自动修正 `.env`，也不会启动 MySQL、Redis 或其他中间件；如果配置错误或服务未启动，命令会在连接数据库时直接报错。
 
 ### 启动本地 PHP 服务
 
@@ -89,12 +96,6 @@ npm run build
 ```text
 public/js/build/
 public/manifest.json
-```
-
-停止本地中间件：
-
-```bash
-./cmd local-down
 ```
 
 ## 生产部署
@@ -202,7 +203,7 @@ LARAVELS_LISTEN_PORT=2222
 RUNTIME_DRIVER=opensource
 ```
 
-宿主机运行时请将 `DB_HOST`、`DB_PORT`、`REDIS_HOST` 和 `REDIS_PORT` 配置为宿主机可访问的实际地址。模板已经按本地中间件暴露端口填写默认值，生产环境请替换为实际数据库和 Redis 地址。
+宿主机运行时请将 `DB_HOST`、`DB_PORT`、`REDIS_HOST` 和 `REDIS_PORT` 配置为宿主机可访问的实际地址。项目不会代为启动 MySQL、Redis 或其他通用中间件。
 
 不要把生产 `.env` 提交到 Git。生产 SMTP 邮箱在管理员后台的系统邮箱设置中配置，不写入 README 或源码。
 
@@ -218,6 +219,7 @@ RUNTIME_DRIVER=opensource
 - 创建 Laravel 可写目录
 - 安装生产 Composer 依赖
 - 执行数据库迁移
+- 确保存在默认管理员账号（无管理员时创建/修复 `admin@yeying.com` 并输出初始密码）
 - 清理配置、路由和视图缓存
 - 修复 `storage` 和 `bootstrap/cache` 权限
 
@@ -259,8 +261,21 @@ sudo ./scripts/ubuntu-deps.sh --install
 ## 常用运维命令
 
 ```bash
-./cmd repassword       # 重置管理员密码
-./cmd help              # 查看命令帮助
+./cmd repassword                  # 重置第一个管理员密码
+./cmd repassword 1                # 按用户 ID 重置密码
+./cmd repassword user@example.com # 按邮箱重置密码
+./cmd ensure-admin                # 无管理员时创建/修复默认管理员
+./cmd help                        # 查看命令帮助
+```
+
+无参数执行 `./cmd repassword` 时，只会查找 `identity` 包含 `admin` 标记的用户。若提示 `错误：未找到管理员用户！`，不要回退重置任意第一个用户，应先把明确的目标账号授予管理员身份。
+
+`./cmd repassword` 使用 `.env` 中的 MySQL 连接配置，并要求本机安装 `mysql` 客户端。Ubuntu 可通过 `scripts/ubuntu-deps.sh --install` 安装。命令不会猜测旧项目容器名；容器场景需要显式设置 `MYSQL_CONTAINER=mysql`。
+
+部署后需要获得第一个管理账号时，执行下面命令即可；若系统已存在管理员，命令只会输出已有管理员，不修改密码。若没有管理员，命令会创建/修复 `admin@yeying.com`，输出初始密码，并强制首次登录后修改密码。
+
+```bash
+./cmd ensure-admin
 ```
 
 生产升级前请先备份数据库和 `public/uploads`。升级、备份、systemd 自动启动和恢复流程详见 `docs/`。

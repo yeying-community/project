@@ -19,7 +19,7 @@ negative:
   - 普通用户即使是部门负责人也不是系统管理员，看不到管理后台
   - 仅靠改前端路由地址访问 /manage 不能绕过权限，后端 API 全部拦截
   - 超级管理员（id=1）专属菜单连普通系统管理员也看不到
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 进不了管理员区
@@ -39,7 +39,7 @@ DooTask 后台访问分两级：
 1. 让现任系统管理员进「团队管理 → 成员」找到你，给你勾上「管理员」标识
 2. 你刷新页面或重新登录后，头像下拉会出现「系统设置」「管理后台」
 3. 若该功能只对超级管理员开放（如重置 license），只能由 id=1 的账号操作
-4. 全公司没人记得管理员账号 → 用根账号到容器内执行 `./cmd artisan dootask:reset-admin` 重置（需服务器权限）
+4. 全公司没人记得管理员账号 → 用服务器账号进入项目目录执行 `./cmd ensure-admin`；已有管理员时再用 `./cmd repassword` 重置密码
 
 参考 [[role-permission.grant-admin.howto]]，权限规则见 [[role-permission.admin.concept]] / [[role-permission.super-admin.concept]]。
 

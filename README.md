@@ -6,7 +6,7 @@ YeYing is an open source task and project management system based on Laravel, La
 
 ## Local Development
 
-In local development, PHP/LaravelS runs directly on the host. MySQL, Redis, Manticore and other middleware run in Docker containers. Node.js/npm is only needed for frontend development and builds.
+In local development, PHP/LaravelS runs directly on the host. MySQL, Redis, Manticore, AppStore and other shared middleware are managed outside this project; project commands do not start or stop those containers. Node.js/npm is only needed for frontend development and builds.
 
 ### Requirements
 
@@ -14,15 +14,36 @@ In local development, PHP/LaravelS runs directly on the host. MySQL, Redis, Mant
 - PHP 8.4 with Swoole
 - Composer
 - Node.js 20+ and npm
-- Docker 20.10+ and Docker Compose v2+
+- MySQL 8.4 and Redis reachable from the host
+- Manticore and AppStore deployed separately when needed
 
 ### Initialize and start
 
-Run from the project root:
+Create `.env` and point the database and Redis settings at your existing shared middleware:
+
+```bash
+cp .env.template .env
+```
+
+At minimum review:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=project
+DB_USERNAME=project
+DB_PASSWORD=123456
+
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_CLIENT=predis
+```
+
+Then run from the project root:
 
 ```bash
 ./cmd local-install
-./cmd local-up
 ./cmd local-start
 ```
 
@@ -32,20 +53,12 @@ Open:
 http://127.0.0.1:2222
 ```
 
-Default local middleware endpoints:
+`./cmd local-install` initializes `.env`, PHP dependencies and runtime directories, then runs migrations. It only checks that required settings exist; it does not rewrite `.env` and does not start MySQL, Redis or other middleware. If a value is wrong or a service is unavailable, the command fails when the application connects to that service.
 
-```text
-MySQL      127.0.0.1:23306
-Redis      127.0.0.1:26379
-Manticore  127.0.0.1:9306
-AppStore   127.0.0.1:19080 (if deployed)
-```
-
-Stop the host service and middleware:
+Stop the host service:
 
 ```bash
 ./cmd local-stop
-./cmd local-down
 ```
 
 Run the frontend development server separately when needed:
@@ -105,7 +118,7 @@ LARAVELS_LISTEN_IP=127.0.0.1
 LARAVELS_LISTEN_PORT=2222
 ```
 
-When LaravelS runs on the host, configure `DB_HOST`, `DB_PORT`, `REDIS_HOST` and `REDIS_PORT` with addresses reachable from the host. For local development, the template uses the ports exposed by the local middleware services; for production, use the actual database and Redis endpoints.
+When LaravelS runs on the host, configure `DB_HOST`, `DB_PORT`, `REDIS_HOST` and `REDIS_PORT` with addresses reachable from the host. The project does not start MySQL, Redis or other shared middleware for you.
 
 ### 4. Start and manage
 
@@ -123,9 +136,24 @@ Use Caddy or Nginx in front of LaravelS for HTTPS, WebSocket forwarding, upload 
 ## Operations
 
 ```bash
-./cmd repassword
+./cmd repassword                 # Reset the first admin user's password
+./cmd repassword 1               # Reset by user ID
+./cmd repassword user@example.com # Reset by email
+./cmd ensure-admin               # Create or repair the default admin if none exists
 ./cmd help
 ```
+
+`./cmd repassword` without arguments only targets users whose `identity` contains the `admin` marker. If it prints `错误：未找到管理员用户！`, do not reset an arbitrary first user. Grant administrator identity to the intended account first.
+
+`./cmd repassword` uses the MySQL connection in `.env` and requires a local `mysql` client. On Ubuntu, `scripts/ubuntu-deps.sh --install` installs it. The command never guesses old project container names; container usage requires an explicit `MYSQL_CONTAINER=mysql`.
+
+`./scripts/install.sh` automatically runs the admin bootstrap after migrations. If you need to repair an existing deployment, run:
+
+```bash
+./cmd ensure-admin
+```
+
+If an administrator already exists, the command prints it and leaves passwords unchanged. If no administrator exists, it creates or repairs `admin@yeying.com`, prints a one-time initial password, and requires password change on first login.
 
 Back up MySQL, `public/uploads` and production configuration before upgrades. See `docs/` for the deployment, backup and recovery details.
 

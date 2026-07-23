@@ -4,10 +4,6 @@ set -euo pipefail
 
 source "$(cd "$(dirname "$0")" && pwd)/local-common"
 
-require_cmd docker
-
-compose_local up -d mysql redis appstore
-echo "Local dependencies are running:"
-echo "  MySQL    -> 127.0.0.1:23306"
-echo "  Redis    -> 127.0.0.1:26379"
-echo "  AppStore -> http://127.0.0.1:19080"
+echo "./cmd local-up no longer starts MySQL/Redis/AppStore containers." >&2
+echo "Start shared middleware outside this project and configure .env instead." >&2
+exit 1

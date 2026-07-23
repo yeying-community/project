@@ -189,11 +189,10 @@ export default {
         },
 
         dashboardHello({systemConfig, userInfo}) {
-            let hello = '欢迎您，{username}';
-            if (systemConfig.system_welcome) {
-                hello = systemConfig.system_welcome
+            if (!systemConfig.system_welcome) {
+                return this.$L('欢迎您，(*)', userInfo.nickname)
             }
-            return this.$L(hello.replace(/\{username}/g, userInfo.nickname))
+            return this.$L(systemConfig.system_welcome.replace(/\{username}/g, userInfo.nickname))
         }
     },
 

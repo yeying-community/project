@@ -26,7 +26,7 @@ class UsersTableSeeder extends Seeder
                 'userid' => 1,
                 'identity' => ',admin,',
                 'az' => 'A',
-                'email' => 'admin@dootask.com',
+                'email' => 'admin@yeying.com',
                 'nickname' => '',
                 'profession' => '管理员',
                 'userimg' => '',

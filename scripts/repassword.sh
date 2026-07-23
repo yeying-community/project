@@ -4,7 +4,25 @@ set -euo pipefail
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-  sed -n '1,24p' "$root_dir/docker/mysql/repassword.sh"
+  cat <<'EOF'
+使用方法:
+  ./cmd repassword [账号标识符] [自定义密码]
+
+参数说明:
+  [账号标识符]: 可选，可以是用户ID(纯数字)或邮箱地址。不提供时默认为第一个 identity 包含 admin 的管理员用户
+  [自定义密码]: 可选，指定要设置的新密码。不提供时会自动生成随机密码
+
+使用示例:
+  ./cmd repassword
+  ./cmd repassword 123
+  ./cmd repassword user@example.com
+  ./cmd repassword 123 newpass
+  ./cmd repassword user@example.com newpass
+
+说明:
+  命令使用 .env 中的 MySQL 配置，并要求本机安装 mysql 客户端。
+  容器场景必须显式设置 MYSQL_CONTAINER=mysql，不会自动猜测容器名。
+EOF
   exit 0
 fi
 
@@ -28,28 +46,25 @@ export MYSQL_PREFIX="$(env_value DB_PREFIX)"
 : "${MYSQL_PREFIX:=}"
 
 if ! command -v mysql >/dev/null 2>&1; then
-  command -v docker >/dev/null 2>&1 || {
-    echo "需要 mysql 客户端或 Docker。Ubuntu 可执行 scripts/ubuntu-deps.sh --install，或安装 Docker。" >&2
+  mysql_container="${MYSQL_CONTAINER:-}"
+  [[ -n "$mysql_container" ]] || {
+    echo "未找到 mysql 客户端。请安装 mysql-client，或显式设置 MYSQL_CONTAINER=mysql 后重试。" >&2
     exit 1
   }
 
-  mysql_container="${MYSQL_CONTAINER:-}"
-  if [[ -z "$mysql_container" ]]; then
-    for candidate in project-local-mysql mysql "project-mysql-${APP_ID:-}"; do
-      if [[ -n "$candidate" ]] && docker inspect "$candidate" >/dev/null 2>&1; then
-        mysql_container="$candidate"
-        break
-      fi
-    done
-  fi
-  [[ -n "$mysql_container" ]] || {
-    echo "未找到 MySQL 客户端，也未找到运行中的 MySQL 容器。可设置 MYSQL_CONTAINER 指定容器名称。" >&2
+  command -v docker >/dev/null 2>&1 || {
+    echo "已设置 MYSQL_CONTAINER=$mysql_container，但未找到 Docker 命令。" >&2
     exit 1
   }
+  if [[ "$(docker inspect -f '{{.State.Running}}' "$mysql_container" 2>/dev/null || true)" != "true" ]]; then
+    echo "MYSQL_CONTAINER 指定的容器不存在或未运行: $mysql_container" >&2
+    exit 1
+  fi
+
   export MYSQL_CONTAINER="$mysql_container"
   export MYSQL_HOST=127.0.0.1
   export MYSQL_PORT=3306
-  echo "未找到 mysql 客户端，改用 Docker 容器: $MYSQL_CONTAINER" >&2
+  echo "未找到本机 mysql 客户端，按 MYSQL_CONTAINER 使用 Docker 容器: $MYSQL_CONTAINER" >&2
 fi
 
 exec sh "$root_dir/docker/mysql/repassword.sh" "$@"
