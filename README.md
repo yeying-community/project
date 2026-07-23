@@ -85,9 +85,15 @@ Run on the build machine:
 ./scripts/package.sh
 ```
 
-The script installs frontend dependencies, builds static assets, installs production Composer dependencies and writes the package to `output/`.
+Without arguments, the script fetches remote tags from `origin`, creates the next patch tag on `origin/main` (for example `v0.0.1` -> `v0.0.2`), pushes the tag, then packages that exact commit. If the latest tag already points to `origin/main`, packaging is skipped. To package an existing tag without creating a new one, pass it explicitly:
 
-The package excludes `.env`, `node_modules`, Git history and runtime logs.
+```bash
+./scripts/package.sh v0.0.2
+```
+
+Set `PACKAGE_REMOTE=upstream` to package from another remote. The script builds in a temporary Git worktree, installs frontend dependencies, builds static assets, installs production Composer dependencies and writes the package to `output/`.
+
+The package excludes `.env`, `node_modules`, `package-lock.json`, Git history and runtime logs.
 
 ### 2. Install Ubuntu dependencies
 
