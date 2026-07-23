@@ -270,6 +270,8 @@ sudo ./scripts/ubuntu-deps.sh --install
 
 无参数执行 `./cmd repassword` 时，只会查找 `identity` 包含 `admin` 标记的用户。若提示 `错误：未找到管理员用户！`，不要回退重置任意第一个用户，应先把明确的目标账号授予管理员身份。
 
+`./cmd repassword` 使用 `.env` 中的 MySQL 连接配置，并要求本机安装 `mysql` 客户端。Ubuntu 可通过 `scripts/ubuntu-deps.sh --install` 安装。命令不会猜测 `project-local-mysql` 等项目本地容器名；旧容器场景需要显式设置 `MYSQL_CONTAINER=容器名`。
+
 部署后需要获得第一个管理账号时，执行下面命令即可；若系统已存在管理员，命令只会输出已有管理员，不修改密码。若没有管理员，命令会创建/修复 `admin@yeying.com`，输出初始密码，并强制首次登录后修改密码。
 
 ```bash

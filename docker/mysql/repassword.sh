@@ -6,11 +6,11 @@
 #   ./repassword.sh [账号标识符] [自定义密码]
 #
 # 参数说明:
-#   [账号标识符]: 可选，可以是用户ID(纯数字)或邮箱地址。不提供时默认为第一个管理员用户
+#   [账号标识符]: 可选，可以是用户ID(纯数字)或邮箱地址。不提供时默认为第一个 identity 包含 admin 的管理员用户
 #   [自定义密码]: 可选，指定要设置的新密码。不提供时会自动生成随机密码
 #
 # 使用示例:
-#   ./repassword.sh                     # 重置第一个管理员用户密码(随机生成)
+#   ./repassword.sh                     # 重置第一个 identity 包含 admin 的管理员用户密码(随机生成)
 #   ./repassword.sh 123                 # 重置ID=123的用户密码(随机生成)
 #   ./repassword.sh user@example.com    # 重置邮箱为user@example.com的用户密码(随机生成)
 #   ./repassword.sh 123 newpass         # 重置ID=123的用户密码为"newpass"

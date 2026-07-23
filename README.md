@@ -145,6 +145,8 @@ Use Caddy or Nginx in front of LaravelS for HTTPS, WebSocket forwarding, upload 
 
 `./cmd repassword` without arguments only targets users whose `identity` contains the `admin` marker. If it prints `错误：未找到管理员用户！`, do not reset an arbitrary first user. Grant administrator identity to the intended account first.
 
+`./cmd repassword` uses the MySQL connection in `.env` and requires a local `mysql` client. On Ubuntu, `scripts/ubuntu-deps.sh --install` installs it. The command never guesses project-local container names; legacy container usage requires an explicit `MYSQL_CONTAINER=container_name`.
+
 `./scripts/install.sh` automatically runs the admin bootstrap after migrations. If you need to repair an existing deployment, run:
 
 ```bash

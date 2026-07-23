@@ -970,7 +970,7 @@ if [[ "$1" == "help" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]] || [[ $#
     exit 0
 fi
 
-# 非宿主机命令需要检查 Docker 环境；repassword 自己处理 mysql/docker fallback，本机直跑命令不需要 Docker。
+# 非宿主机命令需要检查 Docker 环境；repassword 自己检查 mysql 客户端，本机直跑命令不需要 Docker。
 if [[ "$1" != "electron" ]] \
     && [[ "$1" != "repassword" ]] \
     && [[ "$1" != "ensure-admin" ]] \
