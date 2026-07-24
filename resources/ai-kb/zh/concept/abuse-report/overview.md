@@ -19,13 +19,13 @@ negative:
   - 普通成员只能提交举报，看不到「举报管理」后台
   - 举报后不会自动封号或屏蔽，需要管理员手动决定
   - 不支持自动 AI 内容审核（仅人工处理）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 举报管理是什么
 
 ## 定义
-举报管理（complaint）是 DooTask 内置的违规内容处理后台。任何成员在群聊 / 个人对话遇到违规消息时可提交举报，系统管理员在后台审核并标记「已处理」或删除。模型对应 `App\Models\Complaint`，控制器 `ComplaintController`。
+举报管理（complaint）是 YeYing 内置的违规内容处理后台。任何成员在群聊 / 个人对话遇到违规消息时可提交举报，系统管理员在后台审核并标记「已处理」或删除。模型对应 `App\Models\Complaint`，控制器 `ComplaintController`。
 
 ## 关键属性
 - **举报对象**：对话（`dialog_id`），不能对单条消息单独举报

@@ -22,13 +22,13 @@ negative:
   - 全系统最多 200 个部门
   - 同一用户最多负责（owner_userid）10 个部门
   - 部门不能跨实例迁移
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 部门是什么
 
 ## 定义
-部门（department）是 DooTask 用于描述公司组织结构的树形单位。每个部门有名称、上级部门（parent_id）、唯一的部门负责人（owner_userid）和可选的部门管理员（deputy）。部门之间通过 parent_id 形成树形结构，最多 3 级。
+部门（department）是 YeYing 用于描述公司组织结构的树形单位。每个部门有名称、上级部门（parent_id）、唯一的部门负责人（owner_userid）和可选的部门管理员（deputy）。部门之间通过 parent_id 形成树形结构，最多 3 级。
 
 ## 关键属性
 - **name**：部门名称，2-20 字，不能含特殊符号或字符串 `(M)`

@@ -1,4 +1,4 @@
-# ai-kb — 夜莺 AI 助手知识库
+# ai-kb — YeYing AI 助手知识库
 
 这是**专为大语言模型（LLM）检索使用**的夜莺 功能知识库，不是给人类阅读的产品文档。
 
@@ -48,9 +48,9 @@ ai-kb/
 4. 在对应 `zh/<type>/<feature>/<id>.md` 路径下新建文件
 5. 提交 PR、review 后合入。内容进索引不需要额外操作：AI 插件容器每次启动会按文件 hash 对账（reconcile），自动增量收敛新增/变更/删除；想免重启即时生效可手动调 `POST /kb/reindex`
 
-## 改 DooTask 主程序后必须同步更新这里
+## 改 YeYing 主程序后必须同步更新这里
 
-**这是硬性约束** —— 详见主仓库根目录 `CLAUDE.md` 中「DooTask AI 知识库 (ai-kb) 同步规则」章节。新增/修改/删除任何用户可见的功能、菜单、按钮、流程、字段、API 行为、权限角色，都必须在**同一 PR**里更新对应 chunk 并把 frontmatter 的 `last_verified` 改成当前版本号。
+**这是硬性约束** —— 详见主仓库根目录 `CLAUDE.md` 中「AI 知识库 (ai-kb) 同步规则」章节。新增/修改/删除任何用户可见的功能、菜单、按钮、流程、字段、API 行为、权限角色，都必须在**同一 PR**里更新对应 chunk 并把 frontmatter 的 `last_verified` 改成当前版本号。
 
 不更新的代价是 AI 助手给用户讲错路径，比 PR 多写两行成本高得多。
 
@@ -64,7 +64,7 @@ volumes:
   - ../../../dootask/resources/ai-kb:/app/kb-content:ro
 ```
 
-内容同步机制：容器每次启动按文件 hash 对账（reconcile），自动增量收敛新增/变更/删除的 markdown——客户实例更新 DooTask 后重启插件容器即生效。需要免重启即时生效时手动触发：
+内容同步机制：容器每次启动按文件 hash 对账（reconcile），自动增量收敛新增/变更/删除的 markdown——客户实例更新 YeYing 后重启插件容器即生效。需要免重启即时生效时手动触发：
 ```bash
 curl -X POST 'http://ai-service/kb/reindex' \
   -H "X-Ingest-Token: $KB_INGEST_TOKEN" \

@@ -1,6 +1,6 @@
 ---
 id: common-faq.deploy-backup.faq
-title: 怎么备份 DooTask 数据
+title: 怎么备份 YeYing 数据
 type: faq
 feature: common-faq
 scope: admin
@@ -21,10 +21,10 @@ negative:
   - 没有「一键全量备份」按钮，要分别备份数据库、附件、配置三部分
   - cmd update 自带数据库备份，但不备份 public/uploads
   - 备份文件不会自动归档到外部存储，要自行同步
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
-# 怎么备份 DooTask 数据
+# 怎么备份 YeYing 数据
 
 ## 完整备份包含三部分
 1. **数据库**：所有任务、项目、消息、用户元数据

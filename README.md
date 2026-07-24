@@ -119,7 +119,7 @@ cp .env.template .env
 At minimum configure `APP_ENV=production`, `APP_DEBUG=false`, the MySQL and Redis endpoints, and:
 
 ```dotenv
-RUNTIME_DRIVER=opensource
+RUNTIME_DRIVER=yeying
 LARAVELS_LISTEN_IP=127.0.0.1
 LARAVELS_LISTEN_PORT=2222
 ```

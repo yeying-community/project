@@ -209,7 +209,7 @@ SEARCH_PORT=9306
 
 LARAVELS_LISTEN_IP=127.0.0.1
 LARAVELS_LISTEN_PORT=2222
-RUNTIME_DRIVER=opensource
+RUNTIME_DRIVER=yeying
 ```
 
 宿主机运行时请将 `DB_HOST`、`DB_PORT`、`REDIS_HOST` 和 `REDIS_PORT` 配置为宿主机可访问的实际地址。项目不会代为启动 MySQL、Redis 或其他通用中间件。

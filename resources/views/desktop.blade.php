@@ -201,7 +201,7 @@
 
 <h1 class="mirror-nav">
     <span>Download of v{{ $version }}{{ $version === $latest_version ? ' (Latest)' : '' }}{{ $is_draft ? ' (Draft)' : '' }}</span>
-    <a class="download-other-btn" href="https://github.com/kuaifan/dootask/releases" target="_blank">More Versions</a>
+    <a class="download-other-btn" href="https://github.com/yeying-community/project/releases" target="_blank">More Versions</a>
 </h1>
 <div class="mirror">
     <table class="table">

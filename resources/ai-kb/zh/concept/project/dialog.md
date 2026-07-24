@@ -18,13 +18,13 @@ negative:
   - 项目群成员同步自 ProjectUser，不能单独加非项目成员到群
   - 个人项目（[[project.personal.concept]]）无群（仅自己一人）
   - 群解散需要先删项目，否则无法手动解散
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 项目聊天室（自动建群）
 
 ## 定义
-DooTask 团队项目（personal=0）创建时自动生成一个 WebSocketDialog 群聊，对应 `Project.dialog_id` 字段。所有项目成员（ProjectUser）自动加入群聊；项目成员变更（加 / 删 / 转让）时，群成员同步变更。
+YeYing 团队项目（personal=0）创建时自动生成一个 WebSocketDialog 群聊，对应 `Project.dialog_id` 字段。所有项目成员（ProjectUser）自动加入群聊；项目成员变更（加 / 删 / 转让）时，群成员同步变更。
 
 ## 群成员同步规则
 - 加项目成员 → 自动入群（[[project.member.howto]]）

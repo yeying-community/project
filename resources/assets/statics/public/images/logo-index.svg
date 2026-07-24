@@ -5,7 +5,7 @@
         <polygon id="path-1" points="0 0 39.9999579 0 39.9999579 36 0 36"></polygon>
         <polygon id="path-3" points="0 3.00936101e-15 26.7979088 3.00936101e-15 26.7979088 26.9534011 0 26.9534011"></polygon>
     </defs>
-    <g id="Dootask官网" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="YeYing官网" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g transform="translate(-380.000000, -18.000000)" id="导航栏">
             <g id="logo" transform="translate(380.000000, 18.000000)">
                 <g id="编组">
@@ -24,8 +24,8 @@
                         <polygon id="Fill-3" fill="#FFDD33" mask="url(#mask-4)" points="26.7979088 3.00936101e-15 26.7979088 8.98518704 15.2505343 20.6004948 8.93474154 26.9534435 0 17.9661388 0 8.98730469 0.00210526427 8.98518704 6.3157928 15.3339004 8.93474154 17.9682564"></polygon>
                     </g>
                 </g>
-                <text id="DooTask" font-family="PingFangSC-Semibold, PingFang SC" font-size="22" font-weight="500" fill="#FFFFFF">
-                    <tspan x="56" y="26">DooTask</tspan>
+                <text id="YeYing" font-family="PingFangSC-Semibold, PingFang SC" font-size="22" font-weight="500" fill="#FFFFFF">
+                    <tspan x="56" y="26">YeYing</tspan>
                 </text>
             </g>
         </g>

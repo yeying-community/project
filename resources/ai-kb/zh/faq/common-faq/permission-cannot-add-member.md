@@ -19,7 +19,7 @@ negative:
   - 邀请只能选「已注册用户」，不能直接邀请陌生邮箱进项目
   - 普通成员无法主动把外人拉进项目；只能由负责人 / 管理员操作
   - 自己邀请自己 / 重复邀请同一用户都会被静默忽略
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 不能加成员
@@ -44,6 +44,6 @@ last_verified: v1.7.90
 
 ## 不支持
 - 没有「申请加入」流程；用户只能被动接受邀请
-- 不能跨系统直接邀请外部邮箱临时进群，必须先在 DooTask 注册或被批量导入
+- 不能跨系统直接邀请外部邮箱临时进群，必须先在 YeYing 注册或被批量导入
 
 [[role-permission.project-role.concept]] / [[messenger.group.howto.create]] 之类相关章节按需检索

@@ -5254,7 +5254,7 @@ export default {
      *  - keep_alive        是否开启微应用保活 (true/false)，默认 true
      *  - immersive         是否开启沉浸式模式 (true/false)，默认 false
      *  - props             传递参数
-     *  更多说明详见 https://appstore.dootask.com/development/manual
+     *  更多说明详见 https://appstore.yeying.pub/development/manual
      */
     async openMicroApp({state}, data) {
         // 参数基础校验：必须是对象且包含 id/name/url

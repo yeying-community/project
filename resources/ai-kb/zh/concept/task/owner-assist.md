@@ -18,13 +18,13 @@ negative:
   - 一个任务必须至少有一个负责人，不能"无主"
   - 协作者不能完成任务，只有负责人能（或有 TASK_UPDATE 权限的项目角色）
   - 负责人 / 协作者不会自动获得评论权限以外的项目权限
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 负责人与协作者
 
 ## 定义
-DooTask 通过 `ProjectTaskUser` 表维护任务参与人：每条记录 `userid + owner`：
+YeYing 通过 `ProjectTaskUser` 表维护任务参与人：每条记录 `userid + owner`：
 - `owner=1` — **负责人**
 - `owner=0` — **协作者**（assist）
 

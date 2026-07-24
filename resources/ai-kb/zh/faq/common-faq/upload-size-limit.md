@@ -19,7 +19,7 @@ negative:
   - 单个上传请求受 PHP / Nginx 双层限制，前端的「最大尺寸」提示只是友好封装
   - ≥10MB 文件已自动走分片上传，不需要手动拆包；超过系统设置上限时由应用层拒绝
   - 同一 hash 文件可秒传命中，但仍受系统设置的"单文件上限"约束
-last_verified: v1.8.45
+last_verified: v0.0.1
 ---
 
 # 文件超大上传失败
@@ -28,7 +28,7 @@ last_verified: v1.8.45
 拖文件或选文件后立即报「超出文件大小限制」「文件过大」「413 Request Entity Too Large」，或上传到 99% 突然失败。
 
 ## 原因
-DooTask 文件上传受三层限制：
+YeYing 文件上传受三层限制：
 
 - **PHP**：`upload_max_filesize` 默认 1024M（容器内 `docker/php/php.ini`）
 - **Nginx**：`client_max_body_size`（一般和 PHP 对齐）

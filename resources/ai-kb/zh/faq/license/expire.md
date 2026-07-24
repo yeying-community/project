@@ -23,7 +23,7 @@ negative:
   - 修改 License 接口（save）仅超级管理员能调用，普通管理员只能看
   - 不支持自行重置 SN（重新部署会生成新 SN，需要重新签发 License）
   - 若用的是在线授权，error 数组还可能出现「在线授权即将到期/已过期/已失效」等提醒，处理见 [[license.online.howto]]
-last_verified: v1.7.91
+last_verified: v0.0.1
 ---
 
 # License 过期或失效怎么办
@@ -50,7 +50,7 @@ last_verified: v1.7.91
 ## 解决
 
 ### 情况 1：过期
-1. 联系 DooTask 销售/渠道续费
+1. 联系 YeYing 销售/渠道续费
 2. 拿到新的 License 原文
 3. 进入「系统设置」→「License」→ 粘贴新原文 → 保存
 4. 重新加载页面，确认 `error` 数组已清空

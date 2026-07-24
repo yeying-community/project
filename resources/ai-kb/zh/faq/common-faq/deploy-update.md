@@ -1,6 +1,6 @@
 ---
 id: common-faq.deploy-update.faq
-title: 升级 DooTask 失败 / cmd update 报错
+title: 升级 YeYing 失败 / cmd update 报错
 type: faq
 feature: common-faq
 scope: admin
@@ -21,10 +21,10 @@ negative:
   - ./cmd update 会自动备份数据库到 docker/mysql/backup/，失败可还原
   - 本地有未提交改动时 update 会停下来，不强制覆盖
   - 不要直接 git pull + composer install，绕过 cmd 会漏掉迁移和重启
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
-# 升级 DooTask 失败 / cmd update 报错
+# 升级 YeYing 失败 / cmd update 报错
 
 ## 问题
 跑 `sudo ./cmd update` 中途失败：拉代码冲突、composer 装不上、migrate 报错、升级完容器起不来。

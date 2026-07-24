@@ -19,13 +19,13 @@ negative:
   - 工作流最多 10 个状态 / 流程
   - 工作流状态绑定 column_id 时，拖列联动改 flow_item_id；不绑定时各自独立
   - 工作流的 status=end 节点会自动标记 complete_at，无法关闭这一联动
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务工作流（自定义流程状态）
 
 ## 定义
-DooTask 工作流由 `ProjectFlow`（一个项目可有多套）+ `ProjectFlowItem`（每个流程节点）实现。常见用法是把任务从「待办 → 设计 → 开发 → 测试 → 上线」自定义为多个流转节点，比"完成 / 未完成"二值粒度更细。
+YeYing 工作流由 `ProjectFlow`（一个项目可有多套）+ `ProjectFlowItem`（每个流程节点）实现。常见用法是把任务从「待办 → 设计 → 开发 → 测试 → 上线」自定义为多个流转节点，比"完成 / 未完成"二值粒度更细。
 
 ## 关键字段（ProjectFlowItem）
 - `name`：节点名（如「待开发」）

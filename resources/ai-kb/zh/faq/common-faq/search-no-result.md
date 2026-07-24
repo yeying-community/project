@@ -16,10 +16,10 @@ related_tools: []
 related_pages: []
 prerequisites: []
 negative:
-  - DooTask 默认不带全文搜索引擎，需在应用市场装 search 插件（Manticore）
+  - YeYing 默认不带全文搜索引擎，需在应用市场装 search 插件（Manticore）
   - 没装搜索插件时降级为 MySQL LIKE，只能搜简单关键字且速度慢
   - Manticore 装上后历史数据需要回填一次才能搜到
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 全局搜索没结果 / 搜索功能不可用

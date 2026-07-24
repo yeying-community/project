@@ -20,12 +20,12 @@ negative:
   - 系统机器人名单写死在 `UserBot::systemBotName`，不支持自助新增类型
   - 系统机器人不可删除；仅管理员能改昵称 / 头像
   - 部分机器人依赖对应插件已安装（AI、审批等），否则不出现
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 内置系统机器人有哪些
 
-DooTask 自带一组系统机器人，邮箱统一以 `@bot.system` 结尾，由后端 `UserBot::systemBotName` 维护。普通用户能用，但不能创建或删除（详见 [[bot.permission.faq]]）。
+YeYing 自带一组系统机器人，邮箱统一以 `@bot.system` 结尾，由后端 `UserBot::systemBotName` 维护。普通用户能用，但不能创建或删除（详见 [[bot.permission.faq]]）。
 
 ## 通知/提醒类
 - `system-msg@bot.system`「系统消息」：系统公告、登录提醒、版本通知

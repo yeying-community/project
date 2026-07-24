@@ -18,13 +18,13 @@ negative:
   - 描述富文本上限 50000 字符（含 HTML 标签）
   - 描述不能直接附文件，需要单独走任务附件区
   - 描述无版本回滚 UI，仅服务端保留历史（ProjectTaskContent 表）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务描述（富文本）
 
 ## 定义
-DooTask 任务描述（`desc` 字段 + `ProjectTaskContent` 表）支持富文本编辑，包括加粗、列表、链接、代码块、表格、图片、@ 提及成员等。短描述存 `desc`（500 字符快照），完整富文本存 `ProjectTaskContent` 表，每次保存生成新版本记录。
+YeYing 任务描述（`desc` 字段 + `ProjectTaskContent` 表）支持富文本编辑，包括加粗、列表、链接、代码块、表格、图片、@ 提及成员等。短描述存 `desc`（500 字符快照），完整富文本存 `ProjectTaskContent` 表，每次保存生成新版本记录。
 
 ## 在哪里能看到
 - 任务详情页正中央富文本区

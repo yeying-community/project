@@ -21,7 +21,7 @@ negative:
   - 安装过程要拉 Docker 镜像，依赖网络速度
   - 不支持仅给单个用户安装（影响全员）
   - 安装失败一般是网络 / 镜像源问题，看 [[appstore.cannot-install.faq]]
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 安装一个插件
@@ -39,7 +39,7 @@ last_verified: v1.7.90
 
 ## 安装做了什么
 - 在 `docker/appstore/config/{appId}/` 写入 `config.yml`，包含 `status: installed`、`install_at`、`install_version`、`params`
-- 把对应 `docker-compose.yml` 起动；新容器与 DooTask 共享网络
+- 把对应 `docker-compose.yml` 起动；新容器与 YeYing 共享网络
 - 部分插件会通过 menu_items 注册微应用入口到普通成员的「应用」页
 
 ## 安装成功验证

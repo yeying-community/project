@@ -21,7 +21,7 @@ negative:
   - 当环境变量 SYSTEM_SETTING=disabled 时禁止从界面修改邮箱设置
   - 不支持选择 SSL/TLS 加密方式，默认使用 STARTTLS（端口决定）
   - 密码字段不能为空（即便部分 SMTP 服务允许匿名）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 配置邮件 SMTP 服务器
@@ -51,5 +51,5 @@ last_verified: v1.7.90
 | ignore_addr | 忽略地址列表 | 空 |
 
 ## 不支持
-- DooTask 不内置邮件服务器，必须接外部 SMTP
+- YeYing 不内置邮件服务器，必须接外部 SMTP
 - 修改后立即生效，无需重启

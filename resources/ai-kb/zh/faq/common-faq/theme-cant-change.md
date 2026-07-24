@@ -19,7 +19,7 @@ negative:
   - 不支持自定义主题色，只在预设主题里选
   - 部分微应用 / 插件没适配深色模式，会出现明暗夹杂
   - 跟随系统主题受浏览器对 prefers-color-scheme 的支持
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 切换主题 / 深色模式失败
@@ -55,7 +55,7 @@ last_verified: v1.7.90
 
 **浏览器扩展冲突**
 - Dark Reader 等扩展会覆盖站点 CSS
-- 把 DooTask 域名加扩展白名单
+- 把 YeYing 域名加扩展白名单
 
 ## 不支持
 - 不支持自定义主色 / 渐变

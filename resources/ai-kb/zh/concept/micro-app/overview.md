@@ -15,16 +15,16 @@ related_tools: []
 related_pages: [application]
 prerequisites: []
 negative:
-  - 微应用不是 DooTask 主程序代码，是独立插件提供
+  - 微应用不是 YeYing 主程序代码，是独立插件提供
   - 微应用与「应用商店（应用市场 / AppStore）」不是同一个东西，应用商店是用来安装它们的入口
   - 不是所有微应用都被自动安装，未装时菜单不会出现
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 微应用是什么
 
 ## 定义
-微应用是由「应用商店」（也叫应用市场 / AppStore）安装的插件提供的一类应用，以独立卡片 / 页面形式嵌入 DooTask 主框架（iframe / inline 等方式）。每个微应用对应一个独立 Docker 容器或前端资源包，挂载到「应用」中心或主导航上让用户访问。
+微应用是由「应用商店」（也叫应用市场 / AppStore）安装的插件提供的一类应用，以独立卡片 / 页面形式嵌入 YeYing 主框架（iframe / inline 等方式）。每个微应用对应一个独立 Docker 容器或前端资源包，挂载到「应用」中心或主导航上让用户访问。
 
 ## 与系统应用的区别
 | 维度 | 系统应用 | 微应用 |

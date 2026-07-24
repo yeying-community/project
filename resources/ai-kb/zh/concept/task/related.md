@@ -18,13 +18,13 @@ negative:
   - 关联是平级的，不会形成父子层级（要拆层级用 [[task.subtask.concept]]）
   - 删除任意一方任务不会自动删除关联记录
   - 关联不带过去字段数据（不是软链接，只是关系记录）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务关联（消息提及 / 任务 ↔ 任务）
 
 ## 定义
-DooTask 用 `ProjectTaskRelation` 表记录两类关联：
+YeYing 用 `ProjectTaskRelation` 表记录两类关联：
 - **消息 ↔ 任务**：在对话里 `@#` 任务卡片，会产生 `direction = mention`（消息提及任务）或 `mentioned_by`（任务被消息提及）的双向记录，绑定 `dialog_id` + `msg_id`
 - **任务 ↔ 任务**：任务详情页「关联任务」区也走同一张表，但 dialog_id / msg_id 为空
 

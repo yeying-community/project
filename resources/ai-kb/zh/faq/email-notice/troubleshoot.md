@@ -17,16 +17,16 @@ related_tools: []
 related_pages: []
 prerequisites: []
 negative:
-  - DooTask 邮件发送失败不会自动重试
+  - YeYing 邮件发送失败不会自动重试
   - 系统日志只记录发送结果，不抓取 SMTP 原始报文
   - 没有 web 界面查询「这封邮件发到哪了」
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 邮件收不到怎么办
 
 ## 问题
-DooTask 用户没收到注册验证 / 改邮箱验证码 / 未读消息汇总等系统邮件。
+YeYing 用户没收到注册验证 / 改邮箱验证码 / 未读消息汇总等系统邮件。
 
 ## 排查顺序
 1. **管理员有没有配 SMTP？**
@@ -56,4 +56,4 @@ DooTask 用户没收到注册验证 / 改邮箱验证码 / 未读消息汇总等
 ## 如果仍然收不到
 - 在表单点「邮件发送测试」抓取最后一次错误
 - 查看 Docker 容器日志：`docker logs dootask-php` 搜邮件相关报错
-- 收件方可能屏蔽了 DooTask 的发件域名 / IP
+- 收件方可能屏蔽了 YeYing 的发件域名 / IP

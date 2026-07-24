@@ -1,6 +1,6 @@
 ---
 id: common-faq.deploy-storage.faq
-title: 磁盘占满 / DooTask 数据目录变大怎么办
+title: 磁盘占满 / YeYing 数据目录变大怎么办
 type: faq
 feature: common-faq
 scope: admin
@@ -11,7 +11,7 @@ aliases:
   - public/uploads 太大
   - mysql 备份占空间
   - 日志文件过大
-  - DooTask 越用越大
+  - YeYing 越用越大
   - 清理空间
 related_tools: []
 related_pages: []
@@ -21,13 +21,13 @@ negative:
   - 不要手动 rm public/uploads/ 下的文件，会导致已上传附件 404
   - 不要清空数据库表，应通过任务回收站、消息删除等业务操作清理
   - mysql 日志（binlog）不在自动备份里，需另行处理
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
-# 磁盘占满 / DooTask 数据目录变大怎么办
+# 磁盘占满 / YeYing 数据目录变大怎么办
 
 ## 问题
-服务器磁盘越来越满，DooTask 部署目录占了大头，想清理释放空间。
+服务器磁盘越来越满，YeYing 部署目录占了大头，想清理释放空间。
 
 ## 主要占用点
 按通常大小排序：

@@ -20,13 +20,13 @@ negative:
   - 跨项目移动会清空项目级标签（[[task.field.tag.concept]]），按目标项目重新打
   - 跨项目移动不会迁移任务聊天室（dialog_id 保留但不再属于目标项目对话列表）
   - 子任务跟随父任务一起移动，不能单独移动子任务
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务跨项目移动
 
 ## 是什么
-DooTask 任务可通过 `task__move` 接口在不同项目间移动，主要用于「任务被错放在了错的项目」或「把临时任务划归正式项目」的场景。移动会同时更新 `project_id`、`column_id`、`sort`、`flow_item_id` 字段。
+YeYing 任务可通过 `task__move` 接口在不同项目间移动，主要用于「任务被错放在了错的项目」或「把临时任务划归正式项目」的场景。移动会同时更新 `project_id`、`column_id`、`sort`、`flow_item_id` 字段。
 
 ## 入口
 - 桌面端：任务操作菜单（任务卡右键 / 任务详情「⋯」）→「移动」，弹出「移动任务」弹窗

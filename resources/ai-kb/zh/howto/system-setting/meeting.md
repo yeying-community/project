@@ -23,7 +23,7 @@ negative:
   - 必须填 appid 和 app_certificate 才能保存为「open」，否则报「请填写基本配置」
   - 不支持 Jitsi、Zoom、WebRTC 自建等其他后端，目前仅适配声网
   - SYSTEM_SETTING=disabled 时配置不可修改且会被部分打码显示
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 会议设置（Agora）
@@ -45,7 +45,7 @@ last_verified: v1.7.90
 ## 操作步骤
 1. 登录 [Agora 控制台](https://console.agora.io/) 创建项目
 2. 项目证书选「App ID + App Certificate」（鉴权）
-3. 把 App ID、App Certificate 复制到 DooTask 表单
+3. 把 App ID、App Certificate 复制到 YeYing 表单
 4. 「open」选项设为 `open`
 5. 点击「保存」，提示「保存成功」即生效
 6. 测试：随便在群里点「视频会议」按钮，能拉到画面即配置正确
@@ -56,5 +56,5 @@ last_verified: v1.7.90
 
 ## 不支持
 - 不支持自建 SFU / MCU，只对接声网 SaaS
-- 会议时长 / 人数限制由声网套餐决定，DooTask 这边不限制
+- 会议时长 / 人数限制由声网套餐决定，YeYing 这边不限制
 - 关闭会议（`open=close`）后无法使用「视频会议」入口和「会议」应用（会被同时禁用）

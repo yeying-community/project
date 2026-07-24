@@ -19,13 +19,13 @@ negative:
   - 验证码区分大小写；填错会反复要求重输
   - 图形验证码仅用于登录风控，不能用于注册/找回密码
   - 输入正确的账号密码后再没必要每次都填验证码；只有触发风控后才强制要求
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 登录图形验证码
 
 ## 是什么
-DooTask 登录页在风控触发后会弹出图形验证码，要求用户填写。底层接口 `api/users/login/codeimg`（返回图片）和 `login/codejson`（返回 base64 + key）。
+YeYing 登录页在风控触发后会弹出图形验证码，要求用户填写。底层接口 `api/users/login/codeimg`（返回图片）和 `login/codejson`（返回 base64 + key）。
 
 ## 触发条件
 - 同一邮箱多次密码错误（系统标记 `code::邮箱 = need`）

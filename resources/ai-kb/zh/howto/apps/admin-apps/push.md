@@ -17,10 +17,10 @@ prerequisites:
   - 需要系统管理员权限
   - 需要已申请的友盟（UMENG）账号与 App Key/Secret
 negative:
-  - 推送仅作用于 DooTask 官方移动 App（iOS / Android），不支持 Web 端
+  - 推送仅作用于 YeYing 官方移动 App（iOS / Android），不支持 Web 端
   - 推送依赖友盟服务可达，私有化网络隔离环境下需自行评估可用性
   - 不支持改用其他推送服务商（如极光 / 个推）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # APP 推送入口

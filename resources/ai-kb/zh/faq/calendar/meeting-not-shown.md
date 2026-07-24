@@ -18,16 +18,16 @@ negative:
   - 日历**仅显示任务**（ProjectTask），不显示会议、签到、报告
   - 这是设计行为，不是 BUG
   - 没有"统一日历"功能合并所有时间线类内容
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 为什么日历不显示会议 / 签到 / 报告
 
 ## 问题
-打开 DooTask 日历，只看到自己负责的任务，没看到会议、签到打卡、工作报告。
+打开 YeYing 日历，只看到自己负责的任务，没看到会议、签到打卡、工作报告。
 
 ## 原因
-DooTask 日历的数据源**只有 ProjectTask 一张表**：
+YeYing 日历的数据源**只有 ProjectTask 一张表**：
 - 会议保存在 `Meeting` 表（独立模块）
 - 签到保存在 `Checkin` 表（独立模块）
 - 工作报告保存在 `Report` 表（独立模块）

@@ -1,6 +1,6 @@
 ---
 id: common-faq.data-import.faq
-title: 从其他系统迁移数据到 DooTask
+title: 从其他系统迁移数据到 YeYing
 type: faq
 feature: common-faq
 scope: end-user
@@ -18,16 +18,16 @@ related_tools: []
 related_pages: []
 prerequisites: []
 negative:
-  - DooTask 没有「Jira / Trello / 禅道」官方一键迁移工具
+  - YeYing 没有「Jira / Trello / 禅道」官方一键迁移工具
   - Excel 批量导入任务功能依赖项目内的「导入」入口，字段映射有限
   - 历史聊天记录、附件无法从其他系统直接迁过来
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
-# 从其他系统迁移数据到 DooTask
+# 从其他系统迁移数据到 YeYing
 
 ## 问题
-公司之前用 Jira / Tower / 禅道 / Trello / Asana，要搬到 DooTask 怎么迁？
+公司之前用 Jira / Tower / 禅道 / Trello / Asana，要搬到 YeYing 怎么迁？
 
 ## 现状
 没有一键迁移工具。可迁移性：
@@ -50,7 +50,7 @@ last_verified: v1.7.90
 **项目和任务**
 1. 源系统导出任务 Excel
 2. 整理列：任务名、负责人邮箱、截止日期、状态、描述
-3. DooTask 新建项目 → 右上角「导入」
+3. YeYing 新建项目 → 右上角「导入」
 4. 上传 Excel 按提示映射。Jira/禅道导出 CSV 后整理；Trello 用 JSON 导出 + 脚本转 Excel
 
 **附件**：批量上传到文件目录（[[file.upload.howto]]）。
@@ -62,4 +62,4 @@ last_verified: v1.7.90
 - 不支持迁移历史变更（创建时间变为导入时间）
 - 不支持迁移审批流 / 工作流
 
-量大可联系 DooTask 商业支持定制脚本（数据库直插 + 校验）。
+量大可联系 YeYing 商业支持定制脚本（数据库直插 + 校验）。

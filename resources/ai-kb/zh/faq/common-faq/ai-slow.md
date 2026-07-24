@@ -16,10 +16,10 @@ related_tools: []
 related_pages: [ai_assistant_panel]
 prerequisites: []
 negative:
-  - DooTask 不缓存 AI 回复，每次问都是真请求
+  - YeYing 不缓存 AI 回复，每次问都是真请求
   - 流式延迟主要在模型供应商侧，主程序无能为力
   - 没有「换更快模型」按钮——需管理员在 AI 机器人换默认模型
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # AI 回复很慢

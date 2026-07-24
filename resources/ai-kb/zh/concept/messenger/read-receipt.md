@@ -19,12 +19,12 @@ negative:
   - 已读未读不支持手动关闭显示，是系统统一行为
   - 通知类消息（notice）、系统消息不计入已读统计
   - 离开会话不会自动标记已读，需要打开会话并向上滚动经过该消息
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 已读未读状态
 
-DooTask 的「已读未读」（read receipt）以消息 + 用户两两组合粒度记录。每个对话成员对每条消息有一行 `web_socket_dialog_msg_reads`，未读 read_at=null，已读后写入时间戳。
+YeYing 的「已读未读」（read receipt）以消息 + 用户两两组合粒度记录。每个对话成员对每条消息有一行 `web_socket_dialog_msg_reads`，未读 read_at=null，已读后写入时间戳。
 
 ## 定义
 

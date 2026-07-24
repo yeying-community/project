@@ -18,7 +18,7 @@ negative:
   - 项目拥有者 / 管理员不会被项目权限规则拦截，只可能被任务删除 / 归档状态拦
   - 站点管理员（userIsAdmin）也不会自动绕过项目权限
   - 任务可见但改不动，通常是 ProjectPermission 配置问题，不是 BUG
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 为什么不能改任务（项目权限不足）
@@ -27,7 +27,7 @@ last_verified: v1.7.90
 打开任务详情页能看到任务，但字段全是灰色不可编辑；或拖动卡片报「无权限」错误。
 
 ## 原因
-DooTask 检查 5 层权限：
+YeYing 检查 5 层权限：
 1. **任务可见性**（[[task.field.visibility.concept]]）：visibility=2/3 命中你才看到任务
 2. **项目角色**（[[project.role.concept]]）：你是 owner 0 / 1 / 2 哪一档
 3. **项目权限规则**（[[project.permission.concept]] ProjectPermission）：你这个角色 + 这个权限点是否勾选

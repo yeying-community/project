@@ -17,13 +17,13 @@ prerequisites: []
 negative:
   - 当前版本会议窗口内没有独立的文字聊天面板
   - 会议结束后再发的消息不会再关联到这场会议
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 会议中的文字消息
 
 ## 是什么
-DooTask 会议使用 `MeetingMsg` 表把会议相关的消息卡片与具体的 `meetingid` 和对话 `dialog_id` 绑定。一场会议涉及以下三种典型消息卡片：
+YeYing 会议使用 `MeetingMsg` 表把会议相关的消息卡片与具体的 `meetingid` 和对话 `dialog_id` 绑定。一场会议涉及以下三种典型消息卡片：
 
 - 「会议邀请」卡片：发起 / 邀请时由 `meeting-alert` 系统机器人推送给被邀请人
 - 「会议进行中」卡片：在被邀请人对话中保持「进行中」状态

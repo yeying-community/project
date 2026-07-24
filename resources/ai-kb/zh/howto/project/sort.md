@@ -18,13 +18,13 @@ negative:
   - 置顶 / 排序是每用户独立的（ProjectUser.top_at / sort）
   - 不能给整团队设默认排序
   - 项目内任务不能用此机制置顶（任务排序见 [[task.sort.howto]]）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 项目列表排序与置顶
 
 ## 是什么
-DooTask 项目列表的顺序由两个字段决定，都按用户级别独立存储在 `ProjectUser` 表：
+YeYing 项目列表的顺序由两个字段决定，都按用户级别独立存储在 `ProjectUser` 表：
 - `top_at`：置顶时间戳，非空则项目固定在顶部
 - `sort`：手动排序值，决定置顶以下的相对顺序
 

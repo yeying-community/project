@@ -21,18 +21,18 @@ negative:
   - Web 端 / 桌面端不写 UmengAlias 表，因此不通过友盟推送
   - 别名 30 天未活跃即不再用于推送（updated_at 过期）
   - 调试模式（isDebug=1）的 APP 不会注册别名，避免污染生产推送
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 友盟 Alias 用户绑定
 
 ## 定义
-`umeng_alias` 是 DooTask 用来记录「某用户的某台移动设备应该接收哪些推送」的绑定表。每次移动 APP 启动登录后会调用 `api/users/umeng/alias` 注册或更新这条记录，后端按 `userid → alias` 反向查到所有活跃设备来发推送。
+`umeng_alias` 是 YeYing 用来记录「某用户的某台移动设备应该接收哪些推送」的绑定表。每次移动 APP 启动登录后会调用 `api/users/umeng/alias` 注册或更新这条记录，后端按 `userid → alias` 反向查到所有活跃设备来发推送。
 
 ## 关键字段
 | 字段 | 说明 |
 |---|---|
-| userid | DooTask 用户 ID |
+| userid | YeYing 用户 ID |
 | alias | 友盟 alias，用户在友盟侧的唯一标识 |
 | platform | ios / android（其他平台调用会被拒） |
 | device | 设备型号 |

@@ -1,6 +1,6 @@
 ---
 id: glossary.main
-title: DooTask 核心术语表
+title: YeYing 核心术语表
 type: glossary
 feature: glossary
 scope: end-user
@@ -8,9 +8,9 @@ locale: zh
 aliases:
   - 术语
   - 术语表
-  - DooTask 术语表
+  - YeYing 术语表
   - 名词解释
-  - DooTask 名词
+  - YeYing 名词
   - 这个词什么意思
   - 别名对照
 related_tools: []
@@ -19,10 +19,10 @@ prerequisites: []
 negative:
   - 只覆盖产品术语，不含技术名词
   - 别名只列常见口语化叫法
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
-# DooTask 核心术语表
+# YeYing 核心术语表
 
 把口语化叫法对齐到正式术语。格式：术语 / 别名 / 定义。
 

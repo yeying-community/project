@@ -28,7 +28,7 @@ last_verified: v0.0.1
 个人头像下拉里没有「管理后台」「系统设置」入口，或菜单里少了「团队管理」「数据导出」「LDAP」「License」等管理员项。
 
 ## 原因
-DooTask 后台访问分两级：
+YeYing 后台访问分两级：
 
 - **系统管理员（admin）**：`userIsAdmin = true`，看得到「系统设置」「团队管理」「APP 推送」「数据导出」「LDAP」「举报管理」「License Key」等
 - **超级管理员（super-admin）**：仅注册的第一个账号（id=1），额外可改超管设置、看许可证激活等

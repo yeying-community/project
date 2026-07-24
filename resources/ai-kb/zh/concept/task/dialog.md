@@ -18,13 +18,13 @@ negative:
   - 子任务不能独立开聊天室，强制使用父任务的 dialog_id
   - 任务删除不会自动删除聊天室
   - 复制任务会重置 dialog_id，新任务有自己的全新聊天室
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务聊天室（dialog_id）
 
 ## 定义
-DooTask 每个**主任务**可以拥有一个独立聊天室（`dialog_id` 字段，对应 `WebSocketDialog` 表），用于负责人、协作者、可见用户在任务上下文中讨论。第一次打开任务对话区时按需创建，未启用前 dialog_id 为 0。
+YeYing 每个**主任务**可以拥有一个独立聊天室（`dialog_id` 字段，对应 `WebSocketDialog` 表），用于负责人、协作者、可见用户在任务上下文中讨论。第一次打开任务对话区时按需创建，未启用前 dialog_id 为 0。
 
 ## 入口
 - 桌面端：任务详情页 → 顶部「💬 任务对话」按钮 → 唤起侧边对话面板

@@ -17,9 +17,9 @@ prerequisites:
   - 当前用户为系统管理员（userIsAdmin）
 negative:
   - 仅管理员可见入口和保存接口
-  - 自定义菜单只是注册一个 URL/iframe 入口，DooTask 不托管业务页面
+  - 自定义菜单只是注册一个 URL/iframe 入口，YeYing 不托管业务页面
   - 配置项里没有"权限继承项目角色"的开关
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 管理员自定义全员应用菜单

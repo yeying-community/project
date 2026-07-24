@@ -19,8 +19,8 @@ prerequisites:
 negative:
   - 未配置 SMTP 时所有邮件功能都不发邮件，但不会报错给用户
   - 邮件通道只用于系统通知（注册验证 / 改邮箱 / 未读消息 / 删除账号验证），不能用作客户营销邮件
-  - 邮件发送依赖第三方 SMTP，DooTask 自身不内置邮件服务器
-last_verified: v1.7.90
+  - 邮件发送依赖第三方 SMTP，YeYing 自身不内置邮件服务器
+last_verified: v0.0.1
 ---
 
 # 邮件通知是什么

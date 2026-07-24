@@ -18,13 +18,13 @@ negative:
   - 统计不含归档任务（archived_at 非空的不计）
   - 统计实时计算，没有定时缓存，大项目（>10000 任务）会略慢
   - 「我的待办」按 ProjectTaskUser 命中当前用户 + complete_at 为空
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 项目统计（任务数 / 完成率 / 我的待办）
 
 ## 项目级统计字段
-DooTask 项目列表与详情页展示一组实时统计，主要来自 `Project::getTaskStatistics()` 方法。
+YeYing 项目列表与详情页展示一组实时统计，主要来自 `Project::getTaskStatistics()` 方法。
 
 | 字段 | 含义 |
 |---|---|

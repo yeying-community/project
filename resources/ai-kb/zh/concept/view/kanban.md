@@ -18,13 +18,13 @@ negative:
   - 触屏 / 移动端禁用列与任务的拖拽（避免误触），需用任务详情页改 column_id
   - 部门只读模式（department_readonly）下看板所有编辑操作被禁用
   - 一个项目至少要有一个列，删完全部列后无法新建任务
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 看板视图
 
 ## 定义
-看板视图是 DooTask 项目详情页的默认视图（menuType='column'）。任务按「列」（column）水平分栏，每张任务卡按时间或优先级在列内纵向排列。整体类似 Trello 的卡片式工作流。
+看板视图是 YeYing 项目详情页的默认视图（menuType='column'）。任务按「列」（column）水平分栏，每张任务卡按时间或优先级在列内纵向排列。整体类似 Trello 的卡片式工作流。
 
 ## 关键属性
 - **列（column）**：项目级配置，由项目负责人 / 管理员维护；每条任务必属于一个列（task.column_id）
