@@ -19,12 +19,12 @@ negative:
   - 用户不能手动把单聊（type=user）升级成群聊，需重新建群并把对方加入
   - 项目群 / 任务群 / 部门群 / 全员群不允许普通成员解散
   - 单聊不能设免打扰按群粒度，但可在系统设置里设置「个人会话静默」全局策略
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 对话类型
 
-DooTask 的「会话」（也叫对话、Dialog）有两大类：单聊（type=user）和群聊（type=group）。群聊按 group_type 又分多个子类，影响成员管理权限和能否解散。
+YeYing 的「会话」（也叫对话、Dialog）有两大类：单聊（type=user）和群聊（type=group）。群聊按 group_type 又分多个子类，影响成员管理权限和能否解散。
 
 ## 定义
 

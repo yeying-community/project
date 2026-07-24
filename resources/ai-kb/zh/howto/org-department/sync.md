@@ -22,8 +22,8 @@ negative:
   - 同步是单向、追加：只新增 `users.department` 里没有该部门 ID 的用户，已在的不重复加
   - 已 disable_at 的用户被跳过，不会同步进部门或部门群
   - 没有子部门时返回成功但不做事，提示「同步完成，子部门中没有成员需要同步」
-  - 同步与 LDAP 拉取无关：DooTask 内部不直接通过此接口对接 LDAP
-last_verified: v1.7.90
+  - 同步与 LDAP 拉取无关：YeYing 内部不直接通过此接口对接 LDAP
+last_verified: v0.0.1
 ---
 
 # 同步部门成员

@@ -1,6 +1,6 @@
 ---
 id: common-faq.deploy-perf.faq
-title: DooTask 系统性能慢 / 卡 / 加载时间长
+title: YeYing 系统性能慢 / 卡 / 加载时间长
 type: faq
 feature: common-faq
 scope: admin
@@ -19,13 +19,13 @@ related_pages: []
 prerequisites:
   - 部署机能 root 操作主机
 negative:
-  - DooTask 后端走 Swoole 协程，PHP-FPM 优化经验不适用
+  - YeYing 后端走 Swoole 协程，PHP-FPM 优化经验不适用
   - 单机用户数超过 200 后建议给 mysql / redis 单独分配资源
   - 慢查询多数源于 messages / tasks 这类大表缺索引或全文搜索未启用
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
-# DooTask 系统性能慢 / 卡 / 加载时间长
+# YeYing 系统性能慢 / 卡 / 加载时间长
 
 ## 问题
 打开任务列表 / 消息会话 / 仪表盘明显变慢，CPU / 内存占用高，多人操作时卡顿。
@@ -62,7 +62,7 @@ last_verified: v1.7.90
 2. 装 Manticore 搜索插件
 3. mysql 开慢查询找出问题 SQL
 4. 加 CPU / 内存（最简单）
-5. mysql 拆到独立机器，DooTask 走外部 DB
+5. mysql 拆到独立机器，YeYing 走外部 DB
 
 ## 不要做
 - 不要简单加 worker 不加 CPU，反而更慢

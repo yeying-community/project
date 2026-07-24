@@ -1,6 +1,6 @@
 ---
 id: compliance.concept
-title: DooTask 合规能力概览
+title: YeYing 合规能力概览
 type: concept
 feature: compliance
 scope: admin
@@ -17,17 +17,17 @@ related_pages: []
 prerequisites:
   - 多数动作需要系统管理员权限
 negative:
-  - DooTask 主程序没有专门的「合规设置」集中页面
+  - YeYing 主程序没有专门的「合规设置」集中页面
   - 不内置 GDPR DSR 工单系统，需要管理员人工响应
   - 不支持自动数据保留周期清理（需手动或脚本）
   - 没有自动获取用户同意（cookie banner 等）的开关
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
-# DooTask 合规能力概览
+# YeYing 合规能力概览
 
 ## 定义
-DooTask 主程序没有把「合规」做成单独菜单，但通过多个分散功能覆盖了数据合规、用户隐私、内容审核等场景。这里把和合规相关的现有能力索引到一起，方便管理员对照内部合规要求逐项检查。
+YeYing 主程序没有把「合规」做成单独菜单，但通过多个分散功能覆盖了数据合规、用户隐私、内容审核等场景。这里把和合规相关的现有能力索引到一起，方便管理员对照内部合规要求逐项检查。
 
 ## 涉及的现有能力
 | 维度 | 现有手段 | 主程序入口 |

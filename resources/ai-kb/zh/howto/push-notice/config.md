@@ -22,7 +22,7 @@ negative:
   - 当环境变量 SYSTEM_SETTING=disabled 时禁止从界面修改推送设置（密钥会脱敏显示）
   - 必须同时填 iOS 和 Android 的 key/secret 才能两端都收到；只填一端则只推一端
   - 默认 production_mode=true，意味必须用正式签名的 APP 包，开发版 APP 收不到
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 配置友盟 APP 推送
@@ -57,4 +57,4 @@ last_verified: v1.7.90
 
 ## 不支持
 - 国内厂商通道（OPPO/华为/小米/VIVO）不开箱即用：需走友盟厂商通道下发，并在友盟控制台单独配置厂商证书
-- 不能用替代推送服务，DooTask 推送层与友盟 SDK 强绑定
+- 不能用替代推送服务，YeYing 推送层与友盟 SDK 强绑定

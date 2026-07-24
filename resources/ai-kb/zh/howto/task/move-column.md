@@ -20,13 +20,13 @@ negative:
   - 拖动只改 column_id（所属列），不直接改 complete_at（完成时间）
   - 跨项目拖动不支持，跨项目要用 [[task.move.howto.cross-project]]
   - 移动端不支持拖动，需进详情改字段
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 拖拽任务换列 / 修改工作流状态
 
 ## 是什么
-DooTask 看板（Kanban）视图按 `column_id`（项目列）分栏；工作流视图按 `flow_item_id`（自定义状态）分栏。拖动任务卡片会触发 `task__update` 改对应字段并同时更新 `sort` 排序值。
+YeYing 看板（Kanban）视图按 `column_id`（项目列）分栏；工作流视图按 `flow_item_id`（自定义状态）分栏。拖动任务卡片会触发 `task__update` 改对应字段并同时更新 `sort` 排序值。
 
 ## 入口
 - 桌面端：项目详情页右上角视图切换 → 「看板」或「工作流」

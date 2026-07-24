@@ -19,8 +19,8 @@ prerequisites: []
 negative:
   - 「键盘设置」子页只在 Electron 桌面端与 EEUI 移动端显示，Web 端没有
   - 大部分快捷键固定不可改（仅截图键、发送行为可调）
-  - Web 浏览器 Cmd+S / Cmd+P 等会被浏览器吞掉，DooTask 不接管
-last_verified: v1.7.90
+  - Web 浏览器 Cmd+S / Cmd+P 等会被浏览器吞掉，YeYing 不接管
+last_verified: v0.0.1
 ---
 
 # 键盘 / 快捷键设置

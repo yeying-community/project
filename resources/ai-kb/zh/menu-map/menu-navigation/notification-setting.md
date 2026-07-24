@@ -17,7 +17,7 @@ prerequisites: []
 negative:
   - 没有一站式「全部静音」开关，需要按渠道分别关
   - 关掉浏览器通知后桌面弹窗也会同时失效
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 通知偏好设置入口在哪
@@ -27,7 +27,7 @@ last_verified: v1.7.90
 - 桌面端：浏览器原生通知 → 浏览器地址栏锁形图标 → 网站权限
 - 桌面端 Electron：菜单栏 → 通知偏好（仅 Electron）
 - 移动端：底部 Tabbar「我的」→「设置」→「通知 / 推送」
-- 移动端原生：系统设置 → 通知 → DooTask APP
+- 移动端原生：系统设置 → 通知 → YeYing APP
 - 快捷键：无
 
 ## 可调项

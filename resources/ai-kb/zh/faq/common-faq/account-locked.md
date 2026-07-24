@@ -19,8 +19,8 @@ prerequisites: []
 negative:
   - 普通用户没有「解锁」自助按钮，要等冷却或联系管理员
   - 锁定不区分 IP，是按账号锁
-  - LDAP 账号锁定可能源自 LDAP 服务器侧，不是 DooTask 锁的
-last_verified: v1.7.90
+  - LDAP 账号锁定可能源自 LDAP 服务器侧，不是 YeYing 锁的
+last_verified: v0.0.1
 ---
 
 # 账号被锁定 / 频繁报「登录次数过多」

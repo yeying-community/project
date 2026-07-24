@@ -20,13 +20,13 @@ negative:
   - 邀请链接通过 code 唯一识别项目，不绑定具体邀请人
   - 链接刷新后旧链接立即失效
   - 接收邀请的用户会自动加入项目，不走审批
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 项目邀请链接
 
 ## 是什么
-DooTask 通过 `ProjectInvite` 表生成项目邀请：每条记录 `project_id + code + num`，其中 `code` 是加密的邀请码，凭它可直接加入项目，无需审批。常用于"把链接发到群里让大家自己加"。
+YeYing 通过 `ProjectInvite` 表生成项目邀请：每条记录 `project_id + code + num`，其中 `code` 是加密的邀请码，凭它可直接加入项目，无需审批。常用于"把链接发到群里让大家自己加"。
 
 ## 入口
 - 桌面端：项目设置 → 「成员管理」 → 顶部「邀请链接」

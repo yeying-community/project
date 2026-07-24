@@ -18,13 +18,13 @@ negative:
   - 日历**没有独立的事件表**，全部从 ProjectTask 派生
   - 不显示会议（Meeting）、签到、报告，仅显示任务
   - 仅显示当前用户作为负责人（owner=1）的任务，不显示协作任务
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 日历是什么 / 数据源
 
 ## 定义
-DooTask 日历是把 [[task.field.deadline.concept]] 有 end_at 的任务按时间轴铺到月 / 周 / 日格子里的展示视图。它**没有独立的 schedule / event 表**，所有事件完全来自 `ProjectTask` 表，按 `start_at` 和 `end_at` 字段绘制。
+YeYing 日历是把 [[task.field.deadline.concept]] 有 end_at 的任务按时间轴铺到月 / 周 / 日格子里的展示视图。它**没有独立的 schedule / event 表**，所有事件完全来自 `ProjectTask` 表，按 `start_at` 和 `end_at` 字段绘制。
 
 ## 数据规则
 - 数据源：ProjectTask 表

@@ -18,13 +18,13 @@ negative:
   - 优先级数据是全局共享的，不能按项目独立配置（除非用 [[task.field.color.concept]] 单独覆盖）
   - 普通用户无法新增 / 修改优先级枚举，仅可选择
   - 优先级与排序无关，不会自动让高优先级冒泡到列首
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务优先级
 
 ## 定义
-DooTask 任务的优先级（priority）记录任务的紧急 / 重要程度。每个任务存三个字段 `p_level`（数值）、`p_name`（名称）、`p_color`（颜色），三者冗余存储，避免全局配置变更影响历史任务。
+YeYing 任务的优先级（priority）记录任务的紧急 / 重要程度。每个任务存三个字段 `p_level`（数值）、`p_name`（名称）、`p_color`（颜色），三者冗余存储，避免全局配置变更影响历史任务。
 
 ## 数据来源
 全局 `settings` 表的 `priority` JSON 数组定义可选项，每条含：

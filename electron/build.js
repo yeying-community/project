@@ -203,7 +203,7 @@ async function downloadAndExtractDrawio(drawioDestDir) {
 
         // 1. 下载tar.gz文件
         const response = await axios({
-            url: 'https://appstore.dootask.com/api/v1/download/drawio/latest',
+            url: 'https://appstore.yeying.pub/api/v1/download/drawio/latest',
             method: 'GET',
             responseType: 'stream'
         });

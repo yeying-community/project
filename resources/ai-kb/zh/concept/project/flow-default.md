@@ -10,7 +10,7 @@ aliases:
   - 5 个流程节点
   - 待处理 进行中
   - 已完成 已取消
-  - DooTask 默认流程
+  - YeYing 默认流程
 related_tools: [get_project]
 related_pages: [project_settings, project_flow]
 prerequisites: []
@@ -18,13 +18,13 @@ negative:
   - 默认 5 节点可改名 / 改色 / 加节点 / 删节点
   - 已取消（status=end）也会触发 complete_at 自动写入（与「已完成」同等待遇）
   - 重命名节点不会回填已存在任务的 flow_item_name 快照
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 默认工作流（待处理 / 进行中 / 待测试 / 已完成 / 已取消）
 
 ## 定义
-DooTask 创建项目时若勾选「启用工作流」，会自动套用一套预置的 5 节点流程，覆盖最常见的「待办 → 工作 → 检查 → 收尾」工序：
+YeYing 创建项目时若勾选「启用工作流」，会自动套用一套预置的 5 节点流程，覆盖最常见的「待办 → 工作 → 检查 → 收尾」工序：
 
 | 节点 | 状态 | 默认颜色 | 默认 turns（可流转到） |
 |---|---|---|---|

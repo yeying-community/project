@@ -16,16 +16,16 @@ related_tools: []
 related_pages: []
 prerequisites: []
 negative:
-  - DooTask 内部没有「重发推送」按钮
+  - YeYing 内部没有「重发推送」按钮
   - 推送日志只有管理员通过查库 umeng_logs 才能看
   - 静默消息和自己发的消息本来就不推，不算故障
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # APP 收不到推送怎么办
 
 ## 问题
-DooTask 移动端 APP 后台 / 退出登录状态下没收到新消息通知。
+YeYing 移动端 APP 后台 / 退出登录状态下没收到新消息通知。
 
 ## 排查顺序
 1. **管理员有没有配友盟？**
@@ -35,8 +35,8 @@ DooTask 移动端 APP 后台 / 退出登录状态下没收到新消息通知。
    - 打开对应聊天 → 右上角设置 → 检查「免打扰」是否打开
    - 免打扰时该会话不推
 3. **APP 是不是开了通知权限？**
-   - iOS：「设置 → DooTask → 通知 → 允许通知」
-   - Android：「设置 → 应用 → DooTask → 通知 → 允许全部」
+   - iOS：「设置 → YeYing → 通知 → 允许通知」
+   - Android：「设置 → 应用 → YeYing → 通知 → 允许全部」
    - 详见 [[mobile-notify.permission.faq]]
 4. **是不是 PC 在线被延迟了？**
    - PC 端 60 秒内活跃过，APP 推送会被延迟 10 秒

@@ -16,10 +16,10 @@ related_tools: []
 related_pages: []
 prerequisites: []
 negative:
-  - DooTask 没有"轮询拉新"机制，所有实时性都依赖 WebSocket
+  - YeYing 没有"轮询拉新"机制，所有实时性都依赖 WebSocket
   - WebSocket 断线期间发生的变更不会自动补拉
   - 关闭浏览器标签后再打开不会自动重连之前的 WS 会话
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务更新没同步 / 看不到别人改的字段
@@ -28,7 +28,7 @@ last_verified: v1.7.90
 同事在任务上改了截止时间 / 负责人 / 状态，但我这边页面上还是旧值，要刷新才看得到。
 
 ## 原因
-DooTask 任务字段的实时同步走两条路径：
+YeYing 任务字段的实时同步走两条路径：
 
 - **WebSocket 推送**：后端在 `Task` 模型保存后通过 `Doo::userIdPush` 推 `task` 事件，前端 store 收到后更新本地缓存
 - **进入页面拉一次**：进任务详情 / 项目页时主动拉一次最新数据

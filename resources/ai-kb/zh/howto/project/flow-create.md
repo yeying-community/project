@@ -20,13 +20,13 @@ negative:
   - 单个工作流最多 10 个节点
   - 工作流启用后无法回退到"无流程"模式
   - 个人项目（personal=1）不支持工作流
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 在项目设置中启用 / 创建工作流
 
 ## 是什么
-DooTask 工作流（ProjectFlow + ProjectFlowItem）让任务在「待办 / 开发 / 测试 / 完成」等自定义状态间流转。比裸用「列」（[[project.column.howto.add]]）更适合"按工序推进"的场景。任务详情见 [[task.flow.concept]]。
+YeYing 工作流（ProjectFlow + ProjectFlowItem）让任务在「待办 / 开发 / 测试 / 完成」等自定义状态间流转。比裸用「列」（[[project.column.howto.add]]）更适合"按工序推进"的场景。任务详情见 [[task.flow.concept]]。
 
 ## 入口
 - 桌面端：项目设置 → 「工作流」标签 → 「启用工作流」

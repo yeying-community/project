@@ -18,13 +18,13 @@ negative:
   - 一个项目只能有 1 个拥有者（owner=1）
   - 项目管理员不能罢免其他管理员、不能转让拥有者
   - 项目角色与系统角色（站点管理员）独立，互不继承
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 项目角色（拥有者 / 管理员 / 成员）
 
 ## 定义
-DooTask 项目角色用 `ProjectUser.owner` 字段 3 个值表达：
+YeYing 项目角色用 `ProjectUser.owner` 字段 3 个值表达：
 - `0` — **普通成员**（OWNER_MEMBER）
 - `1` — **项目拥有者** / **项目负责人**（OWNER_PRIMARY），每项目唯一
 - `2` — **项目管理员** / **项目副手**（OWNER_DEPUTY）

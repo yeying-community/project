@@ -15,10 +15,10 @@ related_tools: []
 related_pages: []
 prerequisites: []
 negative:
-  - 链接不是「公开 URL」，访问者仍需登录 DooTask 才能看到内容
+  - 链接不是「公开 URL」，访问者仍需登录 YeYing 才能看到内容
   - 同一对 (报告, 用户) 默认复用同一个 code；除非显式刷新（`refresh=yes`）
   - 失败逻辑：如果原报告被删除，链接打开报「报告不存在或已被删除」
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 报告分享链接

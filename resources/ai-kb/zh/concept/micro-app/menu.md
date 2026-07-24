@@ -19,14 +19,14 @@ prerequisites:
 negative:
   - 自定义菜单不会自动同步给已离线的用户，需刷新页面
   - 不支持把自定义菜单注入到「应用市场」或「系统设置」
-  - 自定义菜单的 URL 必须能被 DooTask 前端 iframe / 跳转打开，未对外的内网地址需自行确保连通
-last_verified: v1.7.90
+  - 自定义菜单的 URL 必须能被 YeYing 前端 iframe / 跳转打开，未对外的内网地址需自行确保连通
+last_verified: v0.0.1
 ---
 
 # 自定义微应用菜单
 
 ## 定义
-自定义微应用菜单（microapp_menu）让管理员把任意外部网页或服务以「微应用卡片」的形式接入 DooTask，无需打成插件。配置保存到系统设置项 `microapp_menu`，按用户身份过滤后下发到前端 `microAppsMenus` 状态。
+自定义微应用菜单（microapp_menu）让管理员把任意外部网页或服务以「微应用卡片」的形式接入 YeYing，无需打成插件。配置保存到系统设置项 `microapp_menu`，按用户身份过滤后下发到前端 `microAppsMenus` 状态。
 
 ## 关键属性
 - **应用 ID**：唯一标识，例如 `custom-okr`

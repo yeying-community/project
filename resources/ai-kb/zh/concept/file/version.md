@@ -19,7 +19,7 @@ negative:
   - 普通上传文件覆盖后只会替换最新版，无完整历史
   - 没有版本数量上限，但定期清理由系统设置决定
   - 不支持「版本备注」字段（只看保存人 + 时间 + 大小）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 文件版本历史
@@ -51,4 +51,4 @@ last_verified: v1.7.90
 - 选某一版可「预览」或「恢复」（恢复 = 把该历史版复制为新的最新版，保留中间版本）
 
 ## 与"文件协作锁"
-DooTask 在线 Office 编辑通过 OnlyOffice 提供多人协作，多人编辑同一文档时由 OnlyOffice 自身的协同逻辑保证一致性，并在最后一个编辑者关闭后回写一版到 FileContent。
+YeYing 在线 Office 编辑通过 OnlyOffice 提供多人协作，多人编辑同一文档时由 OnlyOffice 自身的协同逻辑保证一致性，并在最后一个编辑者关闭后回写一版到 FileContent。

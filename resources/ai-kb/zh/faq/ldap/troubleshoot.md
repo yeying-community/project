@@ -21,8 +21,8 @@ prerequisites: []
 negative:
   - 错误日志写到 PHP error_log（info 级别），不会直接弹给前端
   - 没有专门的 LDAP 测试用户接口，只能用「测试连接」验通管理员绑定
-  - 部分 LDAPS 自签证书需要在容器内信任 CA，DooTask 主程序不自带证书管理
-last_verified: v1.7.90
+  - 部分 LDAPS 自签证书需要在容器内信任 CA，YeYing 主程序不自带证书管理
+last_verified: v0.0.1
 ---
 
 # LDAP 连接 / 同步失败排查
@@ -35,9 +35,9 @@ last_verified: v1.7.90
 - 后端日志出现 `[LDAP] auth fail` / `[LDAP] sync fail` / `[LDAP] update fail`
 
 ## 先检查配置（最常见）
-打开 LDAP 设置页逐项核对：「LDAP 地址」（Host）、「LDAP 端口」（默认 389）、「Base DN」、「User DN」（绑定 DN）、「密码」、「登录属性」，改完点「测试链接」验证；并确认网络 / 防火墙放通 DooTask 到 LDAP 的端口。
+打开 LDAP 设置页逐项核对：「LDAP 地址」（Host）、「LDAP 端口」（默认 389）、「Base DN」、「User DN」（绑定 DN）、「密码」、「登录属性」，改完点「测试链接」验证；并确认网络 / 防火墙放通 YeYing 到 LDAP 的端口。
 
-注意：LDAP 用户在**首次登录 DooTask 时**才同步创建本地账号，没有批量预同步，成员列表暂时看不到 LDAP 用户属正常，见 [[ldap.sync.howto]]。
+注意：LDAP 用户在**首次登录 YeYing 时**才同步创建本地账号，没有批量预同步，成员列表暂时看不到 LDAP 用户属正常，见 [[ldap.sync.howto]]。
 
 ### 1. 管理员绑定失败（验证失败）
 触发：「测试链接」报「验证失败」。
@@ -45,7 +45,7 @@ last_verified: v1.7.90
 - LDAP 地址是否带了 `ldap://` 前缀？后端只接受纯域名/IP
 - 端口对不对（明文 389 / TLS 636）
 - User DN（管理员 DN）写完整 `cn=admin,dc=example,dc=com`（不是 `admin`）
-- 防火墙是否放行 DooTask 容器到 LDAP 服务器
+- 防火墙是否放行 YeYing 容器到 LDAP 服务器
 - LDAPS 自签证书要在容器内信任 CA
 
 ### 2. 用户搜不到（登录账号密码错误）

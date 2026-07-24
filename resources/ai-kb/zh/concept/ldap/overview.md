@@ -23,13 +23,13 @@ negative:
   - 不支持多 LDAP 域，只能配置 1 个 default connection
   - LDAP 用户没邮箱属性就无法首次登录（会抛「LDAP 用户缺少邮箱属性」）
   - LDAP 用户密码不存到本地，本地密码用随机串占位
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # LDAP 集成是什么
 
 ## 定义
-LDAP（Lightweight Directory Access Protocol）集成让 DooTask 用企业已有的 LDAP / Active Directory 账号体系做认证。开启后用户在登录页输入企业域账号 + 密码，DooTask 通过 LDAP 协议向目录服务器认证，认证成功后在本地自动创建或合并账号。
+LDAP（Lightweight Directory Access Protocol）集成让 YeYing 用企业已有的 LDAP / Active Directory 账号体系做认证。开启后用户在登录页输入企业域账号 + 密码，YeYing 通过 LDAP 协议向目录服务器认证，认证成功后在本地自动创建或合并账号。
 
 实现位于 `app/Ldap/LdapUser.php`，依赖 `directorytree/ldaprecord` 库。设置存在 `setting` 表的 `thirdAccessSetting` 分组。
 
@@ -44,7 +44,7 @@ LDAP（Lightweight Directory Access Protocol）集成让 DooTask 用企业已有
 
 ## 工作流程
 
-1. 用户在 DooTask 登录页输入企业账号 + 密码
+1. 用户在 YeYing 登录页输入企业账号 + 密码
 2. 后端用管理员 Bind 搜索 `loginAttr=用户名` 的 entry
 3. 拿到该 entry 的真实 DN，用「DN + 用户输入的密码」二次 Bind
 4. Bind 成功 → 从 entry 中提取邮箱（按 `mail / cn / uid / userPrincipalName` 顺序）

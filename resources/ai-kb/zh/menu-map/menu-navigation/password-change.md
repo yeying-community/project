@@ -15,8 +15,8 @@ related_pages: [setting]
 prerequisites: []
 negative:
   - 忘记密码 / 重置密码（未登录场景）走登录页「忘记密码」流程，不走个人设置
-  - LDAP / OAuth 账号通常无法在 DooTask 内改密，需到上游系统
-last_verified: v1.7.90
+  - LDAP / OAuth 账号通常无法在 YeYing 内改密，需到上游系统
+last_verified: v0.0.1
 ---
 
 # 修改密码入口在哪

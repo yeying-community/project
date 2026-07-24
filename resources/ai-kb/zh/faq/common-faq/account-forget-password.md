@@ -17,15 +17,15 @@ related_pages: []
 prerequisites: []
 negative:
   - 找回密码必须能收到邮件，邮箱未验证或邮件服务未配则只能找管理员
-  - LDAP / 域账号的密码在域控修改，DooTask 自助找回无效
+  - LDAP / 域账号的密码在域控修改，YeYing 自助找回无效
   - 超级管理员（id=1）忘密码不能用前端找回，必须走服务器命令重置
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 忘记密码怎么办
 
 ## 问题
-忘了 DooTask 登录密码，要如何找回 / 重置。
+忘了 YeYing 登录密码，要如何找回 / 重置。
 
 ## 普通用户找回
 前提：注册时已验证邮箱、管理员已配 SMTP（[[email-notice.config.howto]]）。
@@ -39,7 +39,7 @@ last_verified: v1.7.90
 收不到邮件：检查垃圾邮件、等几分钟、确认邮箱拼写。详见 [[common-faq.account-email-not-verified.faq]]。
 
 ## LDAP / 域账号
-DooTask 不存域账号密码，找回入口对域账号无效。找公司 IT 重置域密码，回 DooTask 用新密码登录即可。
+YeYing 不存域账号密码，找回入口对域账号无效。找公司 IT 重置域密码，回 YeYing 用新密码登录即可。
 
 ## 管理员侧重置（兜底）
 1. 进「成员管理」找到该用户

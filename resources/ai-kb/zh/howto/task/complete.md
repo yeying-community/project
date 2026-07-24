@@ -20,13 +20,13 @@ negative:
   - 父任务完成不会自动完成所有子任务，需要手动或 [[task.subtask.howto.create]] 后逐个处理
   - 完成不等于归档，归档要走 [[task.archive.howto]]
   - 重复任务在完成的瞬间生成下一份，详见 [[task.recurring.howto]]
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 标记任务完成 / 取消完成
 
 ## 是什么
-任务完成在 DooTask 中通过 `complete_at` 字段记录，非空表示已完成。完成与归档（archived_at）、删除（deleted_at）是三个互相独立的状态字段。
+任务完成在 YeYing 中通过 `complete_at` 字段记录，非空表示已完成。完成与归档（archived_at）、删除（deleted_at）是三个互相独立的状态字段。
 
 ## 入口
 - 桌面端：任务卡片左侧圆形复选框、详情页顶部「✓ 完成」按钮

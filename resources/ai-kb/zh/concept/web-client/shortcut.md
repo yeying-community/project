@@ -15,16 +15,16 @@ related_tools: []
 related_pages: []
 prerequisites: []
 negative:
-  - 网页端不能注册全局快捷键，只在 DooTask 网页处于前台时生效
+  - 网页端不能注册全局快捷键，只在 YeYing 网页处于前台时生效
   - 截图、全局唤起等系统级快捷键仅桌面端有，见 [[electron-client.shortcut.concept]]
-  - 浏览器自身快捷键（Cmd+T 新建标签、Cmd+W 关闭标签）优先生效，DooTask 不能拦截
-last_verified: v1.7.90
+  - 浏览器自身快捷键（Cmd+T 新建标签、Cmd+W 关闭标签）优先生效，YeYing 不能拦截
+last_verified: v0.0.1
 ---
 
 # 网页端快捷键
 
 ## 应用内键盘操作
-网页端的快捷键只在 DooTask 标签页处于焦点状态时生效。下表的 `Mod` 代表 macOS 的 `Command` 或 Windows / Linux 的 `Ctrl`。
+网页端的快捷键只在 YeYing 标签页处于焦点状态时生效。下表的 `Mod` 代表 macOS 的 `Command` 或 Windows / Linux 的 `Ctrl`。
 
 | 操作 | macOS | Windows / Linux |
 |---|---|---|

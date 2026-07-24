@@ -16,10 +16,10 @@ related_tools: []
 related_pages: []
 prerequisites: []
 negative:
-  - DooTask 不是离线优先架构，不支持本地写入 → 上线后合并
+  - YeYing 不是离线优先架构，不支持本地写入 → 上线后合并
   - 离线期间不能发消息、不能改任务，所有操作必须联网完成
   - WebSocket 断线期间的实时推送不会被服务器缓存补发
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 离线后再上线，期间的数据怎么办
@@ -28,8 +28,8 @@ last_verified: v1.7.90
 - 我刚才断网了 5 分钟，重新上线后聊天历史 / 任务变更能补回来吗？
 - 桌面端 / 手机端从后台切回前台，期间的更新怎么获取？
 
-## DooTask 的同步模型
-DooTask 是「在线优先」架构：
+## YeYing 的同步模型
+YeYing 是「在线优先」架构：
 
 - 所有读写都直接请求服务器，不存本地副本
 - 在线时通过 WebSocket 接收实时推送

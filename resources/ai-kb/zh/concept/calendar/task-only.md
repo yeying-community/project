@@ -18,13 +18,13 @@ negative:
   - 日历不显示 ProjectTaskUser.owner=0（协作 / assist）的任务
   - 想看协作任务请到 [[dashboard.assist.howto]]
   - 不能切换"显示所有项目任务包括别人的"
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 日历只显示「我作为负责人的任务」
 
 ## 定义
-DooTask 日历的过滤规则相当窄：仅展示 `ProjectTaskUser.owner = 1` 命中当前用户的、有 end_at 的、未归档的任务。所以**协作的任务不会出现在日历上**。这是设计：日历是"我自己要安排时间做什么"的视图，避免被他人的任务挤满。
+YeYing 日历的过滤规则相当窄：仅展示 `ProjectTaskUser.owner = 1` 命中当前用户的、有 end_at 的、未归档的任务。所以**协作的任务不会出现在日历上**。这是设计：日历是"我自己要安排时间做什么"的视图，避免被他人的任务挤满。
 
 ## 不显示的内容
 | 类型 | 为什么不显示 |

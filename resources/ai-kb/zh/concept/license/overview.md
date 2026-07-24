@@ -23,15 +23,15 @@ prerequisites:
   - 仅超级管理员能保存 License
 negative:
   - 3 人以下的部署不强制 License（不绑 SN / MAC，但仍受人数限制）
-  - 一份 License 不能拆给多个 DooTask 终端共用
+  - 一份 License 不能拆给多个 YeYing 终端共用
   - 过期或人数超限不会立刻锁死功能，但会在管理端持续报错提示
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # License Key 是什么
 
 ## 定义
-License Key 是 DooTask 终端的授权凭证，决定一个部署允许多少注册用户、绑定哪台机器、有效期到何时。它是一段加密字符串，由官方根据「终端 SN + MAC + 人数 + 过期时间」签发。
+License Key 是 YeYing 终端的授权凭证，决定一个部署允许多少注册用户、绑定哪台机器、有效期到何时。它是一段加密字符串，由官方根据「终端 SN + MAC + 人数 + 过期时间」签发。
 
 后端通过 `api/system/license` 接口读写，存储在主程序根目录的 License 文件中（由 `Doo::licenseSave/licenseContent` 管理）。
 

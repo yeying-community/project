@@ -14,15 +14,15 @@ related_tools: []
 related_pages: [messenger]
 prerequisites: []
 negative:
-  - DooTask 没有独立的「通知中心」页面，所有系统通知都通过系统机器人单聊推送
+  - YeYing 没有独立的「通知中心」页面，所有系统通知都通过系统机器人单聊推送
   - 没有桌面端通知小铃铛入口
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 通知中心入口在哪
 
 ## 路径
-DooTask 的"通知"以系统机器人单聊形式存在，没有独立通知中心。
+YeYing 的"通知"以系统机器人单聊形式存在，没有独立通知中心。
 
 - 桌面端：左侧栏「消息」→ 列表里找系统机器人单聊：
   - 「任务提醒」（task-alert@bot.system）

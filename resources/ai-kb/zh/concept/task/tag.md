@@ -18,13 +18,13 @@ negative:
   - 任务标签按项目隔离，不能跨项目共享
   - 单个任务最大标签数 10 个
   - 标签名最长 20 字符
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务标签（项目内独立）
 
 ## 定义
-DooTask 任务标签分两类：
+YeYing 任务标签分两类：
 - **临时标签**（ProjectTaskTag 表）：在任务详情页直接输入产生，记录 `name + color`，无独立 id，按 project_id 绑定
 - **项目级预定义标签**（ProjectTag 表）：在项目设置里统一管理的标签，有 id、可排序、可重命名，所有任务共用同一份
 

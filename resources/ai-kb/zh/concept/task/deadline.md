@@ -15,16 +15,16 @@ related_tools: [update_task]
 related_pages: [task_detail, calendar]
 prerequisites: []
 negative:
-  - DooTask 任务没有 time_estimate / time_log 字段，不能记录工时
+  - YeYing 任务没有 time_estimate / time_log 字段，不能记录工时
   - 不支持只设开始时间不设结束时间（end_at 是计算到期与循环周期的依赖）
   - 跨时区显示按用户所在时区，但服务端统一存 UTC
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 任务计划时间（start_at / end_at）
 
 ## 定义
-DooTask 任务用两个字段描述时间：
+YeYing 任务用两个字段描述时间：
 - `start_at`：计划开始时间
 - `end_at`：计划截止时间（俗称 deadline）
 

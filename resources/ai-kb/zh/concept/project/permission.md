@@ -19,13 +19,13 @@ negative:
   - 权限规则只控制任务操作（add/update/remove/move 等），不控制项目设置
   - 拥有者 / 管理员的权限不可被 ProjectPermission 限制（默认全开）
   - 权限规则只能在「项目级」配置，不能按列、按标签细分
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 项目任务权限点（ProjectPermission）
 
 ## 定义
-DooTask 用 `ProjectPermission` 表细化「谁能做什么任务级操作」。每条规则按 4 类主体 + 11 个权限点矩阵展开。规则只针对 owner=0 的普通成员；拥有者 / 管理员默认全开。
+YeYing 用 `ProjectPermission` 表细化「谁能做什么任务级操作」。每条规则按 4 类主体 + 11 个权限点矩阵展开。规则只针对 owner=0 的普通成员；拥有者 / 管理员默认全开。
 
 ## 4 类权限主体
 - `project_leader` — 项目拥有者（隐式全开）

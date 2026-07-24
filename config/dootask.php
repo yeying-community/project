@@ -32,9 +32,8 @@ return [
     // 临时文件自动清理天数（DeleteTmpTask）
     'auto_empty_temp_file' => env('AUTO_EMPTY_TEMP_FILE', 30),
 
-    // 在线授权：appstore 授权中心地址（OnlineLicense；默认中央，测试可指向 dev appstore）
-    // [调试中] 临时指向本地 dev appstore，发版前改回 'https://appstore.dootask.com'
-    'online_license_appstore_url' => env('ONLINE_LICENSE_APPSTORE_URL', 'https://appstore.dootask.com'),
+    // 在线授权：YeYing AppStore 授权中心地址（OnlineLicense；测试可指向开发环境）
+    'online_license_appstore_url' => env('ONLINE_LICENSE_APPSTORE_URL', 'https://appstore.yeying.pub'),
 
     // 应用市场内网地址：容器部署默认走 appstore 服务名；本机直跑可指向宿主机暴露端口
     'appstore_internal_url' => env('APPSTORE_INTERNAL_URL', 'http://appstore'),
@@ -45,9 +44,8 @@ return [
     // 前端微应用打开 AppStore 的入口地址；默认走同源 /appstore 反代，本机直跑可改成独立端口
     'appstore_entry_url' => env('APPSTORE_ENTRY_URL', 'appstore/internal?language={system_lang}&theme={system_theme}'),
 
-    // Community runtime implementation. The open-source driver is the only
-    // supported default and does not require an external binary.
-    'runtime_driver' => env('RUNTIME_DRIVER', 'opensource'),
+    // YeYing community runtime implementation. It does not require an external binary.
+    'runtime_driver' => env('RUNTIME_DRIVER', 'yeying'),
 
     // GnuPG 可执行文件路径；为空时自动从 PATH 和常见安装路径查找
     'gpg_binary' => env('GPG_BINARY'),

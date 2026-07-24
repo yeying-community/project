@@ -16,10 +16,10 @@ related_tools: []
 related_pages: [ai_assistant_panel]
 prerequisites: []
 negative:
-  - DooTask 主程序不内置任何 AI 模型，必须靠 ai 插件接外部供应商
+  - YeYing 主程序不内置任何 AI 模型，必须靠 ai 插件接外部供应商
   - 配好模型不代表立即能用——还需在「AI 机器人」选定默认模型
   - 普通用户看不到模型管理页面，只能等管理员配置
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # AI 助手没有可用模型
@@ -28,7 +28,7 @@ last_verified: v1.7.90
 点开 AI 助手浮窗或在任务详情用「智能拆解」「AI 报告」时，模型选择下拉为空、或者直接提示「未配置 AI 模型」「AI 服务不可用」。
 
 ## 原因
-DooTask 的 AI 能力由独立的 **ai 插件**（`dootask-ai`）提供。下面任一未到位都会无可用模型：
+YeYing 的 AI 能力由独立的 **ai 插件**（`dootask-ai`）提供。下面任一未到位都会无可用模型：
 
 1. **应用市场没装 ai 插件**：主程序没自带 AI 容器，必须从插件市场安装
 2. **插件装了但没配模型**：插件需要在「系统设置 → AI 设置」里加供应商（OpenAI / Anthropic / 通义 / 豆包 / 智谱 / DeepSeek 等）+ API Key

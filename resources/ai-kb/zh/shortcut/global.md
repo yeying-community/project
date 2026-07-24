@@ -11,7 +11,7 @@ aliases:
   - 常用快捷键
   - AI 助手快捷键
   - 搜索快捷键
-  - DooTask 怎么呼出 AI
+  - YeYing 怎么呼出 AI
   - 搜索的快捷键是什么
 related_tools: []
 related_pages: []
@@ -20,12 +20,12 @@ negative:
   - 浏览器端只有在焦点不在输入框 / 富文本编辑器内时才响应
   - AI 助手快捷键仅在 AI 微应用已安装时生效
   - 移动端无键盘快捷键，需通过界面按钮触发
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 全局快捷键
 
-DooTask 全局可用的快捷键，主要在桌面端（Electron 客户端、Chrome / Safari 等浏览器）生效。下表中 macOS 用 Cmd，Windows / Linux 用 Ctrl。
+YeYing 全局可用的快捷键，主要在桌面端（Electron 客户端、Chrome / Safari 等浏览器）生效。下表中 macOS 用 Cmd，Windows / Linux 用 Ctrl。
 
 | 操作 | Windows / Linux | macOS | 移动端 |
 |---|---|---|---|

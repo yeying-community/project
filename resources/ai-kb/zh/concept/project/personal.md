@@ -18,13 +18,13 @@ negative:
   - 个人项目每个用户只能有 1 个
   - 个人项目不能邀请其他成员
   - 个人项目不能开启工作流
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 个人项目 vs 团队项目
 
 ## 定义
-DooTask 用 `personal` 字段区分两类项目：
+YeYing 用 `personal` 字段区分两类项目：
 - `personal=0` — **团队项目**（默认）：可邀请多人协作
 - `personal=1` — **个人项目**：仅创建者自己可见可改，每用户限 1 个
 

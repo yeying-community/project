@@ -7,7 +7,7 @@ scope: end-user
 locale: zh
 aliases:
   - 怎么登录
-  - 登录 DooTask
+  - 登录 YeYing
   - 登录方式
   - 怎么进系统
   - 登不上
@@ -20,7 +20,7 @@ negative:
   - 账号被停用（disable_at 非空）会提示「帐号已停用」，需联系管理员
   - 开启「注册需邮箱验证」时，未验证邮箱的账号无法登录，必须先完成验证（[[user-account.email-verify.howto]]）
   - 多次失败后系统会强制要求填验证码（[[user-account.login-codeimg.howto]]）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 登录账号
@@ -30,7 +30,7 @@ last_verified: v1.7.90
 - 客户端启动时自动跳转
 
 ## 支持的登录方式
-DooTask 同时支持以下登录方式（在登录页可切换）：
+YeYing 同时支持以下登录方式（在登录页可切换）：
 
 1. **邮箱 + 密码**：默认方式
 2. **扫码登录**：客户端/App 已登录后扫码登录另一端，详见 [[user-account.login-qrcode.howto]]

@@ -22,13 +22,13 @@ negative:
   - Web 端、桌面端（Electron）不走友盟推送，靠 WebSocket + 本地通知
   - 未配置友盟 appkey 时所有 APP 推送链路不工作，但站内消息正常
   - 不支持替换为其他推送服务（如 FCM、个推、极光）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # APP 推送是什么
 
 ## 定义
-APP 推送是 DooTask 通过友盟（UMENG）通道向移动端 APP（iOS / Android）发送的离线消息通知。即便 APP 被后台杀掉或网络断开后再回来，推送也能触达手机系统通知栏。
+APP 推送是 YeYing 通过友盟（UMENG）通道向移动端 APP（iOS / Android）发送的离线消息通知。即便 APP 被后台杀掉或网络断开后再回来，推送也能触达手机系统通知栏。
 
 ## 关键属性
 - **通道**：友盟 UMENG，分 iOS / Android 两套独立配置（`ios_key`、`ios_secret`、`android_key`、`android_secret`）

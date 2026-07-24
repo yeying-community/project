@@ -19,13 +19,13 @@ negative:
   - 不支持 IE 全系列（IE 11 及以下）
   - 不支持 Edge Legacy（基于 EdgeHTML 内核的旧 Edge）
   - 不支持 QQ 浏览器 X5 内核的兼容模式（部分 ES2017+ 语法不识别）
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 网页端浏览器兼容性
 
 ## 推荐浏览器
-DooTask 网页端基于 Vue 2 + Vite 构建，使用现代 ES 语法，**必须用支持 ES2017+ 的浏览器**。下表为推荐最低版本：
+YeYing 网页端基于 Vue 2 + Vite 构建，使用现代 ES 语法，**必须用支持 ES2017+ 的浏览器**。下表为推荐最低版本：
 
 | 浏览器 | 最低版本 | 备注 |
 |---|---|---|

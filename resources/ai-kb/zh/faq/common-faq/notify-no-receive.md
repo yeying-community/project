@@ -16,23 +16,23 @@ related_tools: []
 related_pages: [user_settings_notification]
 prerequisites: []
 negative:
-  - DooTask 不会主动短信通知，不必去等短信
+  - YeYing 不会主动短信通知，不必去等短信
   - 系统不会自动告知用户「你被免打扰了」；得自己检查设置
   - 「已读」消息不会再次推送，被另一端读完不算故障
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 收不到任何通知
 
 ## 问题
-DooTask 用户表示完全没收到任何通知——桌面不弹、APP 不响、邮件没来。
+YeYing 用户表示完全没收到任何通知——桌面不弹、APP 不响、邮件没来。
 
 ## 排查顺序
-DooTask 有四条独立的通知通道，依次自检：
+YeYing 有四条独立的通知通道，依次自检：
 
 1. **应用内红点**：左侧聊天列表、任务列表是否有红点。没有 → 后端根本没产生通知，从源头排查（消息真的发给你了？被设了可见用户排除？）
 2. **桌面 / Web 通知**：桌面端 / Web 是否拿到系统通知权限，详见 [[desktop-notify.permission.faq]]
-3. **移动端 APP 推送**：手机是否给 DooTask 通知权限 + 后台运行；管理员是否配了友盟 [[mobile-notify.permission.faq]] / [[push-notice.troubleshoot.faq]]
+3. **移动端 APP 推送**：手机是否给 YeYing 通知权限 + 后台运行；管理员是否配了友盟 [[mobile-notify.permission.faq]] / [[push-notice.troubleshoot.faq]]
 4. **邮件通知**：管理员是否配 SMTP；该用户是否在「忽略邮箱」列表里，详见 [[email-notice.troubleshoot.faq]]
 
 ## 解决

@@ -17,13 +17,13 @@ prerequisites: []
 negative:
   - 应用市场没有名为「checkin」或「签到」的独立插件
   - 卸载 face 插件不会影响 WiFi / 定位 / 手动签到
-last_verified: v1.7.90
+last_verified: v0.0.1
 ---
 
 # 签到是插件还是内置功能
 
 ## 结论
-签到打卡的**主体功能是 DooTask 内置的**，不需要单独安装插件。模型 (`UserCheckinRecord` / `UserCheckinMac` / `UserCheckinFace`)、签到机器人 (`check-in@bot.system`)、提醒任务 (`CheckinRemindTask`)、设置接口都打包在主程序里，开箱即用。
+签到打卡的**主体功能是 YeYing 内置的**，不需要单独安装插件。模型 (`UserCheckinRecord` / `UserCheckinMac` / `UserCheckinFace`)、签到机器人 (`check-in@bot.system`)、提醒任务 (`CheckinRemindTask`)、设置接口都打包在主程序里，开箱即用。
 
 ## 各签到方式的依赖
 - **手动签到（manual）**：无依赖，主程序自带
