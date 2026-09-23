@@ -46,6 +46,7 @@ use App\Models\ProjectTag;
 use App\Models\ProjectTaskRelation;
 use App\Models\ProjectTaskAiEvent;
 use App\Models\UserDepartment;
+use App\Services\PersistentStorage;
 use App\Module\AiTaskSuggestion;
 use App\Observers\ProjectTaskObserver;
 
@@ -2688,8 +2689,9 @@ class ProjectController extends AbstractController
             ]));
         }
         //
-        $filePath = public_path($file->getRawOriginal('path'));
-        return Base::DownloadFileResponse($filePath, $file->name);
+        [$filePath] = PersistentStorage::readableLocalPath($file->getRawOriginal('path'));
+        return Base::DownloadFileResponse($filePath, $file->name)
+            ->deleteFileAfterSend(PersistentStorage::usesS3());
     }
 
     /**

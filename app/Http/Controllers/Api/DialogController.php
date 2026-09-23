@@ -1994,10 +1994,16 @@ class DialogController extends AbstractController
                 'content' => Doo::translate("内容不存在")
             ];
             if (isset($data['msg']['file']['path'])) {
-                $filePath = public_path($data['msg']['file']['path']);
-                if (file_exists($filePath)) {
+                $filePath = $data['msg']['file']['path'];
+                if (PersistentStorage::isPersistentKey($filePath) && PersistentStorage::exists($filePath)) {
                     $data['content']['type'] = $data['msg']['type'];
-                    $data['content']['content'] = file_get_contents($filePath);
+                    $data['content']['content'] = PersistentStorage::getContent($filePath);
+                } else {
+                    $localPath = public_path($filePath);
+                    if (file_exists($localPath)) {
+                        $data['content']['type'] = $data['msg']['type'];
+                        $data['content']['content'] = file_get_contents($localPath);
+                    }
                 }
             }
         }
@@ -2048,8 +2054,9 @@ class DialogController extends AbstractController
             return Redirect::to(FileContent::toPreviewUrl($array));
         }
         //
-        $filePath = public_path($array['path']);
-        return Base::DownloadFileResponse($filePath, $array['name']);
+        [$filePath] = PersistentStorage::readableLocalPath($array['path']);
+        return Base::DownloadFileResponse($filePath, $array['name'])
+            ->deleteFileAfterSend(PersistentStorage::usesS3());
     }
 
     /**

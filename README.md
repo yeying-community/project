@@ -77,7 +77,7 @@ This command runs the production frontend build and updates `public/js/build/`. 
 
 ## Deployment and Operations
 
-Production deployment, operations and upgrade details are maintained in Chinese at [docs/部署手册.md](./docs/部署手册.md).
+Production deployment, operations and upgrade details are maintained in Chinese at [docs/运维/发布/部署手册.md](./docs/运维/发布/部署手册.md).
 
 ## License
 

@@ -88,6 +88,23 @@ class PersistentStorageTest extends TestCase
         }
     }
 
+    public function test_s3_persistent_object_has_a_readable_download_path_without_public_copy(): void
+    {
+        Storage::fake('s3');
+        config()->set('dootask.file_storage_disk', 's3');
+        $key = 'uploads/chat/test/' . uniqid('', true) . '/discussion.md';
+        Storage::disk('s3')->put($key, '# Discussion');
+
+        [$downloadPath, $cleanup] = PersistentStorage::readableLocalPath($key);
+        try {
+            $this->assertFileExists($downloadPath);
+            $this->assertSame('# Discussion', file_get_contents($downloadPath));
+            $this->assertFileDoesNotExist(public_path($key));
+        } finally {
+            $cleanup();
+        }
+    }
+
     public function test_upload_helper_commits_persistent_files_only_to_selected_backend(): void
     {
         Storage::fake('s3');

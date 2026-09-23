@@ -476,10 +476,18 @@ class IndexController extends InvokeController
         $data = parse_url($key);
         $path = Arr::get($data, 'path');
         $file = public_path($path);
-        // 防止 ../ 穿越获取到系统文件
-        abort_if(!str_starts_with(realpath($file), public_path()), 404);
-        // 如果文件不存在，直接返回 404
-        abort_if(!file_exists($file), 404);
+        $persistentS3 = PersistentStorage::usesS3() && PersistentStorage::isPersistentKey((string)$path);
+        if ($persistentS3) {
+            abort_if(!PersistentStorage::exists($path), 404);
+            $fileSize = PersistentStorage::size($path);
+            $fileModified = PersistentStorage::lastModified($path);
+        } else {
+            // 防止 ../ 穿越获取到系统文件
+            abort_if(!str_starts_with((string)realpath($file), public_path()), 404);
+            abort_if(!file_exists($file), 404);
+            $fileSize = filesize($file);
+            $fileModified = filemtime($file);
+        }
         //
         parse_str($data['query'], $query);
         $name = Arr::get($query, 'name');
@@ -487,11 +495,11 @@ class IndexController extends InvokeController
         $userAgent = strtolower(Request::server('HTTP_USER_AGENT'));
         if ($ext === 'pdf') {
             // 文件超过 10m 不支持在线预览，提示下载
-            if (filesize($file) > 10 * 1024 * 1024) {
+            if ($fileSize > 10 * 1024 * 1024) {
                 return view('download', [
                     'system_alias' => Base::settingFind('system', 'system_alias', 'WebPage'),
                     'name' => $name,
-                    'size' => Base::readableBytes(filesize($file)),
+                    'size' => Base::readableBytes($fileSize),
                     'url' => Base::fillUrl($path),
                     'button' => Doo::translate('点击下载'),
                 ]);
@@ -505,9 +513,12 @@ class IndexController extends InvokeController
             }
             // electron 直接在线预览查看
             if (str_contains($userAgent, 'electron') || str_contains($browser, 'desktop')) {
+                if ($persistentS3) {
+                    [$file] = PersistentStorage::readableLocalPath($path);
+                }
                 return Response::download($file, $name, [
                     'Content-Type' => 'application/pdf'
-                ], 'inline');
+                ], 'inline')->deleteFileAfterSend($persistentS3);
             }
             // EEUI App 直接在线预览查看
             if (Base::isEEUIApp() && Base::judgeClientVersion("0.34.47")) {
@@ -544,7 +555,7 @@ class IndexController extends InvokeController
             $url = 'http://nginx/' . $path;
         }
         $url = Base::urlAddparameter($url, [
-            'fullfilename' => Base::rightDelete($name, '.' . $ext) . '_' . filemtime($file) . '.' . $ext
+            'fullfilename' => Base::rightDelete($name, '.' . $ext) . '_' . $fileModified . '.' . $ext
         ]);
         $redirectUrl = Base::fillUrl("fileview/onlinePreview?url=" . urlencode(base64_encode($url)));
         return Redirect::to($redirectUrl, 301);

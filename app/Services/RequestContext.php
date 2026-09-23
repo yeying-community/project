@@ -20,8 +20,25 @@ class RequestContext
     /** @var int 上下文的TTL（生存时间） */
     private const TTL_SECONDS = 3600;  // 上下文 TTL 为 1 小时
 
-    /** @var array<string, ClientContext> 存储每个请求的上下文数据 */
-    private static array $context = [];
+    /** @var string 协程上下文中存放 ClientContext 的键 */
+    private const CTX_SLOT = '__client_context__';
+
+    /**
+     * 非协程运行时（Task Worker / CLI / artisan / 队列）的降级存储。
+     *
+     * HTTP 请求都跑在各自的协程里，ClientContext 存放于 Swoole 协程上下文
+     * （Coroutine::getContext()）——它按协程隔离、且在协程结束时被自动销毁，
+     * 因此无需手动清理、也不会跨请求泄漏。只有在没有协程（cid<0）时才落到
+     * 这个单槽静态数组；单槽会被 begin()/clean() 覆盖或清空，同样不会无界增长。
+     *
+     * 早期实现用一个以「请求ID」为键的静态数组做存储，但请求ID在一次请求内
+     * 无法稳定解析（Swoole 下 request() 取不到 handle() 时写入的属性），导致
+     * 每次 get/set/has 都生成新ID并残留一个 ClientContext，Worker 生命周期内
+     * 无界累积直至 128MB OOM。改用协程上下文后从根上消除该泄漏。
+     *
+     * @var array<string, ClientContext>
+     */
+    private static array $fallbackContext = [];
 
     /**
      * 生成请求唯一ID
@@ -41,8 +58,26 @@ class RequestContext
     {
         $requestId = self::generateRequestId();
         $request->attributes->set(self::CONTEXT_KEY, $requestId);
-        self::$context[$requestId] = new ClientContext();
+
+        $store = self::coroutineStore();
+        if ($store !== null) {
+            $store[self::CTX_SLOT] = new ClientContext();
+        } else {
+            self::$fallbackContext[self::CTX_SLOT] = new ClientContext();
+        }
+
         return $requestId;
+    }
+
+    /**
+     * 返回当前协程的上下文存储（ArrayObject），非协程环境返回 null。
+     */
+    private static function coroutineStore(): ?\ArrayAccess
+    {
+        if (Coroutine::getCid() < 0) {
+            return null;
+        }
+        return Coroutine::getContext();
     }
 
     /**
@@ -70,36 +105,42 @@ class RequestContext
 
     /**
      * 获取当前请求的上下文示例
+     *
+     * 以「当前协程」为粒度解析：同一请求内的所有调用命中同一个 ClientContext，
+     * 不再因请求ID解析不稳定而残留孤儿上下文。$requestId 参数保留以兼容签名，
+     * 现有调用方均未使用它跨请求寻址（见 begin() 注释）。
      */
     public static function getCurrentRequestContext($requestId = null): ?ClientContext
     {
-        $requestId = self::getCurrentRequestId($requestId);
-        if ($requestId === null) {
-            return null;
+        $store = self::coroutineStore();
+        if ($store !== null) {
+            if (!isset($store[self::CTX_SLOT])) {
+                $store[self::CTX_SLOT] = new ClientContext();
+            } else {
+                $store[self::CTX_SLOT]->update();
+            }
+            return $store[self::CTX_SLOT];
         }
 
-        if (!isset(self::$context[$requestId])) {
-            // 如果上下文不存在，则创建一个新的上下文
-            self::$context[$requestId] = new ClientContext();
+        // 非协程降级：单槽存储
+        if (!isset(self::$fallbackContext[self::CTX_SLOT])) {
+            self::$fallbackContext[self::CTX_SLOT] = new ClientContext();
         } else {
-            // 如果上下文已存在，更新访问时间
-            self::$context[$requestId]->update();
+            self::$fallbackContext[self::CTX_SLOT]->update();
         }
-
-        return self::$context[$requestId];
+        return self::$fallbackContext[self::CTX_SLOT];
     }
 
     /**
-     * 清理过期上下文数据，防止内存泄漏
+     * 清理过期的降级上下文数据（协程上下文由 Swoole 自动回收，无需此处处理）。
      */
     public static function cleanExpired(): void
     {
         $now = microtime(true);
 
-        // 清理过期的上下文
-        foreach (self::$context as $requestId => $context) {
+        foreach (self::$fallbackContext as $slot => $context) {
             if ($now - $context->updatedAt > self::TTL_SECONDS) {
-                unset(self::$context[$requestId]);
+                unset(self::$fallbackContext[$slot]);
             }
         }
     }
@@ -209,17 +250,34 @@ class RequestContext
     /**
      * 清理请求上下文
      *
-     * @param string|null $requestId
+     * 协程环境下从当前协程上下文移除 ClientContext（协程结束时 Swoole 亦会
+     * 自动回收，这里只是尽早释放）；非协程环境清空降级单槽。
+     *
+     * @param string|null $requestId 保留以兼容签名，未使用
      * @return void
      */
     public static function clean(?string $requestId = null): void
     {
-        $requestId = self::getCurrentRequestId($requestId);
-        if ($requestId === null) {
+        $store = self::coroutineStore();
+        if ($store !== null) {
+            unset($store[self::CTX_SLOT]);
             return;
         }
+        unset(self::$fallbackContext[self::CTX_SLOT]);
+    }
 
-        unset(self::$context[$requestId]);
+    /**
+     * 以中间件 terminate 阶段传入的请求实例清理其上下文。
+     *
+     * 协程上下文在请求协程结束时会被 Swoole 自动销毁，因此上下文不会泄漏；
+     * 本方法在 terminate 阶段尽早释放当前协程/降级槽，属于双保险。
+     *
+     * @param Request $request
+     * @return void
+     */
+    public static function cleanRequest(Request $request): void
+    {
+        self::clean();
     }
 
     /** ***************************************************************************************** */

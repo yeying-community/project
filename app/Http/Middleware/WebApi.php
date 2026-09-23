@@ -81,11 +81,13 @@ class WebApi
     }
 
     /**
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Symfony\Component\HttpFoundation\Response  $response
      * @return void
      */
-    public function terminate()
+    public function terminate($request, $response)
     {
-        // 请求结束后清理上下文
-        RequestContext::clean();
+        // 请求结束后精确清理本次请求的上下文，避免 self::$context 泄漏累积。
+        RequestContext::cleanRequest($request);
     }
 }
