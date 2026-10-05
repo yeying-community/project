@@ -8,6 +8,7 @@ use App\Models\WebSocketDialogMsg;
 use App\Models\WebSocketDialogMsgRead;
 use App\Module\Base;
 use App\Module\Doo;
+use App\Services\DialogMessageRecipients;
 use App\Services\RequestContext;
 use Carbon\Carbon;
 use Hhxsv5\LaravelS\Swoole\Task\Task;
@@ -101,48 +102,12 @@ class WebSocketDialogMsgTask extends AbstractTask
         $mentions = $msgJoinGroupResult['mentions'];
 
         // 推送目标①：会话成员/群成员
-        $array = [];
-        foreach ($userids AS $userid) {
-            $silence = $this->silence || $silences[$userid];
-            $updated = $updateds[$userid] ?? $msg->created_at;
-            if ($userid == $msg->userid) {
-                $array[$userid] = [
-                    'userid' => $userid,
-                    'mention' => 0,
-                    'silence' => $silence,
-                    'dot' => 0,
-                    'updated' => $updated,
-                ];
-            } else {
-                $mention = array_intersect([0, $userid], $mentions) ? 1 : 0;
-                $silence = $mention ? false : $silence;
-                $dot = $msg->type === 'record' ? 1 : 0;
-                $msgRead = WebSocketDialogMsgRead::createInstance([
-                    'dialog_id' => $msg->dialog_id,
-                    'msg_id' => $msg->id,
-                    'userid' => $userid,
-                    'mention' => $mention,
-                    'silence' => $silence,
-                    'dot' => $dot,
-                ]);
-                if ($msgRead->saveOrIgnore()) {
-                    if ($dialog->session_id && $dialog->session_id != $msg->session_id) {
-                        $msgRead->read_at = Carbon::now();
-                        $msgRead->save();
-                    }
-                }
-                $array[$userid] = [
-                    'userid' => $userid,
-                    'mention' => $mention,
-                    'silence' => $silence,
-                    'dot' => $dot,
-                    'updated' => $updated,
-                ];
-                // 机器人收到消处理
-                $botUser = User::whereUserid($userid)->whereBot(1)->first();
-                if ($botUser) {  // 避免机器人处理自己发送的消息
-                    $this->endArray[] = new BotReceiveMsgTask($botUser->userid, $msg->id, $mentions, $this->client);
-                }
+        [$array, $botIds] = DialogMessageRecipients::prepare(
+            $msg, $dialog, $userids, $mentions, $updateds, $silences, $this->silence
+        );
+        foreach (array_keys($array) as $userid) {
+            if ($userid != $msg->userid && isset($botIds[$userid])) {
+                $this->endArray[] = new BotReceiveMsgTask($userid, $msg->id, $mentions, $this->client);
             }
         }
         // 更新已发送数量

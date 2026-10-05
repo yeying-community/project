@@ -1,10 +1,11 @@
 <?php
 namespace App\Tasks;
 
-use App\Models\WebSocket;
 use App\Models\WebSocketTmpMsg;
 use App\Module\Base;
 use App\Module\Doo;
+use App\Services\OfflinePushMessages;
+use App\Services\OnlineUserSockets;
 use Cache;
 use Carbon\Carbon;
 use Hhxsv5\LaravelS\Swoole\Task\Task;
@@ -79,29 +80,6 @@ class PushTask extends AbstractTask
     }
 
     /**
-     * 记录离线消息，等上线后重新发送
-     * @param array $userFail
-     * @param array $msg
-     */
-    private static function addTmpMsg(array $userFail, array $msg)
-    {
-        foreach ($userFail as $uid) {
-            $msgString = Base::array2json($msg);
-            $inArray = [
-                'md5' => md5($uid . '-' . $msgString),
-                'msg' => $msgString,
-                'send' => 0,
-                'create_id' => $uid,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ];
-            if (!WebSocketTmpMsg::whereMd5($inArray['md5'])->exists()) {
-                WebSocketTmpMsg::insertOrIgnore($inArray);
-            }
-        }
-    }
-
-    /**
      * 推送消息
      * @param array $lists 消息列表
      * @param bool $retryOffline 如果会员不在线，等上线后继续发送
@@ -121,6 +99,8 @@ class PushTask extends AbstractTask
             return;
         }
         $swoole = app('swoole');
+        $fdsByUser = OnlineUserSockets::forPushLists($lists);
+        $offlineMessages = [];
         foreach ($lists AS $item) {
             if (!is_array($item) || empty($item)) {
                 continue;
@@ -152,9 +132,9 @@ class PushTask extends AbstractTask
                     $userid = [$userid];
                 }
                 foreach ($userid as $uid) {
-                    $row = WebSocket::select(['fd'])->whereUserid($uid)->pluck('fd');
-                    if ($row->isNotEmpty()) {
-                        $array = array_merge($array, $row->toArray());
+                    $fds = $fdsByUser[$uid] ?? [];
+                    if ($fds) {
+                        $array = array_merge($array, $fds);
                     } else {
                         $offlineUser[] = $uid;
                     }
@@ -192,9 +172,12 @@ class PushTask extends AbstractTask
             // 记录不在线的
             if ($retryOffline && $tmpMsgId == 0) {
                 $offlineUser = array_values(array_unique($offlineUser));
-                self::addTmpMsg($offlineUser, $msg);
+                foreach ($offlineUser as $uid) {
+                    $offlineMessages[] = ['userid' => $uid, 'msg' => $msg];
+                }
             }
         }
+        OfflinePushMessages::store($offlineMessages);
     }
 
     /**
