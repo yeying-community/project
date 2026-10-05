@@ -50,7 +50,7 @@ Then run from the project root:
 Open:
 
 ```text
-http://127.0.0.1:2222
+http://localhost:2222
 ```
 
 `./cmd local-install` initializes `.env`, PHP dependencies and runtime directories, then runs migrations. It only checks that required settings exist; it does not rewrite `.env` and does not start MySQL, Redis or other middleware. If a value is wrong or a service is unavailable, the command fails when the application connects to that service.

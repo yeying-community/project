@@ -35,10 +35,15 @@ return [
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
-            'options' => [
+            'options' => array_filter([
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
-            ],
+                // Set PUSHER_APP_HOST to the Node Pusher host to use the
+                // standard Pusher HTTP endpoint instead of Pusher Cloud.
+                'host' => env('PUSHER_APP_HOST'),
+                'port' => env('PUSHER_APP_PORT'),
+                'scheme' => env('PUSHER_APP_SCHEME'),
+            ], static fn ($value) => $value !== null && $value !== ''),
         ],
 
         'ably' => [

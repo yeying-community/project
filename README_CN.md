@@ -63,7 +63,7 @@ REDIS_CLIENT=predis
 访问：
 
 ```text
-http://127.0.0.1:2222
+http://localhost:2222
 ```
 
 查看、停止和重启：
