@@ -13,7 +13,7 @@
                     </div>
                 </div>
             </div>
-            <div v-else class="file-box" @click="downFile">
+            <div v-else class="file-box" @click="viewFile">
                 <img class="file-thumb" :src="msg.thumb"/>
                 <div class="file-info">
                     <div class="file-name">{{ msg.name }}</div>

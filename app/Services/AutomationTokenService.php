@@ -174,7 +174,7 @@ class AutomationTokenService
                 return;
             }
         }
-        if (in_array($resource, ['dialog/msg/list', 'dialog/msg/sendtext'], true)) {
+        if (in_array($resource, ['dialog/msg/list', 'dialog/msg/sendtext', 'dialog/msg/sendfile'], true)) {
             $dialogId = intval($request->input('dialog_id'));
             $projectId = $dialogId > 0 ? intval(ProjectTask::whereDialogId($dialogId)->value('project_id')) : 0;
             if ($projectId > 0) {
