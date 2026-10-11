@@ -110,12 +110,11 @@ export default {
                 $A.messageWarning('请填写名称并选择项目')
                 return
             }
-            const expires = new Date(Date.now() + this.form.days * 86400000).toISOString()
             this.submitting = true
             this.$store.dispatch('call', {
                 url: 'token/create',
                 method: 'post',
-                data: {...this.form, expires_at: expires},
+                data: {...this.form},
             }).then(({data}) => {
                 this.created = data
                 this.createVisible = false

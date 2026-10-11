@@ -21,6 +21,26 @@ use Illuminate\Database\QueryException;
 
 class AutomationTokenService
 {
+    /**
+     * Resolve a token lifetime from the server-authoritative day count.
+     *
+     * The default keeps older clients that omitted `days` usable while
+     * ignoring any client-provided timestamp. New clients must send `days`.
+     */
+    public static function expirationFromDays(mixed $value = 30): Carbon
+    {
+        $maxDays = max(1, (int) config('dootask.automation_token_max_days', 90));
+        $days = is_int($value)
+            ? $value
+            : (is_string($value) && preg_match('/^\d+$/D', $value) ? (int) $value : 0);
+
+        if ($days < 1 || $days > $maxDays) {
+            throw new ApiException(sprintf('令牌有效期必须在%d天以内', $maxDays));
+        }
+
+        return now()->addDays($days);
+    }
+
     public static function issue(int $userid, string $name, array $projectIds, Carbon $expiresAt, array $scopes = []): array
     {
         $secret = 'yysk_' . bin2hex(random_bytes(24));
