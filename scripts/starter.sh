@@ -3,6 +3,8 @@ set -euo pipefail
 
 command="${1:-start}"
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+stop_timeout_seconds="${STOP_TIMEOUT_SECONDS:-30}"
+force_stop_timeout_seconds="${FORCE_STOP_TIMEOUT_SECONDS:-5}"
 log_dir="${YEYING_LOG_DIR:-$root_dir/storage/logs}"
 
 env_value() {
@@ -65,6 +67,11 @@ is_running() {
   tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null | grep -q 'laravels'
 }
 
+validate_stop_timeouts() {
+  [[ "$stop_timeout_seconds" =~ ^[0-9]+$ ]] || { echo "STOP_TIMEOUT_SECONDS must be a non-negative integer." >&2; exit 1; }
+  [[ "$force_stop_timeout_seconds" =~ ^[0-9]+$ ]] || { echo "FORCE_STOP_TIMEOUT_SECONDS must be a non-negative integer." >&2; exit 1; }
+}
+
 start() {
   ensure_dirs
   check_runtime
@@ -105,6 +112,7 @@ start() {
 }
 
 stop() {
+  validate_stop_timeouts
   if ! is_running; then
     rm -f "$pid_file"
     echo "YeYing is not running."
@@ -112,12 +120,31 @@ stop() {
   fi
   local pid
   pid="$(cat "$pid_file")"
-  kill "$pid"
-  for _ in {1..50}; do
-    kill -0 "$pid" 2>/dev/null || break
+  kill -TERM "$pid" 2>/dev/null || true
+  local waited=0
+  local stop_wait_limit=$((stop_timeout_seconds * 5))
+  while is_running; do
+    if (( waited >= stop_wait_limit )); then
+      break
+    fi
     sleep 0.2
+    waited=$((waited + 1))
   done
-  kill -9 "$pid" 2>/dev/null || true
+
+  if is_running; then
+    echo "Graceful stop timed out after ${stop_timeout_seconds}s; sending SIGKILL." >&2
+    kill -KILL "$pid" 2>/dev/null || true
+    waited=0
+    while is_running; do
+      if (( waited >= force_stop_timeout_seconds * 5 )); then
+        echo "LaravelS process $pid did not exit after SIGKILL; refusing to start." >&2
+        return 1
+      fi
+      sleep 0.2
+      waited=$((waited + 1))
+    done
+  fi
+
   rm -f "$pid_file"
   echo "YeYing stopped."
 }
@@ -125,7 +152,12 @@ stop() {
 case "$command" in
   start) start ;;
   stop) stop ;;
-  restart) stop; start ;;
+  restart)
+    if ! stop; then
+      exit 1
+    fi
+    start
+    ;;
   status) if is_running; then echo "YeYing is running (pid $(cat "$pid_file"), port $port)."; else echo "YeYing is stopped."; fi ;;
   *) echo "Usage: $(basename "$0") {start|stop|restart|status}" >&2; exit 1 ;;
 esac
