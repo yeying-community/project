@@ -264,6 +264,12 @@
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;
+                        > .task-id {
+                            margin-right: 5px;
+                            color: $primary-desc-color;
+                            font-size: 12px;
+                            font-weight: normal;
+                        }
                         > span {
                             font-size: 12px;
                             height: 18px;

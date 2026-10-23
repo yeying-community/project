@@ -11,6 +11,7 @@ aliases:
   - 项目筛选
   - 找不到项目
   - 项目快搜
+  - 不知道任务在哪个项目怎么找
 related_tools: [list_projects]
 related_pages: [project_list]
 prerequisites: []
@@ -18,7 +19,8 @@ negative:
   - 默认不显示已归档项目，要切到「已归档」筛选
   - 普通成员搜不到自己未加入的项目（即便项目名公开）
   - 不支持按项目内任务名 / 描述全文搜（要走 [[search 全局搜索]]）
-last_verified: v1.7.90
+  - 全局按 task ID 搜索仍受任务可见性权限限制
+last_verified: v0.0.2
 ---
 
 # 搜索 / 筛选项目
@@ -47,7 +49,9 @@ last_verified: v1.7.90
 - 站点管理员（userIsAdmin）：能搜全站项目，包括没参与的
 
 ## 项目内全文搜
-- 想搜项目内任务、消息、文件：走顶部全局搜（Cmd/Ctrl + K）唤起的全局搜索
+- 想搜项目内任务、消息、文件：走顶部全局搜（Cmd/Ctrl + F 或 Cmd/Ctrl + /）唤起的全局搜索
+- 如果只有 task ID、不知道任务属于哪个项目，直接在全局搜索输入数字 ID；无需逐个打开 Project
+- 任务结果展示 `#taskID` 和所属 Project，点击后打开任务详情
 - 搜索结果按权限过滤，看不到无权限的内容
 - 全局搜底层用 Manticore，详细能力会在 search feature 的 chunk 起草后补充
 

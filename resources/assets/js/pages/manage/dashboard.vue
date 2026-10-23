@@ -74,6 +74,7 @@
                                 <i class="taskfont" v-html="item.complete_at ? '&#xe627;' : '&#xe625;'"></i>
                             </div>
                             <div class="item-title">
+                                <small class="task-id">#{{item.id}}</small>
                                 <!--工作流状态-->
                                 <span v-if="item.flow_item_name" :class="item.flow_item_status" @click.stop="openMenu($event, item)">{{item.flow_item_name}}</span>
                                 <!--是否子任务-->

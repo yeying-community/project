@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ApiException;
 use Request;
 use App\Models\File;
 use App\Models\Project;
@@ -203,7 +204,7 @@ class SearchController extends AbstractController
     /**
      * @api {get} api/search/task 搜索任务
      *
-     * @apiDescription 需要token身份，优先使用 Manticore Search，未安装则使用 MySQL 搜索
+     * @apiDescription 需要token身份；纯数字关键词先精确查找当前用户可访问的任务ID，未命中时优先使用 Manticore Search，未安装则使用 MySQL 搜索；结果包含所属项目名称
      * @apiVersion 1.0.0
      * @apiGroup search
      * @apiName task
@@ -215,6 +216,7 @@ class SearchController extends AbstractController
      * @apiSuccess {Number} ret     返回状态码（1正确、0错误）
      * @apiSuccess {String} msg     返回信息（错误描述）
      * @apiSuccess {Object} data    返回数据
+     * @apiSuccess {String} data[].project_name 所属项目名称
      */
     public function task()
     {
@@ -228,6 +230,25 @@ class SearchController extends AbstractController
             return Base::retSuccess('success', []);
         }
 
+        $normalizedTaskId = ctype_digit($key) ? ltrim($key, '0') : '';
+        if ($normalizedTaskId !== '' && (string)intval($normalizedTaskId) === $normalizedTaskId) {
+            try {
+                $task = ProjectTask::findForDepartmentView(intval($normalizedTaskId), null, true, ['taskUser', 'taskTag', 'project']);
+            } catch (ApiException) {
+                $task = null;
+            }
+
+            if ($task && ProjectTask::matchesTaskDetailVisibility($user->userid)->where('project_tasks.id', $task->id)->exists()) {
+                $taskData = $task->toArray();
+                unset($taskData['project']);
+                $taskData['project_name'] = $task->project?->name;
+                $taskData['relevance'] = 0;
+                $taskData['desc_preview'] = null;
+                $taskData['content_preview'] = null;
+                return Base::retSuccess('success', [$taskData]);
+            }
+        }
+
         // 优先使用 Manticore 搜索
         if (Apps::isInstalled('search')) {
             $results = ManticoreTask::search($user->userid, $key, $searchType, $take);
@@ -236,20 +257,27 @@ class SearchController extends AbstractController
             $taskIds = array_column($results, 'task_id');
             if (!empty($taskIds)) {
                 $tasks = ProjectTask::with(['taskUser', 'taskTag'])
+                    ->with('project')
+                    ->matchesTaskDetailVisibility($user->userid)
                     ->whereIn('id', $taskIds)
                     ->get()
                     ->keyBy('id');
 
-                foreach ($results as &$item) {
+                $results = array_values(array_filter(array_map(function ($item) use ($tasks) {
                     $taskData = $tasks->get($item['task_id']);
-                    if ($taskData) {
-                        $item = array_merge($taskData->toArray(), [
-                            'relevance' => $item['relevance'] ?? 0,
-                            'desc_preview' => $item['desc_preview'] ?? null,
-                            'content_preview' => $item['content_preview'] ?? null,
-                        ]);
+                    if (!$taskData) {
+                        return null;
                     }
-                }
+
+                    $taskArray = $taskData->toArray();
+                    unset($taskArray['project']);
+                    $taskArray['project_name'] = $taskData->project?->name;
+                    return array_merge($taskArray, [
+                        'relevance' => $item['relevance'] ?? 0,
+                        'desc_preview' => $item['desc_preview'] ?? null,
+                        'content_preview' => $item['content_preview'] ?? null,
+                    ]);
+                }, $results)));
             }
         } else {
             // MySQL 回退搜索
@@ -269,7 +297,7 @@ class SearchController extends AbstractController
      */
     private function searchTaskByMysql(int $userid, string $key, int $take): array
     {
-        $tasks = ProjectTask::with(['taskUser', 'taskTag'])
+        $tasks = ProjectTask::with(['taskUser', 'taskTag', 'project'])
             ->whereIn('project_tasks.project_id', function ($query) use ($userid) {
                 $query->select('project_id')
                     ->from('project_users')
@@ -277,6 +305,7 @@ class SearchController extends AbstractController
             })
             ->whereNull('project_tasks.archived_at')
             ->whereNull('project_tasks.deleted_at')
+            ->matchesTaskDetailVisibility($userid)
             ->searchByKeyword($key)
             ->orderByDesc('project_tasks.id')
             ->take($take)
@@ -284,6 +313,8 @@ class SearchController extends AbstractController
 
         return $tasks->map(function ($task) {
             $array = $task->toArray();
+            unset($array['project']);
+            $array['project_name'] = $task->project?->name;
             $array['relevance'] = 0;
             $array['desc_preview'] = null;
             $array['content_preview'] = null;

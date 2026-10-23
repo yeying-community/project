@@ -101,6 +101,7 @@
                                             <Tag :color="tag.color" :fade="false" @on-click="openDialog(dialog.id)">{{$L(tag.text)}}</Tag>
                                         </template>
                                         <span v-html="transformEmojiToHtml(dialog.name)"></span>
+                                        <small v-if="dialog.group_type=='task' && dialog.group_info && dialog.group_info.id" class="task-id">#{{dialog.group_info.id}}</small>
                                         <Icon v-if="dialog.type == 'user' && lastMsgReadDone(dialog.last_msg) && dialog.dialog_user.userid != userId" :type="lastMsgReadDone(dialog.last_msg)"/>
                                         <em v-if="dialog.last_at">{{$A.timeFormat(dialog.last_at)}}</em>
                                     </div>

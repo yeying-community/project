@@ -42,6 +42,7 @@
                                     <Tag :color="tag.color" :fade="false">{{$L(tag.text)}}</Tag>
                                 </template>
                                 <h2 class="user-select-auto" @click="onViewDetail" v-html="transformEmojiToHtml(dialogData.name)"></h2>
+                                <small v-if="dialogData.group_type=='task' && dialogData.group_info && dialogData.group_info.id" class="task-id">#{{dialogData.group_info.id}}</small>
                                 <em v-if="peopleNum > 0" @click="onDialogMenu('groupInfo')">({{peopleNum}})</em>
                                 <Tag v-if="dialogData.bot" class="after" :fade="false">{{$L('机器人')}}</Tag>
                                 <Tag v-if="dialogData.group_type=='all'" class="after pointer" :fade="false" @on-click="onDialogMenu('groupInfo')">{{$L('全员')}}</Tag>

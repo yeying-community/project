@@ -451,6 +451,14 @@
                                     white-space: pre-wrap;
                                     word-wrap: break-word;
                                     word-break: break-word;
+
+                                    .task-id {
+                                        margin-right: 5px;
+                                        color: $primary-desc-color;
+                                        font-size: 11px;
+                                        font-weight: 400;
+                                        white-space: nowrap;
+                                    }
                                 }
                             }
                             .task-menu {
@@ -790,6 +798,19 @@
                                 margin-top: 3px;
                                 margin-right: 3px;
                                 text-align: center;
+
+                                &.task-id {
+                                    height: auto;
+                                    min-width: 0;
+                                    line-height: inherit;
+                                    padding: 0;
+                                    border: 0;
+                                    color: $primary-desc-color;
+                                    font-size: 11px;
+                                    margin-top: 0;
+                                    margin-right: 5px;
+                                    white-space: nowrap;
+                                }
                                 &.start {
                                     background-color: var(--flow-item-custom-color-10, rgba($flow-status-start-color, 0.1));
                                     border-color: var(--flow-item-custom-color-10, rgba($flow-status-start-color, 0.1));

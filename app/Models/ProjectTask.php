@@ -64,6 +64,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTask allData($userid = null)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTask authData($userid = null, $owner = null)
  * @method static \Illuminate\Database\Eloquent\Builder|ProjectTask betweenTime($start, $end, $type = 'taskTime')
+ * @method static \Illuminate\Database\Eloquent\Builder|ProjectTask matchesTaskDetailVisibility(int $userid)
  * @method static \Illuminate\Database\Eloquent\Builder|AbstractModel cancelAppend()
  * @method static \Illuminate\Database\Eloquent\Builder|AbstractModel cancelHidden()
  * @method static \Illuminate\Database\Eloquent\Builder|AbstractModel change($array)
@@ -352,6 +353,45 @@ class ProjectTask extends AbstractModel
             }
         });
         return $query;
+    }
+
+    /**
+     * 按任务详情接口的可见性规则筛选任务。
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int $userid
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeMatchesTaskDetailVisibility($query, int $userid)
+    {
+        return $query->where(function ($query) use ($userid) {
+            $query->where('project_tasks.visibility', 1)
+                ->orWhereExists(function ($subquery) use ($userid) {
+                    $subquery->selectRaw('1')
+                        ->from('project_users')
+                        ->whereColumn('project_users.project_id', 'project_tasks.project_id')
+                        ->where('project_users.userid', $userid)
+                        ->whereIn('project_users.owner', [ProjectUser::OWNER_PRIMARY, ProjectUser::OWNER_DEPUTY]);
+                })
+                ->orWhereExists(function ($subquery) use ($userid) {
+                    $subquery->selectRaw('1')
+                        ->from('project_task_users')
+                        ->whereColumn('project_task_users.task_id', 'project_tasks.id')
+                        ->where('project_task_users.userid', $userid);
+                })
+                ->orWhereExists(function ($subquery) use ($userid) {
+                    $subquery->selectRaw('1')
+                        ->from('project_task_users')
+                        ->whereColumn('project_task_users.task_pid', 'project_tasks.id')
+                        ->where('project_task_users.userid', $userid);
+                })
+                ->orWhereExists(function ($subquery) use ($userid) {
+                    $subquery->selectRaw('1')
+                        ->from('project_task_visibility_users')
+                        ->whereColumn('project_task_visibility_users.task_id', 'project_tasks.id')
+                        ->where('project_task_visibility_users.userid', $userid);
+                });
+        });
     }
 
     /**

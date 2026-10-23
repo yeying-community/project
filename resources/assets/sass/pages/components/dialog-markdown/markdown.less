@@ -152,6 +152,37 @@ body {
     }
 
     .dialog-markdown {
+        details {
+            margin: 8px 0;
+            padding: 0 10px;
+            border-left: 2px solid rgba(22, 119, 255, 0.28);
+            background: rgba(22, 119, 255, 0.04);
+
+            summary {
+                padding: 6px 0;
+                color: #4b5563;
+                font-weight: 500;
+                line-height: 20px;
+                outline: none;
+
+                &:focus-visible {
+                    color: #1677ff;
+                    text-decoration: underline;
+                }
+            }
+
+            &[open] {
+                padding-bottom: 8px;
+            }
+
+            > pre,
+            > p,
+            > ul,
+            > ol {
+                margin-bottom: 8px;
+            }
+        }
+
         table {
             th, td {
                 overflow: hidden;

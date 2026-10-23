@@ -213,7 +213,7 @@
                                             <!--工作流状态-->
                                             <span v-if="item.flow_item_name" :class="item.flow_item_status" @click.stop="openMenu($event, item)">{{item.flow_item_name}}</span>
                                             <!--任务描述-->
-                                            <pre>{{item.name}}</pre>
+                                            <pre><small class="task-id">#{{item.id}}</small>{{item.name}}</pre>
                                         </div>
                                         <div class="task-menu" @click.stop="">
                                             <TaskMenu v-if="!isDepartmentReadonly" :ref="`taskMenu_${item.id}`" :task="item" icon="ios-more"/>

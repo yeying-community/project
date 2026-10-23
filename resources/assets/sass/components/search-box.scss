@@ -344,6 +344,21 @@
                                             word-break: keep-all;
                                         }
 
+                                        .desc-project {
+                                            display: inline-block;
+                                            max-width: 180px;
+                                            margin-right: 7px;
+                                            padding: 0 5px;
+                                            border-radius: 3px;
+                                            background-color: rgba($primary-color, 0.08);
+                                            color: $primary-desc-color;
+                                            font-size: 12px;
+                                            vertical-align: middle;
+                                            overflow: hidden;
+                                            text-overflow: ellipsis;
+                                            white-space: nowrap;
+                                        }
+
                                         .desc-text {
                                             font-size: 13px;
                                             color: rgba($primary-desc-color, 0.7);

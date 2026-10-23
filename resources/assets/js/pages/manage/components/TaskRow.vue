@@ -26,6 +26,7 @@
                             <!--有多少个子任务-->
                             <span v-if="item.sub_my && item.sub_my.length > 0">+{{item.sub_my.length}}</span>
                             <!--任务描述-->
+                            <span class="task-id">#{{item.id}}</span>
                             {{item.name}}
                         </div>
                         <div class="item-icons" @click="openTask(item)">

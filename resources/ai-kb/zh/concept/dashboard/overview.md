@@ -20,7 +20,7 @@ negative:
   - 仪表盘只显示「我作为负责人 owner=1」的任务，协作任务在专门的分组
   - 仪表盘不显示项目进度 / 团队整体数据，仅个人视角
   - 仪表盘不显示已完成任务（默认）
-last_verified: v0.0.1
+last_verified: v0.0.2
 ---
 
 # 仪表盘是什么 / 显示哪些卡片
@@ -45,6 +45,7 @@ YeYing 仪表盘（Dashboard）是当前用户的个人工作台，回答「今�
 - 全部从 ProjectTask 表派生（[[task.field.deadline.concept]] 的 end_at 字段）
 - 仅算 owner=1 命中当前用户的（前 3 组），assist 命中的（第 4 组）
 - 已归档（[[task.archive.howto]]）/ 已完成（[[task.complete.howto]]）的任务不显示
+- 任务列表项显示 `#taskID`，点击任务行仍打开该任务详情
 
 ## 与「项目统计」的区别
 - 仪表盘：个人视角，全部项目

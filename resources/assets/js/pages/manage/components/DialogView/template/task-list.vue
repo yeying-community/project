@@ -4,7 +4,7 @@
         <p>&nbsp;</p>
 
         <p v-for="(item, index) in msg.list" :key="index">
-            <span class="mention task" :data-id="item.id">#{{item.name}}</span>
+            <span class="mention task" :data-id="item.id">#{{item.id}} {{item.name}}</span>
         </p>
     </div>
 </template>

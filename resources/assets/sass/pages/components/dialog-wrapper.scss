@@ -210,10 +210,21 @@
                         }
 
                         > h2 {
+                            flex: 1;
+                            min-width: 0;
                             font-size: 17px;
                             font-weight: 600;
                             overflow: hidden;
                             text-overflow: ellipsis;
+                            white-space: nowrap;
+                        }
+
+                        > .task-id {
+                            flex-shrink: 0;
+                            margin-left: 6px;
+                            color: $primary-desc-color;
+                            font-size: 12px;
+                            font-weight: normal;
                             white-space: nowrap;
                         }
 
