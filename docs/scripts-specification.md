@@ -15,7 +15,7 @@
 
 | 脚本 | 用途 | 典型调用 | 说明 |
 | --- | --- | --- | --- |
-| `package.sh` | 基于远端 `main` 或指定 tag 打生产发布包。 | `./scripts/package.sh` / `./scripts/package.sh v1.2.3` | 会拉取远端、构建前端、安装生产 PHP 依赖，并输出 `output/<project>-<version>-<hash>.tar.gz`。 |
+| `package.sh` | 基于指定源码和版本分别生成 PHP service 与浏览器静态制品。 | `./scripts/package.sh --ref <tag-commit> --source-commit <main-commit> --version <x.y.z> --output-dir <dir>` | PHP 包保留 `public/manifest.json`，不包含 `public/js/build/`；`project-web` static 包独立发布 `js/build/` 到标准静态目录。Nginx 应将 `/js/build/` 通过精确 `alias` 指向 `/opt/deploy/static/project-web/current/js/build/`，其余 Laravel/PHP 路由继续由原 PHP 应用处理。 |
 | `config_backup.sh` | 版本升级成功后备份配置文件。 | `./scripts/config_backup.sh` | 读取 `/data/${MODULE_NAME}/backup.conf` 和 `/data/${MODULE_NAME}/.passphrase-file`，备份 `.env`；如存在 `/etc/nginx/conf.d/project.conf`，也会放在备份包根目录下。 |
 | `upgrade.sh` | 通过 `copy-config` 阶段将当前版本 `.env` 复制到目标版本目录，并执行标准升级钩子。 | `./scripts/upgrade.sh copy-config <current-dir> <target-dir>` | 接收当前目录和目标目录绝对路径，直接覆盖目标目录下 `.env`。 |
 | `backup.conf.template` | `config_backup.sh` 的配置模板。 | 复制为 `/data/${MODULE_NAME}/backup.conf` 后编辑 | 用于控制配置备份开关、文件名前缀和后缀。 |

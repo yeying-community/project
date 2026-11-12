@@ -47,6 +47,7 @@ use App\Models\ProjectTaskRelation;
 use App\Models\ProjectTaskAiEvent;
 use App\Models\UserDepartment;
 use App\Services\PersistentStorage;
+use App\Services\AutomationTokenService;
 use App\Module\AiTaskSuggestion;
 use App\Observers\ProjectTaskObserver;
 
@@ -2707,7 +2708,7 @@ class ProjectController extends AbstractController
      * @apiParam {String} name                  任务描述
      * @apiParam {String} [content]             任务详情
      * @apiParam {Array} [times]                计划时间（格式：开始时间,结束时间；如：2020-01-01 00:00,2020-01-01 23:59）
-     * @apiParam {Number} [owner]               负责人
+     * @apiParam {Number|Array} [owner]         负责人；AK/SK 请求省略时默认为令牌所属用户，显式空数组表示待认领
      * @apiParam {Array} [subtasks]             子任务（格式：[{name,owner,times}]）
      * @apiParam {Number} [top]                 添加的任务排到列表最前面
      *
@@ -2719,7 +2720,7 @@ class ProjectController extends AbstractController
     {
         $user = User::auth();
         //
-        $data = Request::input();
+        $data = AutomationTokenService::applyTaskCreateDefaults(request(), Request::input());
         $project_id = intval($data['project_id']);
         $column_id = $data['column_id'];
         // 项目

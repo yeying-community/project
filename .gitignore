@@ -47,6 +47,7 @@ Homestead.yaml
 # Testing
 .phpunit.result.cache
 test.*
+!scripts/test.sh
 
 # Logs and debug files
 npm-debug.log
@@ -73,12 +74,12 @@ README_LOCAL.md
 .playwright-mcp/
 /.phpunit.cache
 
-# Project skill local task state
-.project-task.json
-.project-lifecycle.json
-.project-execution.json
-.project-execution/
-.project-task-*.json
-.project-lifecycle-*.json
-.project-execution-*.json
-.project-execution-*/
+# YeYing Project local task state
+/.project/
+
+# Legacy root-level state; migrate into .project/ when the task is closed.
+/.project-task
+/.project-*.json
+/.project-execution/
+/.project-execution-*/
+.playwright-cli

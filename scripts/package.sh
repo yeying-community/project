@@ -1,228 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
 export COMPOSER_ALLOW_SUPERUSER=1
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/package-common.sh"
+package_common_init project "$@"
+for command_name in npm composer; do command -v "$command_name" >/dev/null 2>&1 || package_fail "$command_name is required"; done
+[[ -f "$PACKAGE_ROOT_DIR/composer.lock" ]] || package_fail 'composer.lock is required for deterministic PHP dependency installation'
+(cd "$PACKAGE_ROOT_DIR" && HUSKY=0 npm install --no-audit --no-fund && npx vite build -- fromcmd)
+(cd "$PACKAGE_ROOT_DIR" && composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress)
+[[ -f "$PACKAGE_ROOT_DIR/public/manifest.json" && -d "$PACKAGE_ROOT_DIR/public/js/build" ]] || package_fail 'frontend build manifest or assets are missing'
+package_make_root project
+package_archive_source "$PACKAGE_DIR"
+rm -rf "$PACKAGE_DIR/node_modules" "$PACKAGE_DIR/vendor" "$PACKAGE_DIR/output" "$PACKAGE_DIR/public/js/build"
+cp -R "$PACKAGE_ROOT_DIR/vendor" "$PACKAGE_DIR/vendor"
+cp "$PACKAGE_ROOT_DIR/public/manifest.json" "$PACKAGE_DIR/public/manifest.json"
+package_copy_scripts "$PACKAGE_DIR/scripts"
+package_strip_build_files "$PACKAGE_DIR"
+package_finish_artifact service
 
-root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-project_name="${PROJECT_NAME:-project}"
-output_dir="${OUTPUT_DIR:-$root_dir/output}"
-remote_name="${PACKAGE_REMOTE:-origin}"
-auto_build="${AUTO_BUILD:-true}"
-tag_arg="${1:-}"
-source_dir=""
-worktree_dir=""
-stage_dir=""
-
-usage() {
-  echo "Usage: $(basename "$0") [v<major>.<minor>.<patch>]" >&2
-}
-
-require_cmd() {
-  local cmd="$1"
-  command -v "$cmd" >/dev/null 2>&1 || {
-    echo "Missing $cmd command in PATH" >&2
-    exit 1
-  }
-}
-
-normalize_tag() {
-  local tag="$1"
-  tag="${tag#v}"
-  echo "v${tag}"
-}
-
-is_semver_tag() {
-  [[ "$1" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
-}
-
-extract_max_tag() {
-  git -C "$root_dir" tag -l 'v[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n 1
-}
-
-increment_patch_tag() {
-  local tag="$1"
-  local major minor patch
-
-  major="${tag#v}"
-  major="${major%%.*}"
-  minor="${tag#v${major}.}"
-  minor="${minor%%.*}"
-  patch="${tag##*.}"
-  echo "v${major}.${minor}.$((patch + 1))"
-}
-
-ensure_remote_exists() {
-  if ! git -C "$root_dir" remote get-url "$remote_name" >/dev/null 2>&1; then
-    echo "Remote not found: $remote_name" >&2
-    exit 1
-  fi
-}
-
-fetch_remote_refs() {
-  ensure_remote_exists
-  echo "Fetching latest refs from remote '$remote_name'..."
-  git -C "$root_dir" fetch "$remote_name" --prune --tags
-}
-
-prepare_source_dir() {
-  local ref="$1"
-
-  worktree_dir="$(mktemp -d "${TMPDIR:-/tmp}/${project_name}-package-worktree.XXXXXX")"
-  git -C "$root_dir" worktree add --detach "$worktree_dir" "$ref" >/dev/null
-  source_dir="$worktree_dir"
-}
-
-build_artifacts() {
-  if [[ "$auto_build" != "true" ]]; then
-    return 0
-  fi
-
-  require_cmd npm
-  require_cmd composer
-
-  echo "Installing frontend dependencies..."
-  (cd "$source_dir" && npm install)
-
-  echo "Building frontend static assets..."
-  (cd "$source_dir" && npx vite build -- fromcmd)
-
-  echo "Installing production PHP dependencies..."
-  (cd "$source_dir" && composer install --no-dev --prefer-dist --optimize-autoloader)
-}
-
-verify_artifacts() {
-  [[ -f "$source_dir/public/manifest.json" ]] || {
-    echo "Missing frontend manifest: $source_dir/public/manifest.json" >&2
-    exit 1
-  }
-  [[ -d "$source_dir/public/js/build" ]] || {
-    echo "Missing frontend build assets: $source_dir/public/js/build" >&2
-    exit 1
-  }
-  [[ -f "$source_dir/vendor/autoload.php" ]] || {
-    echo "Missing production PHP dependencies: $source_dir/vendor/autoload.php" >&2
-    exit 1
-  }
-}
-
-cleanup() {
-  if [[ -n "$worktree_dir" && -d "$worktree_dir" ]]; then
-    git -C "$root_dir" worktree remove --force "$worktree_dir" >/dev/null 2>&1 || rm -rf "$worktree_dir"
-  fi
-  if [[ -n "$stage_dir" && -d "$stage_dir" ]]; then
-    rm -rf "$stage_dir"
-  fi
-}
-trap cleanup EXIT
-
-require_cmd git
-require_cmd rsync
-
-target_tag=""
-build_ref=""
-build_hash_full=""
-
-if [[ -n "$tag_arg" ]]; then
-  target_tag="$(normalize_tag "$tag_arg")"
-  if ! is_semver_tag "$target_tag"; then
-    usage
-    exit 1
-  fi
-
-  fetch_remote_refs
-  if ! git -C "$root_dir" rev-parse -q --verify "refs/tags/$target_tag" >/dev/null; then
-    echo "Tag not found, skip package: $target_tag"
-    exit 0
-  fi
-
-  build_ref="$target_tag"
-  build_hash_full="$(git -C "$root_dir" rev-list -n 1 "$target_tag")"
-  prepare_source_dir "$build_ref"
-  build_artifacts
-  verify_artifacts
-else
-  fetch_remote_refs
-  remote_main_ref="refs/remotes/$remote_name/main"
-  if ! git -C "$root_dir" rev-parse -q --verify "$remote_main_ref" >/dev/null; then
-    echo "Missing remote branch: $remote_name/main" >&2
-    exit 1
-  fi
-
-  max_tag="$(extract_max_tag)"
-  main_hash_full="$(git -C "$root_dir" rev-parse "$remote_main_ref")"
-  max_tag_hash_full=""
-  if [[ -n "$max_tag" ]]; then
-    max_tag_hash_full="$(git -C "$root_dir" rev-list -n 1 "$max_tag")"
-  fi
-
-  if [[ -n "$max_tag_hash_full" && "$max_tag_hash_full" == "$main_hash_full" ]]; then
-    echo "Latest tag $max_tag already matches $remote_name/main HEAD, skip package."
-    exit 0
-  fi
-
-  if [[ -z "$max_tag" ]]; then
-    target_tag="v0.0.1"
-  else
-    target_tag="$(increment_patch_tag "$max_tag")"
-  fi
-
-  if git -C "$root_dir" rev-parse -q --verify "refs/tags/$target_tag" >/dev/null; then
-    echo "Tag already exists, refuse to overwrite: $target_tag" >&2
-    exit 1
-  fi
-
-  build_ref="$main_hash_full"
-  build_hash_full="$main_hash_full"
-  prepare_source_dir "$build_ref"
-  build_artifacts
-  verify_artifacts
-
-  git -C "$root_dir" tag "$target_tag" "$main_hash_full"
-  if ! git -C "$root_dir" push "$remote_name" "$target_tag"; then
-    git -C "$root_dir" tag -d "$target_tag" >/dev/null 2>&1 || true
-    echo "Failed to push tag to remote: $target_tag" >&2
-    exit 1
-  fi
-fi
-
-if [[ -z "$build_hash_full" ]]; then
-  build_hash_full="$(git -C "$root_dir" rev-parse "$build_ref")"
-fi
-
-target_hash="$(git -C "$root_dir" rev-parse --short=7 "$build_hash_full")"
-package_name="${project_name}-${target_tag}-${target_hash}"
-stage_dir="$(mktemp -d "${TMPDIR:-/tmp}/${project_name}-package-stage.XXXXXX")"
-package_dir="$stage_dir/$package_name"
-archive_path="$output_dir/$package_name.tar.gz"
-
-mkdir -p "$output_dir" "$package_dir"
-echo "Cleaning output directory: $output_dir"
-find "$output_dir" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
-
-rsync -a \
-  --exclude '.git' \
-  --exclude '.github' \
-  --exclude 'node_modules' \
-  --exclude 'package-lock.json' \
-  --exclude 'output' \
-  --exclude 'storage/logs/*' \
-  --exclude '.env' \
-  "$source_dir/" "$package_dir/"
-
-mkdir -p "$package_dir/scripts"
-install -m 0644 "$root_dir/scripts/backup.conf.template" "$package_dir/scripts/backup.conf.template"
-install -m 0755 "$root_dir/scripts/config_backup.sh" "$package_dir/scripts/config_backup.sh"
-install -m 0755 "$root_dir/scripts/upgrade.sh" "$package_dir/scripts/upgrade.sh"
-install -m 0644 "$root_dir/scripts/.passphrase-file.template" "$package_dir/scripts/.passphrase-file.template"
-
-chmod 755 "$package_dir"
-chmod +x \
-  "$package_dir/scripts/ubuntu-deps.sh" \
-  "$package_dir/scripts/starter.sh" \
-  "$package_dir/scripts/health-check.sh" \
-  "$package_dir/scripts/install.sh" \
-  "$package_dir/scripts/config_backup.sh" \
-  "$package_dir/scripts/upgrade.sh"
-
-tar -czf "$archive_path" -C "$stage_dir" "$package_name"
-echo "Package created: $archive_path"
+package_make_root project-web
+PACKAGE_HEALTH_PATH="/$(jq -r 'to_entries[] | select(.key | endswith("/app.js")) | .value.file' "$PACKAGE_ROOT_DIR/public/manifest.json" | head -n 1)"
+[[ -n "$PACKAGE_HEALTH_PATH" && "$PACKAGE_HEALTH_PATH" != "/null" ]] || package_fail 'frontend entry is missing from public/manifest.json'
+mkdir -p "$PACKAGE_DIR/js"
+cp -R "$PACKAGE_ROOT_DIR/public/js/build" "$PACKAGE_DIR/js/build"
+package_finish_artifact static
+package_finish

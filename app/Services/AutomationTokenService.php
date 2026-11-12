@@ -174,6 +174,19 @@ class AutomationTokenService
     }
 
     /**
+     * AK/SK 创建任务时，省略负责人表示默认由令牌所属用户负责。
+     * 显式传入 owner（包括空数组）必须保留，分别用于改派或创建待认领任务。
+     */
+    public static function applyTaskCreateDefaults(Request $request, array $data): array
+    {
+        $token = $request->attributes->get('automation_token');
+        if ($token instanceof AutomationToken && !array_key_exists('owner', $data)) {
+            $data['owner'] = (int) $token->userid;
+        }
+        return $data;
+    }
+
+    /**
      * 标准业务 API 的令牌边界：复用所属用户原有权限，并限制在令牌项目范围内。
      */
     public static function authorizeStandardRequest(AutomationToken $token, Request $request): void
