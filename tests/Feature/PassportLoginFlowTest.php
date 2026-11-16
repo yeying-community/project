@@ -275,14 +275,18 @@ class PassportLoginFlowTest extends TestCase
 
     public function test_wallet_identity_login_session_returns_issuer_endpoint(): void
     {
-        Request::replace(['address' => '0x5c7bf91C493126314bb821C123Dee889FFCa3932']);
+        Request::replace([
+            'address' => '0x5c7bf91C493126314bb821C123Dee889FFCa3932',
+            'identity_scopes' => ['identity.username'],
+        ]);
         $controller = new WalletAuthController();
 
         $result = $controller->login__session();
 
         $this->assertSame(1, $result['ret']);
         $this->assertSame('http://node.test', $result['data']['issuerEndpoint']);
-        $this->assertSame(['identity.basic', 'identity.username', 'identity.wallet', 'identity.email', 'identity.avatar'], $result['data']['scopes']);
+        $this->assertSame(['identity.basic', 'identity.wallet', 'identity.email', 'identity.avatar'], $result['data']['scopes']);
+        $this->assertNotContains('identity.username', $result['data']['scopes']);
     }
 
     public function test_identity_avatar_uri_is_normalized_for_project_storage(): void

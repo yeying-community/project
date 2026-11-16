@@ -247,7 +247,6 @@ class WalletAuthController extends AbstractController
         $sessionId = (string)Str::uuid();
         $scopes = $this->projectIdentityScopes($this->identityScopes(Request::input('identity_scopes', [
             'identity.basic',
-            'identity.username',
             'identity.wallet',
             'identity.email',
             'identity.avatar',
@@ -625,7 +624,8 @@ class WalletAuthController extends AbstractController
 
     private function projectIdentityScopes(array $scopes): array
     {
-        foreach (['identity.basic', 'identity.username', 'identity.wallet', 'identity.email', 'identity.avatar'] as $scope) {
+        $scopes = array_values(array_diff($scopes, ['identity.username']));
+        foreach (['identity.basic', 'identity.wallet', 'identity.email', 'identity.avatar'] as $scope) {
             if (!in_array($scope, $scopes, true)) {
                 $scopes[] = $scope;
             }

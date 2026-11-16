@@ -33,7 +33,7 @@ last_verified: v0.0.2
 YeYing 同时支持以下登录方式（在登录页可切换）：
 
 1. **邮箱 + 密码**：默认方式
-2. **钱包登录**：安装夜莺钱包插件后，点击「钱包登录」按钮，通过 Wallet Identity V1 presentation 完成登录。Wallet 使用本地有效凭证生成并签名 presentation，Project 后端本地验证 DID、scope、issuer 和凭证有效期；正常登录不要求实时访问 Node。历史钱包账号首次使用身份登录时，只要钱包地址凭证验证通过，Project 会自动补绑身份 DID；同一地址已绑定其他 DID 时会拒绝切换。首次钱包登录需设置并验证邮箱。
+2. **钱包登录**：安装夜莺钱包插件后，点击「钱包登录」按钮，通过 Wallet Identity V1 presentation 完成登录。Wallet 使用本地有效凭证生成并签名 presentation，Project 后端本地验证 DID、scope、issuer 和凭证有效期；正常登录不要求实时访问 Node。登录需要已验证的钱包地址和邮箱；用户名仅用于资料同步，不作为登录前提，未验证用户名不会阻断登录。历史钱包账号首次使用身份登录时，只要钱包地址凭证验证通过，Project 会自动补绑身份 DID；同一地址已绑定其他 DID 时会拒绝切换。首次钱包登录需设置并验证邮箱。
 
 钱包登录的解锁、连接、身份资料授权、presentation 出示及账户绑定签名页面顺序，统一遵循 web3-bs《钱包登录统一流程》文档。
 3. **通行证扫码登录**：使用夜莺钱包 App 扫描登录页二维码确认登录，无需钱包插件；通过 Wallet Identity authorization code + PKCE 协议完成身份验证。
@@ -44,7 +44,7 @@ YeYing 同时支持以下登录方式（在登录页可切换）：
 ## 钱包登录与通行证登录的身份模型
 - 钱包登录和通行证登录均基于 Wallet Identity V1 协议，跨应用身份主键为 DID（格式为 `did:yeying:wid_*`）。
 - 钱包地址是可变的关联凭据，不是永久用户主键；一个钱包身份可关联多个 EVM 或非 EVM 地址。
-- 应用通过 `identity.basic`、`identity.wallet`、`identity.username`、`identity.email`、`identity.avatar` scope 按需请求用户身份信息；用户名、邮箱和头像只接受 issuer 签发的已验证凭证（JWT-VC），不信任前端提交值。
+- 应用通过 `identity.basic`、`identity.wallet`、`identity.username`、`identity.email`、`identity.avatar` scope 按需请求用户身份信息；钱包登录不请求可选的 `identity.username`，用户名、邮箱和头像只接受 issuer 签发的已验证凭证（JWT-VC），不信任前端提交值。
 - 钱包插件登录需要资料凭证时，Project 后端使用已配置的 issuer 公钥/JWKS 本地验证 presentation 和 JWT-VC。只有钱包发现本地邮箱、用户名或头像凭证过期或临近过期时，才通过 Node issuer endpoint 发起续签；续签失败或 Node 没有可续签的已验证事实时，才需要回钱包重新完成资料验证。Project 是否查询 Node credential status 由自身撤销策略决定。
 - 通行证登录（无插件）使用 Wallet Identity authorization code + PKCE 兑换；Project 从 Node 返回的 DID、钱包地址和凭证完成本地登录。
 
