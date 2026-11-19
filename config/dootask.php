@@ -73,6 +73,11 @@ return [
     // Directory populated by the Node trust-bundle synchronization job.
     // The production default is /data/node; local deployments can override it.
     'identity_trust_dir' => env('IDENTITY_TRUST_DIR', '/data/node'),
+    // Base64url raw Ed25519 public key used to verify detached manifest.sig.
+    'identity_trust_manifest_public_key' => env('IDENTITY_TRUST_MANIFEST_PUBLIC_KEY', ''),
+    // Pin the Node issuer independently from downloaded metadata.
+    'identity_trust_issuer_did' => env('IDENTITY_TRUST_ISSUER_DID', 'did:web:node.yeying.pub'),
+    'identity_trust_max_age_seconds' => env('IDENTITY_TRUST_MAX_AGE_SECONDS', 3600),
 
     // 当前 Project 在 Node 中登记的应用 ID。
     'passport_client_id' => env('IDENTITY_CLIENT_ID', ''),

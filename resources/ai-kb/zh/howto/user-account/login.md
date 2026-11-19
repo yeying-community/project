@@ -48,7 +48,7 @@ YeYing 同时支持以下登录方式（在登录页可切换）：
 - 钱包插件登录需要资料凭证时，Project 后端使用已配置的 issuer 公钥/JWKS 本地验证 presentation 和 JWT-VC。只有钱包发现本地邮箱、用户名或头像凭证过期或临近过期时，才通过 Node issuer endpoint 发起续签；续签失败或 Node 没有可续签的已验证事实时，才需要回钱包重新完成资料验证。Project 是否查询 Node credential status 由自身撤销策略决定。
 - 通行证登录（无插件）使用 Wallet Identity authorization code + PKCE 兑换；Project 从 Node 返回的 DID、钱包地址和凭证完成本地登录。
 
-Project 只配置 `IDENTITY_TRUST_DIR`（生产默认目录为 `/data/node`）。独立定时任务从 Node 同步并校验 `issuer-metadata.json`、`jwks.json` 和 `manifest.json`，Project 登录时只读取该目录并校验文件摘要，不实时访问 Node。通行证登录另行使用 `IDENTITY_NODE_URL` 和应用授权配置。
+Project 配置 `IDENTITY_TRUST_DIR`（生产默认目录为 `/data/node`）、独立部署固定的 `IDENTITY_TRUST_MANIFEST_PUBLIC_KEY` 和 `IDENTITY_TRUST_ISSUER_DID`。定时任务从 Node 同步 `issuer-metadata.json`、`jwks.json`、`revocations.json`、`manifest.json` 与 `manifest.sig`；登录时校验 detached Ed25519 签名、issuer pin、文件摘要和撤销快照，不实时访问 Node。撤销传播延迟受同步间隔限制，默认超过 1 小时未同步时失败关闭。摘要只能检测文件不一致，真实性由独立固定的公钥保证。通行证登录另行使用 `IDENTITY_NODE_URL` 和应用授权配置。
 
 ## 邮箱密码登录步骤
 1. 填邮箱、密码

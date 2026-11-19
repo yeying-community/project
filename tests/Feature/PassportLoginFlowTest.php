@@ -252,14 +252,26 @@ class PassportLoginFlowTest extends TestCase
         mkdir($directory, 0700, true);
         $metadata = json_encode(['issuer' => 'did:web:node.test', 'jwks_uri' => 'https://node.test/.well-known/jwks.json'], JSON_UNESCAPED_SLASHES);
         $jwks = json_encode(['keys' => [['kty' => 'OKP', 'crv' => 'Ed25519', 'alg' => 'EdDSA', 'kid' => 'test', 'x' => str_repeat('a', 43)]]], JSON_UNESCAPED_SLASHES);
+        $revokedHash = hash('sha256', 'revoked-test-credential');
+        $revocations = json_encode(['issuer' => 'did:web:node.test', 'generatedAt' => now()->toIso8601String(), 'credentialHashes' => [$revokedHash]], JSON_UNESCAPED_SLASHES);
         file_put_contents("{$directory}/issuer-metadata.json", $metadata);
         file_put_contents("{$directory}/jwks.json", $jwks);
-        file_put_contents("{$directory}/manifest.json", json_encode([
+        file_put_contents("{$directory}/revocations.json", $revocations);
+        $manifest = json_encode([
             'issuer' => 'did:web:node.test',
+            'fetchedAt' => now()->toIso8601String(),
             'metadataSha256' => hash('sha256', $metadata),
             'jwksSha256' => hash('sha256', $jwks),
-        ]));
+            'revocationsSha256' => hash('sha256', $revocations),
+        ]);
+        file_put_contents("{$directory}/manifest.json", $manifest);
+        $keypair = sodium_crypto_sign_keypair();
+        $publicKey = sodium_crypto_sign_publickey($keypair);
+        $secretKey = sodium_crypto_sign_secretkey($keypair);
+        file_put_contents("{$directory}/manifest.sig", sodium_crypto_sign_detached($manifest, $secretKey));
         config()->set('dootask.identity_trust_dir', $directory);
+        config()->set('dootask.identity_trust_manifest_public_key', rtrim(strtr(base64_encode($publicKey), '+/', '-_'), '='));
+        config()->set('dootask.identity_trust_issuer_did', 'did:web:node.test');
         $method = new \ReflectionMethod(IdentityCredentialVerifier::class, 'trustBundle');
         $method->setAccessible(true);
 
@@ -267,6 +279,10 @@ class PassportLoginFlowTest extends TestCase
             $bundle = $method->invoke(new IdentityCredentialVerifier());
             $this->assertSame('did:web:node.test', $bundle['issuer']);
             $this->assertSame('test', $bundle['jwks']['keys'][0]['kid']);
+            $this->assertTrue($bundle['revoked'][$revokedHash]);
+            file_put_contents("{$directory}/manifest.sig", str_repeat("\0", SODIUM_CRYPTO_SIGN_BYTES));
+            $this->expectException(RuntimeException::class);
+            $method->invoke(new IdentityCredentialVerifier());
         } finally {
             foreach (glob("{$directory}/*") ?: [] as $file) unlink($file);
             rmdir($directory);
